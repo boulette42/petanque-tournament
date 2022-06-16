@@ -1,8 +1,13 @@
 # Petanque-tournament
 This application can be used to manage round-based competitions in Petanque/Boule. There is basic support for a list of players and the draw of teams and matches at supermêlée or team based competitions.
+Die Sprache des Programms ist bisher ausschließlich "deutsch".
 
 ## Requirements
-The Qt5-framework of trolltech (www.qt.io) is required to build this project.
+Qt5-framework of trolltech (www.qt.io) is required to build this project. 
+
+## Build process
+The file 'petu.pro' can be opened with 'qt-creator'.
+Alternatively you have to use 'qmake' to create project files for your preferred IDE, e.g. 'qmake -tp vc petu.pro' to create a Visual Studio project.
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
