@@ -230,12 +230,12 @@
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionPlayerLoad">
    <property name="text">
-    <string>Spieler-Liste &amp;laden</string>
+    <string>Spieler-Liste &amp;laden...</string>
    </property>
   </action>
   <action name="actionPlayerSave">
    <property name="text">
-    <string>Spieler-Liste &amp;speichern</string>
+    <string>Spieler-Liste &amp;speichern...</string>
    </property>
   </action>
   <action name="actionQuit">
@@ -260,12 +260,12 @@
   </action>
   <action name="actionBackup">
    <property name="text">
-    <string>&amp;Sicherung erstellen</string>
+    <string>&amp;Sicherung erstellen...</string>
    </property>
   </action>
   <action name="actionPlayerAdd">
    <property name="text">
-    <string>Spieler &amp;hinzufügen</string>
+    <string>Spieler &amp;hinzufügen...</string>
    </property>
   </action>
   <action name="actionRoundPrint">
@@ -285,7 +285,7 @@
   </action>
   <action name="actionCreateWindow">
    <property name="text">
-    <string>Neues Fenster...</string>
+    <string>Neues Fenster erzeugen...</string>
    </property>
   </action>
   <action name="actionDeleteAllWindows">

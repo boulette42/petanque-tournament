@@ -112,7 +112,7 @@ QVariant TeamResultModel::data( QModelIndex const& mi, int role ) const
       Player const& player = tournament_.playerList()[idx];
       switch ( col ) {
       case C_TEAM:
-        return player.verein() + QStringLiteral("  ");
+        return player.verein();
       case C_POINTS:
         return player.result()
           ? player.result()->resultPoints()

@@ -74,7 +74,7 @@ QVariant PlayerResultModel::data( QModelIndex const& mi, int role ) const
       case C_ID:
         return player.id();
       case C_NAME:
-        return QStringLiteral("%1, %2  " ).arg( player.name(), player.vorname() );
+        return QStringLiteral("%1, %2" ).arg( player.name(), player.vorname() );
       case C_POINTS:
         return player.result()
           ? player.result()->resultPoints()
