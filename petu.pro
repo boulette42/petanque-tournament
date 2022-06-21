@@ -32,6 +32,7 @@ FORMS += \
   ui/edit_match_dlg.ui \
   ui/edit_player_dlg.ui \
   ui/main_window.ui \
+  ui/select_window_dlg.ui \
   ui/settings_dlg.ui \
   ui/show_result_dlg.ui
 
@@ -49,6 +50,7 @@ HEADERS += \
   src/result.h \
   src/round_calculator.h \
   src/round_model.h \
+  src/select_window_dlg.h \
   src/settings.h \
   src/site.h \
   src/site_model.h \
@@ -75,6 +77,7 @@ SOURCES += \
   src/round_model.cpp \
   src/site.cpp \
   src/site_model.cpp \
+  src/select_window_dlg.cpp \
   src/settings.cpp \
   src/show_result_dlg.cpp \
   src/team.cpp \

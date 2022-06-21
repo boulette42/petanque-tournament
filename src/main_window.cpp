@@ -8,10 +8,11 @@
 #include "player_result.h"
 #include "player_result_model.h"
 #include "round_model.h"
+#include "select_window_dlg.h"
+#include "settings.h"
 #include "show_result_dlg.h"
 #include "site.h"
 #include "site_model.h"
-#include "settings.h"
 #include "version.h"
 #include "team_result_model.h"
 #include "tournament.h"
@@ -23,7 +24,6 @@
 #include <qfiledialog.h>
 #include <qmessagebox.h>
 #include <qtimer.h>
-#include <memory>
 
 
 namespace {
@@ -426,26 +426,40 @@ void MainWindow::updateSiteCount()
 
 void MainWindow::createWindow()
 {
+  SelectWindowDlg swd( this );
+  if ( ! swd.exec() ) return;
   QPointer<QDialog> dlg = new QDialog;
-  updateStyleSheet( *dlg );
-  QVBoxLayout* layout = new QVBoxLayout(dlg);
+  updateStyleSheet( *dlg, swd.fontSize() );
+  QVBoxLayout* layout = new QVBoxLayout( dlg );
   QTreeView* tree_view = new QTreeView;
-  tree_view->setModel(round_model_);
-  tree_view->setRootIsDecorated(false);
-  tree_view->setRootIsDecorated(false);
-  tree_view->setHeaderHidden(true);
-  layout->addWidget(tree_view);
+  QAbstractItemModel* model = nullptr;
+  if ( swd.isRoundWindow() ) {
+    model = round_model_;
+    tree_view->setHeaderHidden( true );
+  }
+  else if ( tournament_->isTeamMode() ) {
+    model = team_result_model_;
+  }
+  else {
+    model = player_result_model_;
+  }
+  tree_view->setModel( model );
+  tree_view->setRootIsDecorated( false );
+  layout->addWidget( tree_view );
   QRect rec = QApplication::desktop()->screenGeometry();
-  QSize size(rec.width() / 2, rec.height() / 2);
+  QSize size( rec.width()/2, rec.height()/2 );
   dlg->resize(size);
-  dlg->setWindowTitle(tr("Runde %1").arg(round_model_->currentRound() + 1));
-  dlg_register_.append(dlg);
+  dlg->setWindowTitle(tr( "Runde %1" ).arg( round_model_->currentRound() + 1 ) );
+  dlg_register_.append( dlg );
   dlg->show();
+  for ( int col = 0; col < model->columnCount() - 1; ++col ) {
+    tree_view->resizeColumnToContents( col );
+  }
 }
 
 void MainWindow::deleteAllWindows()
 {
-  foreach(QPointer<QDialog> p, dlg_register_) {
+  foreach( QPointer<QDialog> p, dlg_register_ ) {
     p->close();
     p = nullptr;
   }
