@@ -32,7 +32,7 @@ public:
       bool ok = false;
       int i = input.toInt( &ok );
       if ( ! ok ) return QValidator::Invalid;
-      if ( i != 0 && ( i < MIN_FONT_SIZE || i > MAX_FONT_SIZE ) ) return QValidator::Invalid;
+      if ( i != 0 && i > MAX_FONT_SIZE ) return QValidator::Invalid;
     }
     return QValidator::Acceptable;
   }
@@ -151,12 +151,17 @@ void activateSimulator()
   settings().simulation_enabled_ = true;
 }
 
-void updateStyleSheet( QWidget& dlg )
+void updateStyleSheet(QWidget& dlg)
+{
+  updateStyleSheet( dlg, global().font_size_ );
+}
+
+void updateStyleSheet( QWidget& dlg, int font_size )
 {
   int const initial_font_size = 9;
-  if ( global().font_size_ > 0 ) {
+  if ( font_size > 0 ) {
     QString const style_sheet = QStringLiteral( "QWidget { font-size: %1pt }" )
-      .arg( global().font_size_ );
+      .arg( font_size );
     dlg.setStyleSheet( style_sheet );
   } else {
     QString const style_sheet = QStringLiteral(

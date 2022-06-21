@@ -1,11 +1,11 @@
 Dokumentation zum Programm Petanque-Turnier
 
 Autor    Boulette 42
-Version  2022-06-13
+Version  2022-06-21
 
 Einleitung
 
-Das Programm "Petanque-Turnier" dient der Protokollierung und der Auslosung von Runden-basierten Turnieren in der Sportart Petanque/Boule. Es enthält eine rudimentäre Spieler-Verwaltung, die Auslosung der Mannschaften und Begegnungen beim Supermelée und die Auslosung der Begegnungen beim Team-basierten Turnier. Als Option kann berücksichtigt werden, dass die Spieler möglichst auf unterschiedlichen Plätzen spielen sollen.
+Das Programm "Petanque-Turnier" dient der Protokollierung und der Auslosung von Runden-basierten Turnieren in der Sportart Petanque/Boule. Es enthält eine rudimentäre Spieler-Verwaltung, die Auslosung der Mannschaften und Begegnungen beim Supermelée und die Auslosung der Begegnungen beim Team-basierten Turnier. Als Option kann berücksichtigt werden, dass die Spieler möglichst auf unterschiedlichen Plätzen spielen sollen. Die Anzeige auf mehreren Bildschirmen wird unterstützt.
 Die Punkte werden nach dem Formule-X-System ermittelt. Jeder Spieler erhält die erzielten Punkte. Für einen Sieg gibt es zusätzlich 100 Punkte + die Differenz zum Ergebnis der Gegner.
 
 
@@ -41,6 +41,11 @@ Automatische Turnier-Speicherung
 Bei Programm-Ende wird ein begonnenes Turnier automatisch unter dem Tagesdatum gespeichert (Dateiname petu_daten_jjjjmmtt.json). Der erneute Aufruf des Programms ohne Aufruf-Parameter lädt das Turnier mit diesem Tagesdatum wieder mit dem gespeicherten Status.
 Das Verzeichnis, in dem diese automatischen Speicherungen stattfinden, lässt sich in den Einstellungen festlegen. Wenn diese Angabe fehlt, werden diese Dateien in dem Verzeichnis gespeichert, in dem sich das Programm befindet.
 
+Mehrere Bildschirme
+Das Programm unterstützt die Anzeige auf mehreren Bildschirmen. Wenn z.B auf einem zweiten Bildschirm die ausgeloste Runde für die Spieler angezeigt werden soll, kann für diesen über den Menüpunkt
+  Ansicht -> neues Fenster erzeugen...
+eine Kopie der aktuellen Rundenanzeige oder der aktuellen Ergebnisliste erzeugt werden. Dieses Fenster kann auf einen anderen Bildschirm verschoben werden und wird dort synchron aktiúalisiert.
+
 Aufruf-Parameter
 Um ein gespeichertes Turnier explizit zu laden, kann das Programm mit dem Aufruf-Parameter
   -t <Pfad-zu-Turnier-Datei>
@@ -53,20 +58,20 @@ geladen werden.
 Programm-Oberfläche
 Menü-Punkte
  Datei
- -> Sicherung erstellen
+ -> Sicherung erstellen...
     Das aktuelle Turnier wird in einer Datei unter einem frei definierbaren Namen gespeichert.
     Das Laden einer solchen Sicherung kann mit dem Aufrufparameter -t <dateiname> erfolgen.
- -> Einstellungen
+ -> Einstellungen...
     Ein Dialog eird aufgerufen, mit dem der Turnier-Modus und das Zielverzeichnis der automatischen Speicherung festgelegt werden können.
     Die Option, ob die Plätze bei der Auswahl berücksichtigt werden sollen, kann hier aktiviert werden.
     Außerdem kann hier die generelle Schriftgröße festgelegt werden. Die Eingabe von '0' aktiviert die Standard-Größe. Jede andere Zahl von '7' bis '24' stellt genau diese Schriftgröße ein.
  Spieler
- -> hinzufügen
+ -> Spieler hinzufügen...
     Die Eingabemaske für die Daten eines neuen Spielers erscheint.
- -> Spieler-Liste laden
+ -> Spieler-Liste laden...
     Eine andere Spielerliste im CSV-Format kann ausgewählt und eingelesen werden. Danach kann der Turnier-Modus neu gewählt werden.
     Achtung: Mit diesem Menüpunkt wird bei erfolgreichem Einlesen das aktuelle Turnier ohne Speicherung abgebrochen. 
- -> Spieler-Liste speichern
+ -> Spieler-Liste speichern...
     Die aktuelle Spielerliste kann im CSV-Format gespeichert werden. Dabei werden die Ergebnis-Punkte der Spieler durch die erreichten Punkte im Turnier ergänzt. Die Sortierung erfolgt absteigend nach der Gesamt-Punktzahl.
  Runde
  -> Runde erzeugen
@@ -74,6 +79,11 @@ Menü-Punkte
  -> Runde beenden
     Diese Aktion führt zur Aktualisierung der Ergebnisliste. Dies kann auch erfolgen, wenn noch nicht alle Ergebnisse eingetragen sind, um einen Zwischenstand zu erzeugen. Ein erneutes Ausführen dieser Aktion überschreibt die bisherigen Ergebnisse.
     Diese Aktion muss auch erfolgen, wenn ein Ergebnis korrigiert wurde.
+ Ansicht
+ -> Neues Fenster erzeugen...
+    Es erscheint ein Dialog, in dem die Schriftgröße und die Art des neuen Fensters (Runden- oder Ergebnis-Anzeige) ausgewählt werden kann. Nach Bestätigung wird ein synchronisiertes Fenster erzeugt, das z.B. auf einen anderen Bildschirm geschoben werden kann.
+ -> Alle Fenster löschen
+    Alle über den vorigen Menüpunkt erzeugten Fenster werden gelöscht
  Hilfe
  -> Über
     Es erfolgt die Anzeige der Programm-Version
@@ -92,4 +102,3 @@ Bildschirm
  -> Ergebnisse
     Dieser Bildschirm zeigt den augenblicklichen Spielstand aller Runden ein, die mit der Aktion "Runde beenden" bereits übernommen sind. Die Liste ist nach dem Spielstand sortiert, die besten Spieler bzw. Teams stehen oben.
     Ein Doppelklick auf einen Eintrag öffnet ein Fenster, in dem alle Ergebnisse des laufenden Turniers dieses Spielers bzw. Teams angezeigt werden.
-

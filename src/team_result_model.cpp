@@ -98,7 +98,7 @@ int TeamResultModel::rowCount( QModelIndex const& parent ) const
 
 int TeamResultModel::columnCount( QModelIndex const& parent ) const
 {
-  if ( ! parent.isValid() ) return COLUMN_OFFSET + tournament_.lastRoundIdx() + 1;
+  if ( ! parent.isValid() ) return COLUMN_OFFSET + tournament_.lastRoundIdx() + 2;
   else return 0;
 }
 
@@ -111,15 +111,21 @@ QVariant TeamResultModel::data( QModelIndex const& mi, int role ) const
     if ( role == Qt::DisplayRole ) {
       Player const& player = tournament_.playerList()[idx];
       switch ( col ) {
-      case C_TEAM:   return player.verein();
-      case C_POINTS: return player.result()
-                                ? player.result()->resultPoints()
-                                : 0;
-      default:        return player.result()
-                                ? player.result()->resultPoints( col-COLUMN_OFFSET )
-                                : 0;
-
+      case C_TEAM:
+        return player.verein();
+      case C_POINTS:
+        return player.result()
+          ? player.result()->resultPoints()
+          : 0;
+      default:
+        if ( col-COLUMN_OFFSET <= tournament_.lastRoundIdx() ) {
+          return player.result()
+            ? player.result()->resultPoints( col-COLUMN_OFFSET )
+            : 0;
+        }
       }
+    } else if ( role == Qt::TextAlignmentRole ) {
+      return col == C_TEAM ? Qt::AlignLeft : Qt::AlignRight;
     }
   }
   return QVariant();
@@ -130,9 +136,14 @@ QVariant TeamResultModel::headerData( int section, Qt::Orientation orientation, 
   if ( orientation == Qt::Horizontal ) {
     if ( role == Qt::DisplayRole ) {
       switch ( section ) {
-      case C_TEAM:   return tr( "Team" );
-      case C_POINTS: return tr( "Punkte" );
-      default:       return tr( "Runde %1" ).arg( section-COLUMN_OFFSET+1 );
+      case C_TEAM:
+        return tr( "Team" );
+      case C_POINTS:
+        return tr( "Punkte" );
+      default:
+        if ( section-COLUMN_OFFSET <= tournament_.lastRoundIdx() ) {
+          return tr( "Runde %1" ).arg( section-COLUMN_OFFSET+1 );
+        }
       }
     }
   }

@@ -8,21 +8,22 @@
 #include "player_result.h"
 #include "player_result_model.h"
 #include "round_model.h"
+#include "select_window_dlg.h"
+#include "settings.h"
 #include "show_result_dlg.h"
 #include "site.h"
 #include "site_model.h"
-#include "settings.h"
 #include "version.h"
 #include "team_result_model.h"
 #include "tournament.h"
 #include "tournament_simulator.h"
 #include <qdatetime.h>
 #include <qdebug.h>
+#include <qdesktopwidget.h>
 #include <qevent.h>
 #include <qfiledialog.h>
 #include <qmessagebox.h>
 #include <qtimer.h>
-#include <memory>
 
 
 namespace {
@@ -87,12 +88,14 @@ MainWindow::MainWindow( Tournament const& tournament )
   ui_->setupUi( this );
   connect( ui_->actionBackup, &QAction::triggered, this, &MainWindow::exportTournament );
   connect( ui_->actionSettings, &QAction::triggered, this, &MainWindow::editSettings );
-  connect( ui_->actionQuit, &QAction::triggered, this, &QMainWindow::close );
+  connect( ui_->actionQuit, &QAction::triggered, this, &MainWindow::close );
   connect( ui_->actionPlayerLoad, &QAction::triggered, this, &MainWindow::loadPlayerList );
   connect( ui_->actionPlayerSave, &QAction::triggered, this, &MainWindow::savePlayerList );
   connect( ui_->actionPlayerAdd, &QAction::triggered, this, &MainWindow::addPlayer );
   connect( ui_->actionRoundCreate, &QAction::triggered, this, &MainWindow::newRound );
   connect( ui_->actionRoundFinish, &QAction::triggered, this, &MainWindow::finishRound );
+  connect( ui_->actionCreateWindow, &QAction::triggered, this, &MainWindow::createWindow );
+  connect( ui_->actionDeleteAllWindows, &QAction::triggered, this, &MainWindow::deleteAllWindows );
   connect( ui_->actionAbout, &QAction::triggered, this, &MainWindow::about );
   connect( ui_->pbSetSiteCnt, &QPushButton::clicked, this, &MainWindow::updateSiteCount );
   connect( ui_->tvPlayerList, &QAbstractItemView::activated, this, &MainWindow::playerActivated );
@@ -181,13 +184,6 @@ void MainWindow::editSettings()
       updateStyleSheet( *this );
       updateView( TabMode::all );
     }
-  }
-}
-
-void MainWindow::quitTournament()
-{
-  if ( ! tournament_->isChanged() || saveTournament( currentTournamentName() ) ) {
-    close();
   }
 }
 
@@ -332,6 +328,7 @@ void MainWindow::newRound()
 
 void MainWindow::initModels()
 {
+  deleteAllWindows();
   round_model_ = new RoundModel( *tournament_ );
   ui_->tvMatchList->setModel( round_model_ );
   player_result_model_ = new PlayerResultModel( *tournament_ );
@@ -426,6 +423,49 @@ void MainWindow::updateSiteCount()
       tr( "Die Platzanzahl konnten nicht übernommen werden" ) );
   }
 }
+
+void MainWindow::createWindow()
+{
+  SelectWindowDlg swd( this );
+  if ( ! swd.exec() ) return;
+  QPointer<QDialog> dlg = new QDialog;
+  updateStyleSheet( *dlg, swd.fontSize() );
+  QVBoxLayout* layout = new QVBoxLayout( dlg );
+  QTreeView* tree_view = new QTreeView;
+  QAbstractItemModel* model = nullptr;
+  if ( swd.isRoundWindow() ) {
+    model = round_model_;
+    tree_view->setHeaderHidden( true );
+  }
+  else if ( tournament_->isTeamMode() ) {
+    model = team_result_model_;
+  }
+  else {
+    model = player_result_model_;
+  }
+  tree_view->setModel( model );
+  tree_view->setRootIsDecorated( false );
+  layout->addWidget( tree_view );
+  QRect rec = QApplication::desktop()->screenGeometry();
+  QSize size( rec.width()/2, rec.height()/2 );
+  dlg->resize(size);
+  dlg->setWindowTitle(tr( "Runde %1" ).arg( round_model_->currentRound() + 1 ) );
+  dlg_register_.append( dlg );
+  dlg->show();
+  for ( int col = 0; col < model->columnCount() - 1; ++col ) {
+    tree_view->resizeColumnToContents( col );
+  }
+}
+
+void MainWindow::deleteAllWindows()
+{
+  foreach( QPointer<QDialog> p, dlg_register_ ) {
+    p->close();
+    p = nullptr;
+  }
+  dlg_register_.clear();
+}
+
 
 void MainWindow::about()
 {
@@ -547,4 +587,13 @@ bool MainWindow::eventFilter( QObject* obj, QEvent *evt )
     }
   }
   return QMainWindow::eventFilter( obj, evt );
+}
+
+void MainWindow::closeEvent( QCloseEvent* event )
+{
+  event->ignore();
+  if ( ! tournament_->isChanged() || saveTournament( currentTournamentName() ) ) {
+    deleteAllWindows();
+    event->accept();
+  }
 }

@@ -18,5 +18,6 @@ struct Settings
 Settings const& global();
 bool settingsDialog( QWidget* parent, bool enable_mode );
 void updateStyleSheet( QWidget& dlg );
+void updateStyleSheet( QWidget& dlg, int font_size );
 
 #endif  // SETTINGS_H
