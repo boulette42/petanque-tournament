@@ -9,6 +9,6 @@ bug
 feature
 - create additioal non-modal, synchronized round window
   (e.g. for a 2nd screen)
-- all windows are distroyed at end 
+- all windows are destroyed at end 
 ui
 - show results right-aligned 
