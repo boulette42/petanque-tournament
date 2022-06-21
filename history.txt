@@ -7,8 +7,8 @@ Version 0.92a - 2022-06-21
 bug
 - results of last round were not saved
 feature
-- create additioal non-modal, synchronized round window
-  (e.g. for a 2nd screen)
+- create additioal non-modal, synchronized windows of round- or result-tab
+  (e.g. fill a 2nd screen) with individual font size
 - all windows are destroyed at end 
 ui
 - show results right-aligned 
