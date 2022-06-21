@@ -1,0 +1,9 @@
+**/obj
+**/exe
+**/.vs
+*.vcxproj
+*.filters
+*.user
+.qmake.stash
+*.bak
+*.json

@@ -68,5 +68,4 @@ int main( int argc, char **argv )
   MainWindow mw( tournament );
   mw.show();
   app.exec();
-  mw.quitTournament();
 }

@@ -18,6 +18,7 @@
 #include "tournament_simulator.h"
 #include <qdatetime.h>
 #include <qdebug.h>
+#include <qdesktopwidget.h>
 #include <qevent.h>
 #include <qfiledialog.h>
 #include <qmessagebox.h>
@@ -87,12 +88,14 @@ MainWindow::MainWindow( Tournament const& tournament )
   ui_->setupUi( this );
   connect( ui_->actionBackup, &QAction::triggered, this, &MainWindow::exportTournament );
   connect( ui_->actionSettings, &QAction::triggered, this, &MainWindow::editSettings );
-  connect( ui_->actionQuit, &QAction::triggered, this, &QMainWindow::close );
+  connect( ui_->actionQuit, &QAction::triggered, this, &MainWindow::close );
   connect( ui_->actionPlayerLoad, &QAction::triggered, this, &MainWindow::loadPlayerList );
   connect( ui_->actionPlayerSave, &QAction::triggered, this, &MainWindow::savePlayerList );
   connect( ui_->actionPlayerAdd, &QAction::triggered, this, &MainWindow::addPlayer );
   connect( ui_->actionRoundCreate, &QAction::triggered, this, &MainWindow::newRound );
   connect( ui_->actionRoundFinish, &QAction::triggered, this, &MainWindow::finishRound );
+  connect( ui_->actionCreateWindow, &QAction::triggered, this, &MainWindow::createWindow );
+  connect( ui_->actionDeleteAllWindows, &QAction::triggered, this, &MainWindow::deleteAllWindows );
   connect( ui_->actionAbout, &QAction::triggered, this, &MainWindow::about );
   connect( ui_->pbSetSiteCnt, &QPushButton::clicked, this, &MainWindow::updateSiteCount );
   connect( ui_->tvPlayerList, &QAbstractItemView::activated, this, &MainWindow::playerActivated );
@@ -181,13 +184,6 @@ void MainWindow::editSettings()
       updateStyleSheet( *this );
       updateView( TabMode::all );
     }
-  }
-}
-
-void MainWindow::quitTournament()
-{
-  if ( ! tournament_->isChanged() || saveTournament( currentTournamentName() ) ) {
-    close();
   }
 }
 
@@ -332,6 +328,7 @@ void MainWindow::newRound()
 
 void MainWindow::initModels()
 {
+  deleteAllWindows();
   round_model_ = new RoundModel( *tournament_ );
   ui_->tvMatchList->setModel( round_model_ );
   player_result_model_ = new PlayerResultModel( *tournament_ );
@@ -426,6 +423,35 @@ void MainWindow::updateSiteCount()
       tr( "Die Platzanzahl konnten nicht übernommen werden" ) );
   }
 }
+
+void MainWindow::createWindow()
+{
+  QPointer<QDialog> dlg = new QDialog;
+  updateStyleSheet( *dlg );
+  QVBoxLayout* layout = new QVBoxLayout(dlg);
+  QTreeView* tree_view = new QTreeView;
+  tree_view->setModel(round_model_);
+  tree_view->setRootIsDecorated(false);
+  tree_view->setRootIsDecorated(false);
+  tree_view->setHeaderHidden(true);
+  layout->addWidget(tree_view);
+  QRect rec = QApplication::desktop()->screenGeometry();
+  QSize size(rec.width() / 2, rec.height() / 2);
+  dlg->resize(size);
+  dlg->setWindowTitle(tr("Runde %1").arg(round_model_->currentRound() + 1));
+  dlg_register_.append(dlg);
+  dlg->show();
+}
+
+void MainWindow::deleteAllWindows()
+{
+  foreach(QPointer<QDialog> p, dlg_register_) {
+    p->close();
+    p = nullptr;
+  }
+  dlg_register_.clear();
+}
+
 
 void MainWindow::about()
 {
@@ -547,4 +573,13 @@ bool MainWindow::eventFilter( QObject* obj, QEvent *evt )
     }
   }
   return QMainWindow::eventFilter( obj, evt );
+}
+
+void MainWindow::closeEvent( QCloseEvent* event )
+{
+  event->ignore();
+  if ( ! tournament_->isChanged() || saveTournament( currentTournamentName() ) ) {
+    deleteAllWindows();
+    event->accept();
+  }
 }

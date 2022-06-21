@@ -10,6 +10,7 @@ class PlayerResultModel;
 class SiteModel;
 class TeamResultModel;
 class Ui_MainWindow;
+class QDialog;
 class QModelIndex;
 
 class MainWindow : public QMainWindow
@@ -32,11 +33,11 @@ class MainWindow : public QMainWindow
   QPointer<RoundModel> round_model_;
   QPointer<PlayerResultModel> player_result_model_;
   QPointer<TeamResultModel> team_result_model_;
+  QVector<QPointer<QDialog> > dlg_register_;
 
 public:
   explicit MainWindow( Tournament const& tournament );
   ~MainWindow();
-  void quitTournament();
 
 private:
   MainWindow( MainWindow const& );
@@ -48,6 +49,7 @@ private:
   void updateRoundSelect( int round_idx );
   void activateTab( TabMode mode );
   bool eventFilter( QObject* obj, QEvent* evt ) override;
+  void closeEvent( QCloseEvent* event ) override;
 
 private slots:
   void editSettings();
@@ -57,6 +59,8 @@ private slots:
   void addPlayer();
   void newRound();
   void finishRound();
+  void createWindow();
+  void deleteAllWindows();
   void about();
   void updateSiteCount();
   void playerActivated( QModelIndex const& index );

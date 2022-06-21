@@ -231,6 +231,7 @@ void Tournament::setRound( int round_idx, Round const& round )
       }
     }
   }
+  changed_ = true;
 }
 
 bool Tournament::isTeamMode() const
