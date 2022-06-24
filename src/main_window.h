@@ -4,13 +4,13 @@
 #include "config.h"
 #include <qmainwindow.h>
 
+class ExternalWindow;
 class RoundModel;
 class PlayerModel;
 class PlayerResultModel;
 class SiteModel;
 class TeamResultModel;
 class Ui_MainWindow;
-class QDialog;
 class QModelIndex;
 
 class MainWindow : public QMainWindow
@@ -33,7 +33,7 @@ class MainWindow : public QMainWindow
   QPointer<RoundModel> round_model_;
   QPointer<PlayerResultModel> player_result_model_;
   QPointer<TeamResultModel> team_result_model_;
-  QVector<QPointer<QDialog> > dlg_register_;
+  QVector<QSharedPointer<ExternalWindow> > window_register_;
 
 public:
   explicit MainWindow( Tournament const& tournament );

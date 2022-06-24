@@ -2,6 +2,7 @@
 #include "ui_main_window.h"
 #include "edit_match_dlg.h"
 #include "edit_player_dlg.h"
+#include "external_window.h"
 #include "match.h"
 #include "player.h"
 #include "player_model.h"
@@ -19,7 +20,6 @@
 #include "tournament_simulator.h"
 #include <qdatetime.h>
 #include <qdebug.h>
-#include <qdesktopwidget.h>
 #include <qevent.h>
 #include <qfiledialog.h>
 #include <qmessagebox.h>
@@ -393,6 +393,9 @@ void MainWindow::updateRoundSelect( int round_idx )
   ui_->cmbRound->show();
   player_result_model_->updatePlayerList();
   team_result_model_->updateTeamList();
+  foreach( QSharedPointer<ExternalWindow> p, window_register_ ) {
+    p->updateRound( round_idx );
+  }
 }
 
 void MainWindow::finishRound()
@@ -428,14 +431,9 @@ void MainWindow::createWindow()
 {
   SelectWindowDlg swd( this );
   if ( ! swd.exec() ) return;
-  QPointer<QDialog> dlg = new QDialog;
-  updateStyleSheet( *dlg, swd.fontSize() );
-  QVBoxLayout* layout = new QVBoxLayout( dlg );
-  QTreeView* tree_view = new QTreeView;
   QAbstractItemModel* model = nullptr;
   if ( swd.isRoundWindow() ) {
     model = round_model_;
-    tree_view->setHeaderHidden( true );
   }
   else if ( tournament_->isTeamMode() ) {
     model = team_result_model_;
@@ -443,29 +441,18 @@ void MainWindow::createWindow()
   else {
     model = player_result_model_;
   }
-  tree_view->setModel( model );
-  tree_view->setRootIsDecorated( false );
-  layout->addWidget( tree_view );
-  QRect rec = QApplication::desktop()->screenGeometry();
-  QSize size( rec.width()/2, rec.height()/2 );
-  dlg->resize(size);
-  dlg->setWindowTitle(tr( "Runde %1" ).arg( round_model_->currentRound() + 1 ) );
-  dlg_register_.append( dlg );
-  dlg->show();
-  for ( int col = 0; col < model->columnCount() - 1; ++col ) {
-    tree_view->resizeColumnToContents( col );
-  }
+  QSharedPointer<ExternalWindow> external_window( new ExternalWindow( *model, swd.fontSize() ) );
+  window_register_.append( external_window );
 }
 
 void MainWindow::deleteAllWindows()
 {
-  foreach( QPointer<QDialog> p, dlg_register_ ) {
+  foreach( QSharedPointer<ExternalWindow> p, window_register_ ) {
     p->close();
     p = nullptr;
   }
-  dlg_register_.clear();
+  window_register_.clear();
 }
-
 
 void MainWindow::about()
 {
@@ -534,6 +521,9 @@ void MainWindow::roundChanged( int round_idx )
     }
   }
   round_model_->setRound( round_idx );
+  foreach( QSharedPointer<ExternalWindow> p, window_register_ ) {
+    p->updateRound( round_idx );
+  }
   updateView( TabMode::round );
 }
 

@@ -40,6 +40,7 @@ HEADERS += \
   src/config.h \
   src/edit_match_dlg.h \
   src/edit_player_dlg.h \
+  src/external_window.h \
   src/json_common.h \
   src/main_window.h \
   src/match.h \
@@ -64,6 +65,7 @@ HEADERS += \
 SOURCES += \
   src/edit_match_dlg.cpp \
   src/edit_player_dlg.cpp \
+  src/external_window.cpp \
   src/json_common.cpp \
   src/main.cpp \
   src/main_window.cpp \
