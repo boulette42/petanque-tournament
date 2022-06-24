@@ -1,5 +1,7 @@
 **/obj
 **/exe
+**/obj32
+**/exe32
 **/.vs
 *.vcxproj
 *.filters
