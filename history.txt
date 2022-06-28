@@ -12,3 +12,15 @@ feature
 - all windows are destroyed at end 
 ui
 - show results right-aligned 
+
+Version 0.92b - 2022-06-24
+bugs
+- wrong window title on external window
+other
+- refactoring of external window handling
+
+Version 0.92c - 2022-06-26
+other
+- installer with innosetup
+- build script (windows)
+

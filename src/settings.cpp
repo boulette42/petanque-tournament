@@ -1,5 +1,6 @@
 ﻿#include "settings.h"
 #include "ui_settings_dlg.h"
+#include "version.h"
 #include <qfiledialog.h>
 #include <qmessagebox.h>
 #include <qsettings.h>
@@ -8,8 +9,8 @@
 
 namespace {
 
-QString const company( QStringLiteral( "Boulette 42" ) );
-QString const app_name( QStringLiteral( "Supermelée" ) );
+QString const company( QStringLiteral( MY_COMPANY_NAME ) );
+QString const app_name( QStringLiteral( MY_PRODUCT_NAME ) );
 QString const v_mode( QStringLiteral( "Modus" ) );
 QString const v_mode_s( QStringLiteral( "Supermelee" ) );
 QString const v_mode_t( QStringLiteral( "Teams" ) );

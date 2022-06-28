@@ -5,6 +5,23 @@ TARGET = petu
 CONFIG += force_asserts c++17
 QT += widgets
 
+win32 {
+  X86_X64 = $$(x86_x64_)
+  contains(QT_ARCH, i386) {
+    equals(X86_X64, "x64") {
+      error("wrong Qt-architecture: expected x64")
+#    } else {
+#      message("Qt-architecture: x86")
+    }
+  } else {
+    equals(X86_X64, "x86") {
+      error("wrong Qt-architecture: expected x86")
+#    } else {
+#      message("Qt-architecture: x64")
+    }
+  }
+}
+
 include(output_dir.pri)
 
 DEFINES += \
@@ -24,6 +41,7 @@ win32-msvc* {
 
   #pdb in release-build
   QMAKE_CXXFLAGS_RELEASE += /Zi
+  QMAKE_CXXFLAGS_RELEASE += /Fd$$OBJECTS_DIR\petu.vc.pdb
   QMAKE_LFLAGS_RELEASE += /DEBUG
 }
 

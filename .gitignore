@@ -2,10 +2,16 @@
 **/exe
 **/obj32
 **/exe32
+**/dist
+**/installer
 **/.vs
 *.vcxproj
 *.filters
 *.user
-.qmake.stash
 *.bak
 *.json
+.qmake.stash
+error.log
+Makefile
+Makefile.Release
+Makefile.Debug
