@@ -38,14 +38,14 @@ if errorlevel 1 (
   exit /b 1
 )
 
-set errlog_="%~dp0error.log"
+set errlog_="%~dp0build.log"
 
 echo creating makefile...
 del Makefile >NUL 2>NUL
 del Makefile.Release >NUL 2>NUL
 del Makefile.Debug >NUL 2>NUL
 del .qmake.stash >NUL 2>NUL
-qmake petu.pro  2>&1 >%errlog_%
+qmake petanque-tournament.pro  2>&1 >%errlog_%
 if errorlevel 1 (
   echo qmake failed: see '%errlog_%'
   echo did you set 'QTDIR' according to x86^|x64?

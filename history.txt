@@ -24,3 +24,6 @@ other
 - installer with innosetup
 - build script (windows)
 
+Version 0.92d - 2022-06-28
+- default-directory is '$home/.petu'
+- refactoring settings

@@ -11,7 +11,7 @@
 *.bak
 *.json
 .qmake.stash
-error.log
+build.log
 Makefile
 Makefile.Release
 Makefile.Debug

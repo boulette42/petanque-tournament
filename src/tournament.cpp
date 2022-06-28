@@ -51,12 +51,12 @@ Round readRound( QJsonObject const& json, QString& error_string )
   return ret;
 }
 
-QString globalTournamentName( QString const& tournament_name )
+QString globalTournamentName( QString const& tournament_name, bool to_write = false )
 {
   QString filepath = tournament_name;
   QFileInfo fi( filepath );
   if ( fi.fileName() == tournament_name ) {
-    QString dir = global().data_dir_;
+    QString dir = global().dataDir( to_write );
     if ( ! dir.isEmpty() && QDir( dir ).exists() ) {
       dir.replace( QLatin1Char( '\\' ), QLatin1Char( '/' ) );
       if ( ! dir.endsWith( QLatin1Char( '/' ) ) ) {
@@ -153,7 +153,7 @@ bool Tournament::createRound( int round_idx, QString& error_string )
     error_string = tr( "Eine neue Runde konnte nicht erzeugt werden" );
     return false;
   }
-  if ( global().site_enabled_ ) {
+  if ( global().siteEnabled() ) {
     round = calcSites( round, *this );
   }
   if ( round_idx == n_rounds ) {
@@ -240,7 +240,7 @@ bool Tournament::isTeamMode() const
   case ProgMode::teams:
     return true;
   case ProgMode::undefined:
-    return global().mode_ == ProgMode::teams;
+    return global().isTeamMode();
   //case ProgMode::SUPER_MELEE:
   }
   return false;
@@ -475,11 +475,12 @@ bool Tournament::loadTournament( QString const& tournament_name )
 
 bool Tournament::saveTournament( QString const& tournament_name, QString& error_string ) const
 {
-  QString file_path = globalTournamentName( tournament_name );
+  QString file_path = globalTournamentName( tournament_name, true );
   if ( ! createBackup( file_path, error_string ) ) return false;
   QFile fo( file_path );
   if ( ! fo.open( QIODevice::WriteOnly ) ) {
-    error_string = tr( "Datei '%1' lässt sich nicht öffnen (%2)" )
+    error_string = tr( "Datei '%1' lässt sich nicht speichern (%2)\n"
+                       "Bítte anderes Verzeichnis in den Einstellungen wählen." )
       .arg( tournament_name, fo.errorString() );
     return false;
   }

@@ -60,11 +60,6 @@ int main( int argc, char **argv )
       tournament.loadPlayerList( csv_path );
     }
   }
-  QString const simul = getArg( 's' );
-  if ( simul == QStringLiteral( "imulate" ) ) {
-    extern void activateSimulator();
-    activateSimulator();
-  }
   MainWindow mw( tournament );
   mw.show();
   app.exec();
