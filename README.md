@@ -7,8 +7,8 @@ Qt5-framework of trolltech (www.qt.io) is required to build this project.<br>
 You need 'InnoSetup' Version 6.x (https://jrsoftware.org/isdl.php) to create a windows setup.
 
 ## Build process
-The file 'petu.pro' can be opened with 'qt-creator'.<br>
-Alternatively you have to use 'qmake' to create project files for your preferred IDE, e.g. 'qmake -tp vc petu.pro' to create a Visual Studio project.<br>
+The file 'petanque-tournament.pro' can be opened with 'qt-creator'.<br>
+Alternatively you have to use 'qmake' to create project files for your preferred IDE, e.g. 'qmake -tp vc petanque-tournament.pro' to create a Visual Studio project.<br>
 Under Windows there exists a build script 'make_all.bat', which compiles the 32bit- or 64bit-Binaries and creates a setup.exe.
 
 ## Contributing
