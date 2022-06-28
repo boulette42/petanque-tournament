@@ -3,11 +3,13 @@ This application can be used to manage round-based competitions in Petanque/Boul
 Die Sprache des Programms ist bisher ausschließlich "deutsch".
 
 ## Requirements
-Qt5-framework of trolltech (www.qt.io) is required to build this project. 
+Qt5-framework of trolltech (www.qt.io) is required to build this project.
+You need 'InnoSetup' Version 6.x (ttps://jrsoftware.org/isdl.php) to create a windows setup.
 
 ## Build process
 The file 'petu.pro' can be opened with 'qt-creator'.
 Alternatively you have to use 'qmake' to create project files for your preferred IDE, e.g. 'qmake -tp vc petu.pro' to create a Visual Studio project.
+Under Windows there exists a build script 'make_all.bat', which compiles the 32bit- or 64bit-Binaries and creates a setup.exe.
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
