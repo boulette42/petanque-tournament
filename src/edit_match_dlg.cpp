@@ -70,7 +70,7 @@ bool EditMatchDlg::exec( Match const& match, int mno, Tournament const& tourname
       .arg( tournament.player( p_id_lt ).verein() )
       .arg( tournament.player( p_id_rt ).verein() );
   } else {
-    if ( global().site_enabled_ ) {
+    if ( global().siteEnabled() ) {
       title = tournament.siteName( match.site_id_ );
     } else {
       title = dlg_->tr( "Match %1" ).arg( mno );

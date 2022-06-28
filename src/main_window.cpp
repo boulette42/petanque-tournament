@@ -173,14 +173,14 @@ void MainWindow::exportTournament()
 
 void MainWindow::editSettings()
 {
-  bool const site_enabled = global().site_enabled_;
-  int const font_size = global().font_size_;
-  if ( settingsDialog( this, tournament_->isUndefinedMode() ) ) {
-    if ( global().site_enabled_ != site_enabled ) {
+  bool const site_enabled = global().siteEnabled();
+  int const font_size = global().fontSize();
+  if ( global().execDialog( this, tournament_->isUndefinedMode() ) ) {
+    if ( global().siteEnabled() != site_enabled ) {
       round_model_->setRound( round_model_->currentRound() );
     }
     updateView( TabMode::round );
-    if ( global().font_size_ != font_size ) {
+    if ( global().fontSize() != font_size ) {
       updateStyleSheet( *this );
       updateView( TabMode::all );
     }
@@ -202,7 +202,7 @@ bool MainWindow::saveTournament( QString const& filename )
 
 void MainWindow::loadPlayerList()
 {
-  if ( last_load_dir.isEmpty() ) last_load_dir = global().data_dir_;
+  if ( last_load_dir.isEmpty() ) last_load_dir = global().dataDir();
   QString filename = QFileDialog::getOpenFileName(
     this,
     tr( "Spieler-Daten laden"),
@@ -260,7 +260,7 @@ void MainWindow::newRound()
     activateTab( TabMode::player );
     return;
   }
-  if ( global().site_enabled_ ) {
+  if ( global().siteEnabled() ) {
     int const n_site = tournament_->selectedSiteCount();
     if ( n_site < n_player / 4 ) {
       QMessageBox::warning(
@@ -342,7 +342,7 @@ void MainWindow::initModels()
 void MainWindow::updateView( TabMode tm )
 {
   bool const team_mode = tournament_->isTeamMode();
-  ui_->tabWidget->setTabVisible( TI_Site, global().site_enabled_ );
+  ui_->tabWidget->setTabVisible( TI_Site, global().siteEnabled() );
   ui_->tabWidget->setTabVisible( TI_PlayerResult, ! team_mode );
   ui_->tabWidget->setTabVisible( TI_TeamResult, team_mode );
 

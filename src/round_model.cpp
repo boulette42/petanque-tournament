@@ -33,7 +33,7 @@ void RoundModelBase::initRound( Round const& round )
   for ( int m = 0; m < n_matches; ++m ) {
     int row = m * matchRowCount();
     row_to_match_.append( row++ );
-    if ( global().site_enabled_ ) {
+    if ( global().siteEnabled() ) {
       if ( tournament_.isTeamMode() ) {
         row_to_match_.append( row );
       }
@@ -50,7 +50,7 @@ void RoundModelBase::initRound( Round const& round )
 
 int RoundModelBase::matchRowCount() const
 {
-  return global().site_enabled_
+  return global().siteEnabled()
     ? MATCH_ROW_CNT + 1
     : MATCH_ROW_CNT;
 }
@@ -94,7 +94,7 @@ QVariant RoundModelBase::data( QModelIndex const& mi, int role ) const
     switch ( role ) {
     case Qt::DisplayRole: {
       int const m = row_to_match_[row] / matchRowCount();
-      int const k = ( row_to_match_[row] % matchRowCount() ) - global().site_enabled_;
+      int const k = ( row_to_match_[row] % matchRowCount() ) - global().siteEnabled();
       Match const& match = round_[m];
       if ( k == -1 ) {
         switch ( col ) {

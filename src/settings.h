@@ -3,20 +3,28 @@
 
 #include "config.h"
 
+struct SettingsCore;
 class QWidget;
 
-struct Settings
+class Settings
 {
-  QString data_dir_;
-  ProgMode mode_ = ProgMode::super_melee;
-  int font_size_ = 0;
-  bool site_enabled_ = true;
-  bool simulation_enabled_ = false;
+  QSharedPointer<SettingsCore> m_;
+
+public:
+  Settings();
+  ~Settings();
+
+  bool execDialog( QWidget* parent, bool enable_mode );
+  QString dataDir( bool for_write = false ) const;
+  int fontSize() const;
+  bool isTeamMode() const;
+  bool siteEnabled() const;
+  bool simulationEnabled() const;
 };
 
 
-Settings const& global();
-bool settingsDialog( QWidget* parent, bool enable_mode );
+Settings& global();
+
 void updateStyleSheet( QWidget& dlg );
 void updateStyleSheet( QWidget& dlg, int font_size );
 

@@ -1,26 +1,77 @@
 ﻿#include "settings.h"
 #include "ui_settings_dlg.h"
 #include "version.h"
+#include <qdir.h>
 #include <qfiledialog.h>
 #include <qmessagebox.h>
 #include <qsettings.h>
+#include <qstandardpaths.h>
 #include <qvalidator.h>
 
 
 namespace {
 
-QString const company( QStringLiteral( MY_COMPANY_NAME ) );
-QString const app_name( QStringLiteral( MY_PRODUCT_NAME ) );
-QString const v_mode( QStringLiteral( "Modus" ) );
-QString const v_mode_s( QStringLiteral( "Supermelee" ) );
-QString const v_mode_t( QStringLiteral( "Teams" ) );
-QString const v_data_dir( QStringLiteral( "DataDir" ) );
-QString const v_font_size( QStringLiteral( "FontSize" ) );
-QString const v_site_enabled( QStringLiteral( "SiteEnabled" ) );
+  QString const company( QStringLiteral( MY_COMPANY_NAME ) );
+  QString const app_name( QStringLiteral( MY_PRODUCT_NAME ) );
+  QString const v_mode( QStringLiteral( "Modus" ) );
+  QString const v_mode_s( QStringLiteral( "Supermelee" ) );
+  QString const v_mode_t( QStringLiteral( "Teams" ) );
+  QString const v_data_dir( QStringLiteral( "DataDir" ) );
+  QString const v_font_size( QStringLiteral( "FontSize" ) );
+  QString const v_site_enabled( QStringLiteral( "SiteEnabled" ) );
 
-const int MIN_FONT_SIZE = 7;
-const int MAX_FONT_SIZE = 24;
+  const int MIN_FONT_SIZE = 7;
+  const int MAX_FONT_SIZE = 24;
 
+
+  QString defaultDataDir()
+  {
+    return QStandardPaths::writableLocation( QStandardPaths::HomeLocation ) + QStringLiteral("/.petu");
+  }
+
+}
+
+
+struct SettingsCore
+{
+  QString data_dir_;
+  ProgMode mode_ = ProgMode::super_melee;
+  int font_size_ = 0;
+  bool site_enabled_ = true;
+  bool simulation_enabled_ = false;
+
+  void load()
+  {
+    QSettings s( company, app_name );
+    QString mode = s.value( v_mode ).toString();
+    mode_ = mode.compare( v_mode_t, Qt::CaseInsensitive ) == 0
+      ? ProgMode::teams
+      : ProgMode::super_melee;
+    data_dir_ = s.value( v_data_dir ).toString();
+    site_enabled_ = s.value( v_site_enabled ).toBool();
+    font_size_ = s.value( v_font_size ).toInt();
+    simulation_enabled_ = false;
+    QStringList const args = QCoreApplication::arguments();
+    for (int i = 1; i < args.count(); ++i ) {
+      if ( args.at( i ) == QStringLiteral( "-simulate" ) ) {
+        simulation_enabled_ = true;
+        break;
+      }
+    }
+  }
+
+  void save()
+  {
+    QSettings s( company, app_name );
+    s.setValue( v_mode, mode_ == ProgMode::teams ? v_mode_t : v_mode_s );
+    s.setValue( v_data_dir, data_dir_ );
+    s.setValue( v_site_enabled, site_enabled_ );
+    s.setValue( v_font_size, font_size_ );
+  }
+};
+
+
+namespace {
 
 class ZoomValidator : public QValidator
 {
@@ -40,46 +91,14 @@ public:
 };
 
 
-Settings loadSettings()
-{
-  Settings settings;
-  QSettings s( company, app_name );
-  QString mode = s.value( v_mode ).toString();
-  settings.mode_ = mode.compare( v_mode_t, Qt::CaseInsensitive ) == 0
-    ? ProgMode::teams
-    : ProgMode::super_melee;
-  settings.data_dir_ = s.value( v_data_dir ).toString();
-  settings.site_enabled_ = s.value( v_site_enabled ).toBool();
-  settings.font_size_ = s.value( v_font_size ).toInt();
-  return settings;
-}
-
-void saveSettings( Settings const& settings )
-{
-  QSettings s( company, app_name );
-  s.setValue( v_mode, settings.mode_ == ProgMode::teams ? v_mode_t : v_mode_s );
-  s.setValue( v_data_dir, settings.data_dir_ );
-  s.setValue( v_site_enabled, settings.site_enabled_ );
-  s.setValue( v_font_size,settings. font_size_ );
-}
-
-Settings& settings()
-{
-  static Settings s( loadSettings() );
-  return s;
-}
-
-
 class SettingsDlg : public QObject
 {
-  Settings& settings_;
   QPointer<QDialog> dlg_;
   QSharedPointer<Ui_SettingsDialog> ui_;
 
 public:
   SettingsDlg( QWidget* parent )
-    : settings_( settings() )
-    , dlg_( new QDialog( parent ) )
+    : dlg_( new QDialog( parent ) )
     , ui_( new Ui_SettingsDialog )
   {
     ui_->setupUi( dlg_ );
@@ -92,31 +111,31 @@ public:
 
   ~SettingsDlg() = default;
 
-  bool exec( bool enable_mode )
+  bool exec( bool enable_mode, SettingsCore& settings )
   {
     ui_->gbMode->setVisible( enable_mode );
-    ui_->rbSuperMelee->setChecked( settings_.mode_ == ProgMode::super_melee );
-    ui_->rbTeams->setChecked( settings_.mode_ == ProgMode::teams  );
-    ui_->leDataDir->setText( settings_.data_dir_ );
-    ui_->cbSiteEnabled->setChecked( settings_.site_enabled_ );
-    ui_->leFontSize->setText( QString::number( settings_.font_size_ ) );
+    ui_->rbSuperMelee->setChecked( settings.mode_ == ProgMode::super_melee );
+    ui_->rbTeams->setChecked( settings.mode_ == ProgMode::teams  );
+    ui_->leDataDir->setText( settings.data_dir_.isEmpty() ? defaultDataDir() : settings.data_dir_ );
+    ui_->cbSiteEnabled->setChecked( settings.site_enabled_ );
+    ui_->leFontSize->setText( QString::number( settings.font_size_ ) );
     if ( ! dlg_->exec() ) return false;
-    settings_.data_dir_ = ui_->leDataDir->text();
-    settings_.mode_ = ui_->rbSuperMelee->isChecked() ? ProgMode::super_melee : ProgMode::teams;
-    settings_.site_enabled_ = ui_->cbSiteEnabled->isChecked();
+    settings.data_dir_ = ui_->leDataDir->text();
+    settings.mode_ = ui_->rbSuperMelee->isChecked() ? ProgMode::super_melee : ProgMode::teams;
+    settings.site_enabled_ = ui_->cbSiteEnabled->isChecked();
     int font_size = ui_->leFontSize->text().toInt();
     if ( font_size >= MIN_FONT_SIZE && font_size <= MAX_FONT_SIZE ) {
-      settings_.font_size_ = font_size;
+      settings.font_size_ = font_size;
     } else {
-      settings_.font_size_ = 0;
+      settings.font_size_ = 0;
     }
-    saveSettings( settings_ );
+    settings.save();
     return true;
   }
 
   void selectDir()
   {
-    QString dir = QFileDialog::getExistingDirectory( dlg_, tr( "Verzeichnis auswählen" ), settings_.data_dir_ );
+    QString dir = QFileDialog::getExistingDirectory( dlg_, tr( "Verzeichnis auswählen" ), ui_->leDataDir->text() );
     if ( ! dir.isEmpty() ) {
       ui_->leDataDir->setText( dir );
     }
@@ -136,25 +155,62 @@ public:
 }
 
 
-extern Settings const& global()
+Settings& global()
 {
-  return settings();
+  static Settings settings;
+  return settings;
 }
 
-bool settingsDialog( QWidget* parent, bool enable_mode )
+
+Settings::Settings()
+  : m_( new SettingsCore )
+{
+  m_->load();
+}
+
+Settings::~Settings() = default;
+
+bool Settings::execDialog(QWidget* parent, bool enable_mode)
 {
   SettingsDlg dlg( parent );
-  return dlg.exec( enable_mode );
+  return dlg.exec( enable_mode, *m_ );
 }
 
-void activateSimulator()
+bool Settings::isTeamMode() const
 {
-  settings().simulation_enabled_ = true;
+  return m_->mode_ == ProgMode::teams;
+}
+
+QString Settings::dataDir( bool to_write ) const
+{
+  QString const default_dir = defaultDataDir();
+  if ( m_->data_dir_.isEmpty() || m_->data_dir_ == default_dir ) {
+    if ( to_write ) {
+      QDir().mkpath( default_dir );
+    }
+    return default_dir;
+  }
+  return m_->data_dir_;
+}
+
+int Settings::fontSize() const
+{
+  return m_->font_size_;
+}
+
+bool Settings::siteEnabled() const
+{
+  return m_->site_enabled_;
+}
+
+bool Settings::simulationEnabled() const
+{
+  return m_->simulation_enabled_;
 }
 
 void updateStyleSheet(QWidget& dlg)
 {
-  updateStyleSheet( dlg, global().font_size_ );
+  updateStyleSheet( dlg, global().fontSize() );
 }
 
 void updateStyleSheet( QWidget& dlg, int font_size )
