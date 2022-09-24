@@ -67,13 +67,13 @@ bool EditMatchDlg::exec( Match const& match, int mno, Tournament const& tourname
     int p_id_lt = match.team_lt_.playerId( 0 );
     int p_id_rt = match.team_rt_.playerId( 0 );
     title = QStringLiteral( "%1 - %2" )
-      .arg( tournament.player( p_id_lt ).verein() )
-      .arg( tournament.player( p_id_rt ).verein() );
+      .arg( tournament.player( p_id_lt ).team() )
+      .arg( tournament.player( p_id_rt ).team() );
   } else {
     if ( global().siteEnabled() ) {
       title = tournament.siteName( match.site_id_ );
     } else {
-      title = dlg_->tr( "Match %1" ).arg( mno );
+      title = tr( "Match %1" ).arg( mno );
     }
   }
   dlg_->setWindowTitle( title );

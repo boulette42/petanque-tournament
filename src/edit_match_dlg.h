@@ -9,6 +9,8 @@ class Ui_EditMatchDialog;
 
 class EditMatchDlg
 {
+  Q_DECLARE_TR_FUNCTIONS(EditMatchDlg)
+
   QPointer<QDialog> dlg_;
   QSharedPointer<Ui_EditMatchDialog> ui_;
 

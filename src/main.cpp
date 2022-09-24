@@ -1,6 +1,7 @@
 #include "main_window.h"
 #include "tournament.h"
 #include <qapplication.h>
+#include <qmessagebox.h>
 #include <qtranslator.h>
 
 
@@ -36,9 +37,13 @@ QString getArg( char c )
 }
 
 
-QString tr( char const* txt )
+bool loadTranslator(QTranslator& trl, char const* name)
 {
-  return QApplication::tr( txt );
+  return trl.load(
+    QLocale(),
+    QString::fromUtf8(name),
+    QStringLiteral("_"),
+    qApp->applicationDirPath());
 }
 
 // --- main ------------------------------------------------------------------
@@ -46,10 +51,15 @@ QString tr( char const* txt )
 int main( int argc, char **argv )
 {
   QApplication app( argc, argv );
-  static QTranslator tr_qt;
-  if ( tr_qt.load( QStringLiteral("qtbase_de.qm"), qApp->applicationDirPath() ) ) {
+  QTranslator tr_petu;
+  if ( loadTranslator( tr_petu, "petu") ) {
+    qApp->installTranslator( &tr_petu );
+  }
+  QTranslator tr_qt;
+  if ( loadTranslator( tr_qt, "qt") ) {
     qApp->installTranslator( &tr_qt );
   }
+  app.setAttribute( Qt::AA_DontShowIconsInMenus, true );
   Tournament tournament;
   QString const tournament_path = getArg( 't' );
   if ( ! tournament_path.isEmpty() ) {

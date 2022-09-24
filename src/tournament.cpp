@@ -36,7 +36,7 @@ Round readRound( QJsonObject const& json, QString& error_string )
   Round ret;
   if ( json.contains( J_MATCHES ) ) {
     if ( ! json[J_MATCHES].isArray() ) {
-      error_string = tr( "Keine Matches definiert" );
+      error_string = Tournament::tr( "Keine Matches definiert" );
       return ret;
     }
     QJsonArray m_arr = json[J_MATCHES].toArray();
@@ -75,12 +75,12 @@ bool createBackup( QString const filename, QString& error_string )
     QString backup_filename = filename + QLatin1String( ".bak" );
     if ( QFile::exists( backup_filename ) ) {
       if ( ! QFile::remove( backup_filename ) ) {
-        error_string = tr( "Datei '%1' lässt sich nicht löschen" ).arg( backup_filename );
+        error_string = Tournament::tr( "Datei '%1' lässt sich nicht löschen" ).arg( backup_filename );
         return false;
       }
     }
     if ( ! f.rename( backup_filename ) ) {
-      error_string = tr( "Backup von Datei '%1' lässt sich nicht erstellen (%2)" )
+      error_string = Tournament::tr( "Backup von Datei '%1' lässt sich nicht erstellen (%2)" )
         .arg( filename, f.errorString() );
       return false;
     }
@@ -172,7 +172,7 @@ TeamList Tournament::setTeams( PlayerList const& player_list, QString& error_str
   TeamMap team_map;
   for ( int i = 0, n = player_list.size(); i < n; i++ ) {
     Player const& player( player_list[i] );
-    QString team_name = player.verein().toLower();
+    QString team_name = player.team().toLower();
     TeamMap::iterator t_it = team_map.find( team_name );
     if ( t_it == team_map.end() ) {
       t_it = team_map.insert( team_name, IdList() );
@@ -269,7 +269,7 @@ QString Tournament::playerName( int id ) const
 {
   Player const& p = player( id );
   return id != INVALID_ID
-    ? QStringLiteral( "%1 %2" ).arg( p.vorname(), p.name() )
+    ? QStringLiteral( "%1 %2" ).arg( p.firstName(), p.lastName() )
     : QString();
 }
 
@@ -585,12 +585,11 @@ void Tournament::writeToJson( QJsonObject& json ) const
   json[J_SITES] = s_arr;
 }
 
-
 Round readRoundFile( QString const& filepath, QString& error_string )
 {
   QFile fi( filepath );
   if ( ! fi.open( QIODevice::ReadOnly ) ) {
-    error_string = tr( "Kann Datei '%1' nicht lesen" ).arg( filepath );
+    error_string = Tournament::tr( "Kann Datei '%1' nicht lesen" ).arg( filepath );
     return Round();
   }
   QByteArray round_data = fi.readAll();

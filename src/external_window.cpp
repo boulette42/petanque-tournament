@@ -7,14 +7,6 @@
 #include <qlayout.h>
 #include <qtreeview.h>
 
-namespace {
-
-  QString roundTitle()
-  {
-    return tr( "Runde" );
-  }
-}
-
 
 ExternalWindow::ExternalWindow( QAbstractItemModel& model, int font_size )
   : dlg_( new QDialog )
@@ -24,8 +16,7 @@ ExternalWindow::ExternalWindow( QAbstractItemModel& model, int font_size )
   QTreeView* tree_view = new QTreeView;
   RoundModel* round_model = dynamic_cast<RoundModel *>( &model );
   if ( round_model ) {
-    dlg_->setWindowTitle( QStringLiteral( "%1 %2" )
-      .arg( roundTitle() )
+    dlg_->setWindowTitle( tr( "Runde %1" )
       .arg( round_model->currentRound() + 1 ) );
     tree_view->setHeaderHidden( true );
   }
@@ -59,9 +50,7 @@ void ExternalWindow::close()
 
 void ExternalWindow::updateRound( int round_idx )
 {
-  if ( dlg_ && dlg_->windowTitle().startsWith( roundTitle() ) ) {
-    dlg_->setWindowTitle( QStringLiteral( "%1 %2" )
-      .arg( roundTitle() )
-      .arg( round_idx + 1 ) );
+  if ( dlg_ && dlg_->windowTitle().startsWith( tr( "Runde" ) ) ) {
+    dlg_->setWindowTitle( tr( "Runde %1" ).arg( round_idx + 1 ) );
   }
 }

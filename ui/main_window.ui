@@ -232,15 +232,24 @@
    <property name="text">
     <string>Spieler-Liste &amp;laden...</string>
    </property>
+   <property name="iconVisibleInMenu">
+    <bool>false</bool>
+   </property>
   </action>
   <action name="actionPlayerSave">
    <property name="text">
     <string>Spieler-Liste &amp;speichern...</string>
    </property>
+   <property name="iconVisibleInMenu">
+    <bool>false</bool>
+   </property>
   </action>
   <action name="actionQuit">
    <property name="text">
     <string>&amp;Ende</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>false</bool>
    </property>
   </action>
   <action name="actionPlayerPrint">
@@ -252,20 +261,32 @@
    <property name="text">
     <string>Runde &amp;erzeugen</string>
    </property>
+   <property name="iconVisibleInMenu">
+    <bool>false</bool>
+   </property>
   </action>
   <action name="actionRoundFinish">
    <property name="text">
     <string>Runde &amp;beenden</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>false</bool>
    </property>
   </action>
   <action name="actionBackup">
    <property name="text">
     <string>&amp;Sicherung erstellen...</string>
    </property>
+   <property name="iconVisibleInMenu">
+    <bool>false</bool>
+   </property>
   </action>
   <action name="actionPlayerAdd">
    <property name="text">
     <string>Spieler &amp;hinzufügen...</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>false</bool>
    </property>
   </action>
   <action name="actionRoundPrint">
@@ -277,20 +298,32 @@
    <property name="text">
     <string>Einstellungen...</string>
    </property>
+   <property name="iconVisibleInMenu">
+    <bool>false</bool>
+   </property>
   </action>
   <action name="actionAbout">
    <property name="text">
     <string>Über...</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>false</bool>
    </property>
   </action>
   <action name="actionCreateWindow">
    <property name="text">
     <string>Neues Fenster erzeugen...</string>
    </property>
+   <property name="iconVisibleInMenu">
+    <bool>false</bool>
+   </property>
   </action>
   <action name="actionDeleteAllWindows">
    <property name="text">
     <string>Alle Fenster löschen</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>false</bool>
    </property>
   </action>
  </widget>

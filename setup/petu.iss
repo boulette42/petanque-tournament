@@ -30,6 +30,8 @@ Source: "..\dist\exe\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs;
 
 [Icons]
 Name: "{group}\{#MY_PRODUCT_NAME}"; Filename: "{app}\petu.exe"
+Name: "{group}\{#MY_PRODUCT_NAME} entfernen"; Filename: "{uninstallexe}"
+Name: "{userdesktop}\{#MY_PRODUCT_NAME}"; Filename: "{app}\petu.exe"
 
 [Run]
 Filename: "{app}\petu.exe"; Description: "Programm starten"; Flags: postinstall

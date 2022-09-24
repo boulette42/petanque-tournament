@@ -37,7 +37,7 @@ EditPlayerDlg::EditPlayerDlg( QWidget* parent )
 {
   ui_->setupUi( dlg_ );
   QRegExp rx( QLatin1String( "\\S+.*" ) );
-  ui_->leName->setValidator( new QRegExpValidator( rx ) );
+  ui_->leLastName->setValidator( new QRegExpValidator( rx ) );
   updateStyleSheet( *dlg_ );
   QFontMetrics fm( ui_->lePoints->font() );
   ui_->lePoints->setMaximumWidth( fm.horizontalAdvance( QLatin1String( "555555" ) ) );
@@ -51,19 +51,26 @@ bool EditPlayerDlg::exec( Player const& player, bool team_mode )
   if ( player_->id() != player.id() ) {
     *player_ = player;
   }
-  dlg_->setWindowTitle( dlg_->tr( "Spieler %1" ).arg( player.id() ) );
-  ui_->tlAssoc->setText( team_mode ? tr( "Team" ) : tr( "Verein" ) );
-  ui_->leName->setText( player.name() );
-  ui_->leVorname->setText( player.vorname() );
-  ui_->leAssoc->setText( player.verein() );
+  dlg_->setWindowTitle( tr( "Spieler %1" ).arg( player.id() ) );
+  if (team_mode) {
+    ui_->leTeam->setText( player.team() );
+  }
+  else {
+    ui_->leTeam->hide();
+    ui_->tlTeam->hide();
+  }
+  ui_->leLastName->setText( player.lastName() );
+  ui_->leFirstName->setText( player.firstName() );
+  ui_->leAssoc->setText( player.association() );
   ui_->lePoints->setText( QString::number( player.points() ) );
   bool selected = player.selected();
   if ( ! dlg_->exec() ) return false;
   *player_ = Player(
     player_->id(),
-    ui_->leName->text(),
-    ui_->leVorname->text(),
+    ui_->leLastName->text(),
+    ui_->leFirstName->text(),
     ui_->leAssoc->text(),
+    ui_->leTeam->text(),
     ui_->lePoints->text().toInt() );
   player_->setSelected( selected );
   return true;

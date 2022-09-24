@@ -110,11 +110,11 @@ QVariant RoundModelBase::data( QModelIndex const& mi, int role ) const
         switch ( col ) {
         case 0:
           return tournament_.isTeamMode()
-            ? tournament_.player( match.team_lt_.playerId( 0 ) ).verein()
+            ? tournament_.player( match.team_lt_.playerId( 0 ) ).team()
             : tr( "Match %1" ).arg( m + 1 );
         case 1:
           if ( tournament_.isTeamMode() ) {
-            return tournament_.player( match.team_rt_.playerId( 0 ) ).verein();
+            return tournament_.player( match.team_rt_.playerId( 0 ) ).team();
           }
           [[fallthrough]];
         case 2:

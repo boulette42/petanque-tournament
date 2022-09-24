@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>510</width>
-    <height>146</height>
+    <height>221</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,7 +15,7 @@
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
-    <widget class="QLabel" name="tlVorname">
+    <widget class="QLabel" name="tlFirstName">
      <property name="text">
       <string>Vorname</string>
      </property>
@@ -25,10 +25,10 @@
     </widget>
    </item>
    <item row="0" column="1">
-    <widget class="QLineEdit" name="leVorname"/>
+    <widget class="QLineEdit" name="leFirstName"/>
    </item>
    <item row="1" column="0">
-    <widget class="QLabel" name="tlName">
+    <widget class="QLabel" name="tlLastName">
      <property name="text">
       <string>Name</string>
      </property>
@@ -38,12 +38,12 @@
     </widget>
    </item>
    <item row="1" column="1">
-    <widget class="QLineEdit" name="leName"/>
+    <widget class="QLineEdit" name="leLastName"/>
    </item>
    <item row="2" column="0">
     <widget class="QLabel" name="tlAssoc">
      <property name="text">
-      <string>Verein/Team</string>
+      <string>Verein</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -54,6 +54,19 @@
     <widget class="QLineEdit" name="leAssoc"/>
    </item>
    <item row="3" column="0">
+    <widget class="QLabel" name="tlTeam">
+     <property name="text">
+      <string>Team</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1">
+    <widget class="QLineEdit" name="leTeam"/>
+   </item>
+   <item row="4" column="0">
     <widget class="QLabel" name="tlPoints">
      <property name="text">
       <string>Punktzahl</string>
@@ -63,7 +76,7 @@
      </property>
     </widget>
    </item>
-   <item row="3" column="1">
+   <item row="4" column="1">
     <widget class="QLineEdit" name="lePoints">
      <property name="inputMask">
       <string comment="9000"/>
@@ -73,7 +86,7 @@
      </property>
     </widget>
    </item>
-   <item row="4" column="1">
+   <item row="5" column="1">
     <spacer name="verticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
@@ -86,7 +99,7 @@
      </property>
     </spacer>
    </item>
-   <item row="5" column="0" colspan="2">
+   <item row="6" column="0" colspan="2">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>

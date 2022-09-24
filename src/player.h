@@ -7,10 +7,13 @@ class QJsonObject;
 
 class Player
 {
+  Q_DECLARE_TR_FUNCTIONS(Player)
+
   int id_ = INVALID_ID;
-  QString name_;
-  QString vorname_;
-  QString verein_;
+  QString last_name_;
+  QString first_name_;
+  QString association_;
+  QString team_;
   int points_ = 0;
   bool selected_ = false;
   QSharedPointer<PlayerResult> result_;
@@ -19,9 +22,10 @@ public:
   Player();
   Player(
     int id,
-    QString const& name,
-    QString const& vorname = QString(),
-    QString const& verein = QString(),
+    QString const& last_name,
+    QString const& first_name = QString(),
+    QString const& association = QString(),
+    QString const& team = QString(),
     int points = 0 );
   Player( int id, Player const& copy_from );
   ~Player();
@@ -29,9 +33,10 @@ public:
   bool equals( Player const& player ) const;
 
   int id() const { return id_; }
-  QString const& vorname() const { return vorname_; }
-  QString const& name() const { return name_; }
-  QString const& verein() const { return verein_; }
+  QString const& firstName() const { return first_name_; }
+  QString const& lastName() const { return last_name_; }
+  QString const& association() const { return association_; }
+  QString const& team() const { return team_; }
   QSharedPointer<PlayerResult> result() const { return result_; }
   int points() const { return points_; }
   void setPoints( int points ) { points_ = points; }

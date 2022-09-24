@@ -5,9 +5,10 @@
 
 enum Columns {
   C_ID,
-  C_VORNAME,
-  C_NAME,
-  C_VEREIN,
+  C_FIRST_NAME,
+  C_LAST_NAME,
+  C_ASSOCIATION,
+  C_TEAM_OR_POINTS,
   C_POINTS,
   COLUMN_CNT
 };
@@ -119,11 +120,13 @@ QVariant PlayerModel::data( QModelIndex const& mi, int role ) const
     case Qt::DisplayRole: {
       Player const& player = tournament_.player_list_[idx];
       switch ( col ) {
-      case C_ID:      return player.id();
-      case C_VORNAME: return player.vorname();
-      case C_NAME:    return player.name();
-      case C_VEREIN:  return player.verein();
-      case C_POINTS:  return player.points();
+      case 0: return tournament_.isTeamMode()
+        ? QVariant( player.team() )
+        : QVariant( player.id() );
+      case 1: return player.lastName();
+      case 2: return player.firstName();
+      case 3: return player.association();
+      case 4: return player.points();
       }
       break; }
     case Qt::CheckStateRole:
@@ -171,11 +174,11 @@ QVariant PlayerModel::headerData( int section, Qt::Orientation orientation, int 
     switch ( role ) {
     case Qt::DisplayRole:
       switch ( section ) {
-      case C_ID:      return tr( "      ID" );
-      case C_VORNAME: return tr( "Vorname" );
-      case C_NAME:    return tr( "Name" );
-      case C_VEREIN:  return tournament_.isTeamMode() ? tr( "Team" ) : tr( "Verein" );
-      case C_POINTS:  return tr( "Punkte" );
+      case 0: return tournament_.isTeamMode() ? tr( "Team" ) : tr( "ID" );
+      case 1: return tr( "Name" );
+      case 2: return tr( "Vorname" );
+      case 3: return tr( "Verein" );
+      case 4: return tr( "Punkte" );
       }
       break;
     }
@@ -189,7 +192,7 @@ void PlayerModel::sort( int column, Qt::SortOrder order )
     PlayerList const player_list_;
     int const col_;
     bool const ascending_;
-    bool const team_mode_;
+    bool team_mode_;
 
     LowerThan( Tournament const& tournament, int col, bool ascending )
       : player_list_( tournament.playerList() )
@@ -204,18 +207,17 @@ void PlayerModel::sort( int column, Qt::SortOrder order )
       int eff_rhs = ascending_ ? i_rhs : i_lhs;
       Player const& lhs( player_list_[eff_lhs] );
       Player const& rhs( player_list_[eff_rhs] );
-      if ( lhs.selected() != rhs.selected()
-        && ( col_ == C_ID 
-          || col_ == C_VEREIN /*&& team_mode_*/ ) )
-      {
+      if ( lhs.selected() != rhs.selected() && ( col_ == 0 || col_ == 3 ) ) {
         return lhs.selected() > rhs.selected();
       }
       switch ( col_ ) {
-      case C_ID:      return lhs.id() < rhs.id();
-      case C_VORNAME: return lhs.vorname().compare( rhs.vorname(), Qt::CaseInsensitive ) < 0;
-      case C_NAME:    return lhs.name().compare( rhs.name().toLower(), Qt::CaseInsensitive ) < 0;
-      case C_VEREIN:  return lhs.verein().compare( rhs.verein().toLower(), Qt::CaseInsensitive ) < 0;
-      case C_POINTS:  return lhs.points() > rhs.points();   // umgekehrte Sortierung
+      case 0: return team_mode_
+        ? lhs.team().compare(rhs.team(), Qt::CaseInsensitive) < 0
+        : rhs.id() > lhs.id();
+      case 1: return lhs.lastName().compare( rhs.lastName(), Qt::CaseInsensitive ) < 0;
+      case 2: return lhs.firstName().compare( rhs.firstName(), Qt::CaseInsensitive ) < 0;
+      case 3: return lhs.association().compare( rhs.association(), Qt::CaseInsensitive ) < 0;
+      case 4:  return lhs.points() > rhs.points();   // umgekehrte Sortierung
       }
       return false;
     }
@@ -235,4 +237,3 @@ void PlayerModel::sort( int column, Qt::SortOrder order )
   }
   endResetModel();
 }
-

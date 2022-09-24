@@ -9,6 +9,8 @@ class Ui_EditPlayerDialog;
 
 class EditPlayerDlg
 {
+  Q_DECLARE_TR_FUNCTIONS(EditPlayerDlg)
+
   QPointer<QDialog> dlg_;
   QSharedPointer<Ui_EditPlayerDialog> ui_;
   QSharedPointer<Player> player_;

@@ -9,6 +9,8 @@ class QDialog;
 
 class ExternalWindow
 {
+  Q_DECLARE_TR_FUNCTIONS(ExternalWindow)
+
   QPointer<QDialog> dlg_;
 
 public:

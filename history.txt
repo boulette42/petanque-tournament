@@ -1,7 +1,33 @@
 changes of petanque-tounament
 
-Version 0.91a - 2022-06-16
-first published version
+Version 0.93a - 2022-07-16
+translations
+- added english and french translation
+installer
+- desktop icon
+- uninstall icon
+bugs
+- load selection-status of sites
+- input dialog of simulated player abortable
+features
+- 'team' is a separate property of players
+ui
+- dont show (inexistent) icons in menus
+
+Version 0.92d - 2022-06-28
+- default-directory is '$home/.petu'
+- refactoring settings
+
+Version 0.92c - 2022-06-26
+other
+- installer with innosetup
+- build script (windows)
+
+Version 0.92b - 2022-06-24
+bugs
+- wrong window title on external window
+other
+- refactoring of external window handling
 
 Version 0.92a - 2022-06-21
 bug
@@ -13,17 +39,5 @@ feature
 ui
 - show results right-aligned 
 
-Version 0.92b - 2022-06-24
-bugs
-- wrong window title on external window
-other
-- refactoring of external window handling
-
-Version 0.92c - 2022-06-26
-other
-- installer with innosetup
-- build script (windows)
-
-Version 0.92d - 2022-06-28
-- default-directory is '$home/.petu'
-- refactoring settings
+Version 0.91a - 2022-06-16
+first published version

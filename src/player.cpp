@@ -13,23 +13,26 @@ Player::Player() = default;
 
 Player::Player(
   int id,
-  QString const& name,
-  QString const& vorname,
-  QString const& verein,
+  QString const& last_name,
+  QString const& first_name,
+  QString const& association,
+  QString const& team,
   int points )
   : id_( id )
-  , name_( name )
-  , vorname_( vorname )
-  , verein_( verein )
+  , last_name_( last_name )
+  , first_name_( first_name )
+  , association_( association )
+  , team_( team )
   , points_( points )
 {
 }
 
 Player::Player( int id, Player const& other )
   : id_( id )
-  , name_( other.name_ )
-  , vorname_( other.vorname_ )
-  , verein_( other.verein_ )
+  , last_name_( other.last_name_ )
+  , first_name_( other.first_name_ )
+  , association_( other.association_ )
+  , team_( other.team_ )
   , points_( other.points_ )
   , selected_( other.selected_ )
 {
@@ -40,9 +43,10 @@ Player::~Player() = default;
 bool Player::equals( Player const& rhs ) const
 {
   return id_ == rhs.id_
-    && vorname_ == rhs.vorname_
-    && name_ == rhs.name_
-    && verein_ == rhs.verein_
+    && first_name_ == rhs.first_name_
+    && last_name_ == rhs.last_name_
+    && association_ == rhs.association_
+    && team_ == rhs.team_
     && points_ == rhs.points_;
   // selected_ und result_ irrelevant
 }
@@ -73,16 +77,19 @@ Player Player::fromCsvLine( QString const& line, QString& error_string, char del
       }
       break; }
     case 1:
-      player.vorname_ = fld;
+      player.first_name_ = fld;
       break;
     case 2:
-      player.name_ = fld;
+      player.last_name_ = fld;
       break;
     case 3:
       player.points_ = fld.toInt();
       break;
     case 4:
-      player.verein_ = fld;
+      player.association_ = fld;
+      break;
+    case 5:
+      player.team_ = fld;
       break;
     }
   }
@@ -93,13 +100,14 @@ QString Player::toCsvLine( char delimiter ) const
 {
   int points = points_;
   if ( result_ ) points += result_->resultPoints();
-  return QStringLiteral( "%1%2%3%2%4%2%5%2%6" )
+  return QStringLiteral( "%1%2%3%2%4%2%5%2%6%2%7" )
     .arg( id_ )
     .arg( QLatin1Char( delimiter ) )
-    .arg( vorname_ )
-    .arg( name_ )
+    .arg( first_name_ )
+    .arg( last_name_ )
     .arg( points )
-    .arg( verein_ );
+    .arg( association_ )
+    .arg( team_ );
 }
 
 bool operator==( Player const& lhs, Player const& rhs )
@@ -115,9 +123,10 @@ bool operator!=( Player const& lhs, Player const& rhs )
 Player Player::readFromJson( QJsonObject const& json, QString& error_string )
 {
   int id = INVALID_ID;
-  QString vorname;
-  QString name;
-  QString verein;
+  QString first_name;
+  QString last_name;
+  QString association;
+  QString team;
   int points = 0;
   bool selected = false;
   if ( ! json.contains( J_ID ) ) {
@@ -128,15 +137,18 @@ Player Player::readFromJson( QJsonObject const& json, QString& error_string )
   if ( id != INVALID_ID ) {
     bool ok = false;
     if ( json.contains( J_FIRST_NAME ) ) {
-      vorname = json[J_FIRST_NAME].toString();
-      ok = ! vorname.isEmpty();
+      first_name = json[J_FIRST_NAME].toString();
+      ok = ! first_name.isEmpty();
     }
     if ( json.contains( J_LAST_NAME ) ) {
-      name = json[J_LAST_NAME].toString();
-      ok |= ! name.isEmpty();
+      last_name = json[J_LAST_NAME].toString();
+      ok |= ! last_name.isEmpty();
     }
     if ( json.contains( J_ASSOCIATION ) ) {
-      verein = json[J_ASSOCIATION].toString();
+      association = json[J_ASSOCIATION].toString();
+    }
+    if ( json.contains( J_TEAM ) ) {
+      team = json[J_TEAM].toString();
     }
     if ( json.contains( J_POINTS ) ) {
       points = readInt( json[J_POINTS], INVALID_IDX );
@@ -154,7 +166,7 @@ Player Player::readFromJson( QJsonObject const& json, QString& error_string )
   } else {
     error_string = tr( "ungültige Spieler-ID" );
   }
-  Player ret( id, name, vorname, verein, points );
+  Player ret( id, last_name, first_name, association, team, points );
   ret.setSelected( selected );
   return ret;
 }
@@ -162,9 +174,10 @@ Player Player::readFromJson( QJsonObject const& json, QString& error_string )
 void Player::writeToJson( QJsonObject& json ) const
 {
   json[J_ID] = id_;
-  if ( ! vorname_.isEmpty() ) json[J_FIRST_NAME] = vorname_;
-  if ( ! name_.isEmpty() ) json[J_LAST_NAME] = name_;
-  if ( ! verein_.isEmpty() ) json[J_ASSOCIATION] = verein_;
+  if ( ! first_name_.isEmpty() ) json[J_FIRST_NAME] = first_name_;
+  if ( ! last_name_.isEmpty() ) json[J_LAST_NAME] = last_name_;
+  if ( ! association_.isEmpty() ) json[J_ASSOCIATION] = association_;
+  if ( ! team_.isEmpty() ) json[J_TEAM] = team_;
   if ( points_ > 0 ) json[J_POINTS] = points_;
   if ( selected_ ) json[J_SELECTED] = selected_;
 }

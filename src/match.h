@@ -1,11 +1,15 @@
 #ifndef MATCH_H
 #define MATCH_H
 
+#include "config.h"
 #include "team.h"
 #include "result.h"
 
 struct Match
 {
+  Q_DECLARE_TR_FUNCTIONS(Match)
+
+public:
   Team team_lt_;
   Team team_rt_;
   Result result_;

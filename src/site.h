@@ -7,11 +7,14 @@ class QJsonObject;
 
 class Site
 {
+  Q_DECLARE_TR_FUNCTIONS(Site)
+
   int id_ = INVALID_ID;
   QString name_;
   bool selected_ = true;
 
 public:
+  Site();
   explicit Site( int id, QString const& name = QString() );
   ~Site();
 

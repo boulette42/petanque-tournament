@@ -11,6 +11,8 @@ class Ui_ShowPlayerResultDialog;
 
 class ShowResultDlg
 {
+  Q_DECLARE_TR_FUNCTIONS(Tournament)
+
   QPointer<QDialog> dlg_;
   QSharedPointer<Ui_ShowPlayerResultDialog> ui_;
   QPointer<QAbstractItemModel> match_model_;

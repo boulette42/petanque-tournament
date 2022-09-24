@@ -34,8 +34,8 @@ void ShowResultDlg::exec( Tournament const& tournament, Team const& team )
   QString team_name = tr( "unbekannt" );
   for ( int i = 0; i < team.size(); ++i ) {
     Player const& player( tournament.player( team.playerId( i ) ) );
-    if ( ! player.verein().isEmpty() ) {
-      team_name = player.verein();
+    if ( ! player.team().isEmpty() ) {
+      team_name = player.team();
       break;
     }
   }

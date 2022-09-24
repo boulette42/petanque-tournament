@@ -3,6 +3,7 @@
 TEMPLATE = app
 TARGET = petu
 CONFIG += force_asserts c++17
+CONFIG += lrelease
 QT += widgets
 
 win32 {
@@ -104,6 +105,11 @@ SOURCES += \
   src/team_result_model.cpp \
   src/tournament.cpp \
   src/tournament_simulator.cpp
+
+TRANSLATIONS = \
+  translations/petu_de.ts \
+  translations/petu_en.ts \
+  translations/petu_fr.ts
 
 win32 {
   RC_FILE = src/petu.rc

@@ -6,6 +6,8 @@ class QWidget;
 
 class TournamentSimulator
 {
+  Q_DECLARE_TR_FUNCTIONS(TournamentSimulator)
+
   Tournament& tournament_;
 
 public:
