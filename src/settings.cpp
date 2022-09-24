@@ -93,6 +93,8 @@ public:
 
 class SettingsDlg : public QObject
 {
+  Q_DECLARE_TR_FUNCTIONS(EditPlayerDlg)
+
   QPointer<QDialog> dlg_;
   QSharedPointer<Ui_SettingsDialog> ui_;
 

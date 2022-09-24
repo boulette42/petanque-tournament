@@ -2,6 +2,7 @@
 #include "json_common.h"
 #include <qjsonobject.h>
 #include <qstring.h>
+#include <qvariant.h>
 
 QString const J_ASSOCIATION = QLatin1String( "association" );
 QString const J_DATE = QLatin1String( "date" );

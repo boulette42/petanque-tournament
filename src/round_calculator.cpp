@@ -4,7 +4,6 @@
 #include "player_result.h"
 #include "site.h"
 #include "tournament.h"
-#include <qdebug.h>
 #include <qfile.h>
 #include <qmap.h>
 #include <qrandom.h>
@@ -18,18 +17,18 @@ namespace {
 using FlagList = QVector<bool>;
 
 // Strafpunkte
-const int DIFF_LEVEL_1S = 3;     // Unterschied gewonnene Runden == 1 selbes Team
-const int DIFF_LEVEL_2S = 8;     // Unterschied gewonnene Runden == 2 selbes Team
-const int DIFF_LEVEL_FACTOR = 1; // Unterschied gewonnene Runden zwischen Teams * Runden
-const int DIFF_LEVEL_N = 10;     // Unterschied gewonnene Runden > 2  (kommt nicht vor)
-const int DOUBLE_TRIPLET = 15;   // Spieler-Wiederholung in Triplette
-const int DOUBLE_DOUBLET = 25;   // Spieler-Wiederholung in Doublette
-const int OPPONENT_TRIPLET = 3;  // Gegner-Wiederholung in Triplette
-const int OPPONENT_DOUBLET = 6;  // Gegner-Wiederholung in Doublette
+const int DIFF_LEVEL_1S = 3;      // Unterschied gewonnene Runden == 1 selbes Team
+const int DIFF_LEVEL_2S = 8;      // Unterschied gewonnene Runden == 2 selbes Team
+const int DIFF_LEVEL_FACTOR = 1;  // Unterschied gewonnene Runden zwischen Teams * Runden
+const int DIFF_LEVEL_N = 10;      // Unterschied gewonnene Runden > 2  (kommt nicht vor)
+const int DOUBLE_TRIPLET = 15;    // Spieler-Wiederholung in Triplette
+const int DOUBLE_DOUBLET = 25;    // Spieler-Wiederholung in Doublette
+const int OPPONENT_TRIPLET = 3;   // Gegner-Wiederholung in Triplette
+const int OPPONENT_DOUBLET = 6;   // Gegner-Wiederholung in Doublette
 
 const int MAX_TRY_PER_ITERATION = 10000;
 const int MAX_TRY_ABSOLUTE = 1000000;
-const int MAX_POINTS = 10;       // Ergebnisse oberhalb verwerfen
+const int MAX_POINTS = 10;        // Ergebnisse oberhalb verwerfen
 
 struct Randomizer
 {
@@ -207,7 +206,7 @@ private:
     int id_lt = team_lt.playerId( 0 );
     PlayerList::const_iterator it_lt = getPlayerIterator( id_lt );
     if ( it_lt == player_list_.constEnd() ) return false;
-    QString const team_name = it_lt->verein();
+    QString const team_name = it_lt->team();
     int id_rt = team_rt.playerId( 0 );
     PlayerList::const_iterator it_rt = getPlayerIterator( id_rt );
     if ( it_rt == player_list_.constEnd() ) return false;
@@ -226,7 +225,7 @@ private:
     int id_lt = team_lt.playerId( 0 );
     PlayerList::const_iterator it_lt = getPlayerIterator( id_lt );
     if ( it_lt == player_list_.constEnd() ) return false;
-    return team_name_rt.compare( it_lt->verein(), Qt::CaseInsensitive ) == 0;
+    return team_name_rt.compare( it_lt->team(), Qt::CaseInsensitive ) == 0;
   }
 
   Team const& currentTeam( int idx ) const
@@ -257,7 +256,7 @@ class SuperMeleeRoundCalculator
   QVector<PlayerCalc> player_list_;   // aktuelle Spieler (sortiert)
   IdMap id_idx_map_;                  // Map Player-ID -> index
   FlagList player_used_;              // Spieler bereits verteilt?
-  IdxList status_;               // geählter spieler-idx an position
+  IdxList status_;                    // gewählter spieler-idx an position
 
 public:
   Round exec( PlayerList const& players )
@@ -269,16 +268,6 @@ public:
     player_used_ = FlagList( n_players, false );
     status_ = IdxList( n_players, INVALID_IDX );
     int last_eval = -1;
-    //
-  #if 0
-    QString error_string;
-    QString const filepath( QStringLiteral( "f:/temp/tx/log/20220608/erg/round_test.json" ) );
-    Round tmp = readRoundFile( filepath, error_string );
-    if ( ! tmp.isEmpty() ) {
-      int erg = evaluateRound( tmp );
-      qDebug() << tr( "Ergebnis = %1" ).arg( erg );
-    }
-  #endif
     Round rx = initMatches();
     IdxList player_to_team( initPlayerToTeam( rx ) );
     IdxList team_to_player( initTeamToPlayer( player_to_team ) );

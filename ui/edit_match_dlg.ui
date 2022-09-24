@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>475</width>
-    <height>166</height>
+    <height>183</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -24,7 +24,7 @@
         </font>
        </property>
        <property name="text">
-        <string>Spieler11</string>
+        <string>Spieler</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -39,7 +39,7 @@
         </font>
        </property>
        <property name="text">
-        <string>Spieler21</string>
+        <string>Spieler</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -54,7 +54,7 @@
         </font>
        </property>
        <property name="text">
-        <string>Spieler12</string>
+        <string>Spieler</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -69,7 +69,7 @@
         </font>
        </property>
        <property name="text">
-        <string>Spieler22</string>
+        <string>Spieler</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -84,7 +84,7 @@
         </font>
        </property>
        <property name="text">
-        <string>Spieler13</string>
+        <string>Spieler</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -99,7 +99,7 @@
         </font>
        </property>
        <property name="text">
-        <string>Spieler23</string>
+        <string>Spieler</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>

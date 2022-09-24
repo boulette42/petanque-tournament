@@ -51,19 +51,23 @@ set setup_prefix_=setup-petanque-turnier
 rmdir /s /q %dist_% >NUL 2>NUL
 del %my_dir_%installer\%setup_prefix_%-%x86_x64_%-*.exe >NUL 2>NUL
 
-echo copying petu.exe...
+echo copying petu-files...
 call :_COPY_FILE_TO_DIR %petu_src_dir_%\petu.exe %dist_%\exe
+call :_COPY_FILE_TO_DIR %petu_src_dir_%\petu_de.qm %dist_%\exe
+call :_COPY_FILE_TO_DIR %petu_src_dir_%\petu_en.qm %dist_%\exe
+call :_COPY_FILE_TO_DIR %petu_src_dir_%\petu_fr.qm %dist_%\exe
 call :_COPY_FILE_TO_FILE %mydir_%petanque-turnier.dok %dist_%\exe\petanque-turnier.dok.txt
 
 echo copying Qt-files...
 call :_COPY_FILE_TO_DIR %QTDIR%\bin\Qt5Core.dll %dist_%\exe
 call :_COPY_FILE_TO_DIR %QTDIR%\bin\Qt5Gui.dll %dist_%\exe
 call :_COPY_FILE_TO_DIR %QTDIR%\bin\Qt5Widgets.dll %dist_%\exe
+call :_COPY_FILE_TO_DIR %QTDIR%\bin\libGLESv2.dll %dist_%\exe
 call :_COPY_FILE_TO_DIR %QTDIR%\plugins\platforms\qwindows.dll %dist_%\exe\platforms
 call :_COPY_FILE_TO_DIR %QTDIR%\plugins\styles\qwindowsvistastyle.dll %dist_%\exe\styles
-call :_COPY_FILE_TO_FILE %QTDIR%\translations\qtbase_de.qm %dist_%\exe\translations\qt_de
-call :_COPY_FILE_TO_FILE %QTDIR%\translations\qtbase_en.qm %dist_%\exe\translations\qt_en
-call :_COPY_FILE_TO_FILE %QTDIR%\translations\qtbase_fr.qm %dist_%\exe\translations\qt_fr
+call :_COPY_FILE_TO_FILE %QTDIR%\translations\qtbase_de.qm %dist_%\exe\qt_de.qm
+call :_COPY_FILE_TO_FILE %QTDIR%\translations\qtbase_en.qm %dist_%\exe\qt_en.qm
+call :_COPY_FILE_TO_FILE %QTDIR%\translations\qtbase_fr.qm %dist_%\exe\qt_fr.qm
 
 echo copying vc-runtime-files...
 call :_COPY_FILE_TO_DIR "%vc_src_dir_%\msvcp140.dll" %dist_%\exe

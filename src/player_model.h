@@ -7,6 +7,8 @@
 
 class PlayerModel : public QAbstractItemModel
 {
+  Q_DECLARE_TR_FUNCTIONS(PlayerModel)
+
   Tournament& tournament_;
   IdxList sorted_;
   int sort_column_ = 0;

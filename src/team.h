@@ -7,6 +7,8 @@ class QJsonObject;
 
 class Team
 {
+  Q_DECLARE_TR_FUNCTIONS(Team)
+
   IdList player_list_;
 
 public:

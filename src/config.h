@@ -1,6 +1,7 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+#include <qcoreapplication.h>
 #include <qpointer.h>
 #include <qstring.h>
 #include <qvector.h>
@@ -27,7 +28,5 @@ enum class ProgMode {
   super_melee,
   teams
 };
-
-extern QString tr( char const* );
 
 #endif  // CONFIG_H

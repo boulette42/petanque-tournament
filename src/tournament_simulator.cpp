@@ -17,8 +17,9 @@ TournamentSimulator::~TournamentSimulator() = default;
 PlayerList TournamentSimulator::createRandomPlayers( QWidget* parent ) const
 {
   PlayerList ret;
-  int cnt = QInputDialog::getInt( parent, tr( "Eingabe" ), tr( "Anzahl generierte Spieler" ), 10, 0, 50 );
-  if ( cnt == 0 ) return ret;
+  bool ok = false;
+  int cnt = QInputDialog::getInt( parent, tr( "Spieler erzeugen" ), tr( "Anzahl generierte Spieler" ), 10, 0, 64, 1, &ok );
+  if ( ! ok || cnt == 0 ) return ret;
   ret.reserve( cnt );
   int max_id = 0;
   foreach ( Player const& player, tournament_.playerList() ) {
@@ -27,8 +28,8 @@ PlayerList TournamentSimulator::createRandomPlayers( QWidget* parent ) const
   max_id += 1;
   for ( int i = 0; i < cnt; ++i ) {
     QString name = tr( "Spieler %1" ).arg( max_id + i, 4, 10, QLatin1Char( '0' ) );
-    QString team = tr( "Team %1" ).arg( (max_id + i) / 2, 3, 10, QLatin1Char( '0' ) );;
-    Player player( max_id + i, name, QString(), team );
+    QString team = tr( "Team %1" ).arg( ( max_id + i - 1 ) / 2, 3, 10, QLatin1Char( '0' ) );;
+    Player player( max_id + i, name, QString(), QString(), team );
     ret.append( player );
   }
   return ret;

@@ -54,9 +54,7 @@ void TeamResultModel::updateTeamList()
       }
     }
   }
-  beginResetModel();
   sort( 0, Qt::DescendingOrder );
-  endResetModel();
 }
 
 Team TeamResultModel::getTeam( QModelIndex const& mi ) const
@@ -112,7 +110,7 @@ QVariant TeamResultModel::data( QModelIndex const& mi, int role ) const
       Player const& player = tournament_.playerList()[idx];
       switch ( col ) {
       case C_TEAM:
-        return player.verein();
+        return player.team();
       case C_POINTS:
         return player.result()
           ? player.result()->resultPoints()
@@ -137,12 +135,12 @@ QVariant TeamResultModel::headerData( int section, Qt::Orientation orientation, 
     if ( role == Qt::DisplayRole ) {
       switch ( section ) {
       case C_TEAM:
-        return tr( "Team" );
+        return Tournament::tr( "Team" );
       case C_POINTS:
-        return tr( "Punkte" );
+        return Tournament::tr( "Punkte" );
       default:
         if ( section-COLUMN_OFFSET <= tournament_.lastRoundIdx() ) {
-          return tr( "Runde %1" ).arg( section-COLUMN_OFFSET+1 );
+          return Tournament::tr( "Runde %1" ).arg( section-COLUMN_OFFSET+1 );
         }
       }
     }

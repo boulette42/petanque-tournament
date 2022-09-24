@@ -2,6 +2,13 @@
 #include "json_common.h"
 #include <qjsonobject.h>
 
+Site::Site()
+  : id_( INVALID_ID )
+  , name_()
+  , selected_( false )
+{
+}
+
 Site::Site( int id, QString const& name )
   : id_( id )
   , name_( name )
@@ -20,6 +27,7 @@ QString Site::name() const
 Site Site::readFromJson( QJsonObject const& json, QString& error_string )
 {
   Site ret( INVALID_ID, QString() );
+  ret.selected_ = false;
   if ( ! json.contains( J_ID ) ) {
     error_string = tr( "Platz-ID nicht definiert" );
   } else {

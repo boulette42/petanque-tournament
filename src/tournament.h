@@ -9,6 +9,8 @@ class QJsonObject;
 
 class Tournament
 {
+  Q_DECLARE_TR_FUNCTIONS(Tournament)
+
   friend PlayerModel;
   friend SiteModel;
 

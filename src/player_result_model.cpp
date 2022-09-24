@@ -74,7 +74,7 @@ QVariant PlayerResultModel::data( QModelIndex const& mi, int role ) const
       case C_ID:
         return player.id();
       case C_NAME:
-        return QStringLiteral("%1, %2" ).arg( player.name(), player.vorname() );
+        return QStringLiteral("%1, %2" ).arg( player.lastName(), player.firstName() );
       case C_POINTS:
         return player.result()
           ? player.result()->resultPoints()
@@ -99,14 +99,14 @@ QVariant PlayerResultModel::headerData( int section, Qt::Orientation orientation
     if ( role == Qt::DisplayRole ) {
       switch ( section ) {
       case C_ID:
-        return tr( "ID" );
+        return Tournament::tr( "ID" );
       case C_NAME:
-        return tr( "Name" );
+        return Tournament::tr( "Name" );
       case C_POINTS:
-        return tr( "Punkte" );
+        return Tournament::tr( "Punkte" );
       default:
         if ( section-COLUMN_OFFSET <= tournament_.lastRoundIdx() ) {
-          return tr( "Runde %1" ).arg( section-COLUMN_OFFSET+1 );
+          return Tournament::tr( "Runde %1" ).arg( section-COLUMN_OFFSET+1 );
         }
       }
     }
