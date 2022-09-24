@@ -6,6 +6,7 @@ feature
 bugs
 - wrong minimum number of sites for team-mode with triplettes
 - initial directory for saving files not set
+- match list for supermelee in reduced view
 
 Version 0.95a - 2022-09-13
 features
