@@ -27,8 +27,13 @@ int PlayerResult::resultPoints() const
 
 int PlayerResult::wonRounds() const
 {
+  return wonRoundsUntil( match_list_.size() );
+}
+
+int PlayerResult::wonRoundsUntil( int max_round ) const
+{
   int res = 0;
-  for ( int ri = 0; ri < match_list_.size(); ++ri ) {
+  for ( int ri = 0; ri < max_round; ++ri ) {
     if ( resultPoints( ri ) > 100 ) ++res;
   }
   return res;

@@ -128,33 +128,37 @@ Round const& Tournament::round( int round_idx ) const
     : empty_round;
 }
 
-bool Tournament::createRound( int round_idx, QString& error_string )
+bool Tournament::createRound( int round_idx, RoundCalculator& round_calculator )
 {
   int n_rounds = round_list_.size();
   if ( round_idx < n_rounds - 1 ) {
-    error_string = tr( "Runden-Parameter unplausibel" );
+    round_calculator.setError( tr( "Runden-Parameter unplausibel" ) );
     // Programmfehler: nicht neue Runde
     return false;
   }
   Round round;
   PlayerList player_list( selectedPlayerList() );
   if ( isTeamMode() ) {
+    QString error_string;
     TeamList team_list = setTeams( player_list, error_string );
-    if ( ! error_string.isEmpty() ) return false;
-    if ( team_list.size() % 2 ) {
-      error_string = tr( "Ungerade Anzahl von Teams" );
+    if ( ! error_string.isEmpty() ) {
+      round_calculator.setError( error_string );
       return false;
     }
-    round = calcRound( player_list, team_list );
+    if ( team_list.size() % 2 ) {
+      round_calculator.setError( tr( "Ungerade Anzahl von Teams" ) );
+      return false;
+    }
+    round = round_calculator.calcRound( player_list, team_list );
   } else {
-    round = calcRound( player_list );
+    round = round_calculator.calcRound( player_list );
   }
   if ( round.isEmpty() ) {
-    error_string = tr( "Eine neue Runde konnte nicht erzeugt werden" );
+    round_calculator.setError( tr( "Eine neue Runde konnte nicht erzeugt werden" ) );
     return false;
   }
   if ( global().siteEnabled() ) {
-    round = calcSites( round, *this );
+    round = round_calculator.calcSites( round, *this );
   }
   if ( round_idx == n_rounds ) {
     round_list_.append( round );
@@ -221,6 +225,9 @@ void Tournament::setRound( int round_idx, Round const& round )
       PlayerList::iterator it = getPlayerIterator( player_list_, id );
       if ( it != player_list_.end() ) {
         it->setMatch( round_idx, match );
+        if ( isTeamMode() ) {
+          it->updatePoints();
+        }
       }
     }
     for ( int i = 0; i < match.team_rt_.size(); ++i ) {
@@ -228,6 +235,9 @@ void Tournament::setRound( int round_idx, Round const& round )
       PlayerList::iterator it = getPlayerIterator( player_list_, id );
       if ( it != player_list_.end() ) {
         it->setMatch( round_idx, match );
+        if ( isTeamMode() ) {
+          it->updatePoints();
+        }
       }
     }
   }
@@ -381,6 +391,18 @@ int Tournament::selectedSiteCount() const
     if ( s.selected() ) ++cnt;
   }
   return cnt;
+}
+
+int Tournament::neededSites() const
+{
+  if ( isTeamMode() ) {
+    QString error_string;
+    TeamList team_list = setTeams( player_list_, error_string );
+    return ( team_list.size() + 1 ) / 2;
+  }
+  else {
+    return selectedPlayerCount() / 4;
+  }
 }
 
 bool Tournament::savePlayerList( QString const& csv_name ) const

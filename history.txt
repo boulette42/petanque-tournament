@@ -1,4 +1,24 @@
-changes of petanque-tounament
+changes of petanque-tournament
+
+Version 0.95b - 2022-09-14
+feature
+- draw of sites accelerated
+bugs
+- wrong minimum number of sites for team-mode with triplettes
+- initial directory for saving files not set
+
+Version 0.95a - 2022-09-13
+features
+- possible other windows of player-list
+- sortable match-list in team-based competition (site / team-points)
+ui
+- context-menu for select-all (and simulate)
+- reduced match-list (no players) for large team-based competitions
+  via option in settings
+bugs
+- draw of sites
+- draw of teams in team-based competition
+- create default data-directory if it not exists
 
 Version 0.93a - 2022-07-16
 translations

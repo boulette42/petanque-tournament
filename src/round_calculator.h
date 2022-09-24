@@ -3,8 +3,22 @@
 
 #include "config.h"
 
-Round calcRound( PlayerList const& player_list );
-Round calcRound( PlayerList const& player_list, TeamList const& team_list );
-Round calcSites( Round const& round, Tournament const& tournament );
+class QWidget;
+
+
+class RoundCalculator
+{
+  QWidget* parent_;
+  QString error_string_;
+
+public:
+  explicit RoundCalculator( QWidget* parent );
+
+  Round calcRound( PlayerList const& player_list );
+  Round calcRound( PlayerList const& player_list, TeamList const& team_list );
+  Round calcSites( Round const& round, Tournament const& tournament );
+  void setError( QString const& error_string );
+  QString lastError() const;
+};
 
 #endif  // ROUND_CALCULATOR_H

@@ -8,6 +8,7 @@
 #include "player_model.h"
 #include "player_result.h"
 #include "player_result_model.h"
+#include "round_calculator.h"
 #include "round_model.h"
 #include "select_window_dlg.h"
 #include "settings.h"
@@ -39,6 +40,7 @@ QString currentTournamentName()
 
 bool isSimulateKey( QKeyEvent const* ke )
 {
+  if ( !global().simulationEnabled() ) return false;
   return ke->key() == Qt::Key_S
     && ( QApplication::keyboardModifiers() & Qt::ControlModifier )
     && ( QApplication::keyboardModifiers() & Qt::ShiftModifier );
@@ -104,6 +106,21 @@ MainWindow::MainWindow( Tournament const& tournament )
   connect( ui_->tvPlayerResultList, &QAbstractItemView::activated, this, &MainWindow::resultActivated );
   connect( ui_->tvTeamResultList, &QAbstractItemView::activated, this, &MainWindow::resultActivated );
   connect( ui_->cmbRound, SIGNAL(currentIndexChanged(int)), this, SLOT(roundChanged(int)) );
+  connect( ui_->tvPlayerList, &QAbstractItemView::customContextMenuRequested, this, &MainWindow::playerListContextMenu );
+  connect( ui_->tvSiteList, &QAbstractItemView::customContextMenuRequested, this, &MainWindow::siteListContextMenu );
+  connect( ui_->tvMatchList, &QAbstractItemView::customContextMenuRequested, this, &MainWindow::matchListContextMenu );
+  connect( ui_->actionMarkAllPlayers, &QAction::triggered,
+           this, [this]() { player_model_->setAllChecked( true ); } );
+  connect( ui_->actionUnmarkAllPlayers, &QAction::triggered,
+           this, [this]() { player_model_->setAllChecked( false ); } );
+  connect( ui_->actionSimulatePlayers, &QAction::triggered,
+           this, &MainWindow::simulateGeneratePlayers );
+  connect( ui_->actionMarkAllSites, &QAction::triggered,
+           this, [this]() { site_model_->setAllChecked( true ); } );
+  connect( ui_->actionUnmarkAllSites, &QAction::triggered,
+           this, [this]() { site_model_->setAllChecked( false ); } );
+  connect( ui_->actionSimulateResults, &QAction::triggered,
+           this, &MainWindow::simulateGenerateResults );
   updateStyleSheet( *this );
   QFontMetrics fm( ui_->leSiteCnt->font() );
   ui_->leSiteCnt->setMaximumWidth( fm.horizontalAdvance( QLatin1String( "55555" ) ) );
@@ -116,11 +133,14 @@ MainWindow::MainWindow( Tournament const& tournament )
     updateRoundSelect( last_round_idx );
   }
   ui_->tvPlayerList->installEventFilter( this );
+  ui_->tvPlayerList->setContextMenuPolicy( Qt::CustomContextMenu );
   ui_->tabPlayer->installEventFilter( this );
   ui_->tvSiteList->installEventFilter( this );
+  ui_->tvSiteList->setContextMenuPolicy( Qt::CustomContextMenu );
   ui_->tabSites->installEventFilter( this );
   ui_->leSiteCnt->installEventFilter( this );
   ui_->tvMatchList->installEventFilter( this );
+  ui_->tvMatchList->setContextMenuPolicy( Qt::CustomContextMenu );
   ui_->tabRound->installEventFilter( this );
   player_model_->triggerSort();
   updateView( TabMode::round );
@@ -175,9 +195,13 @@ void MainWindow::editSettings()
 {
   bool const site_enabled = global().siteEnabled();
   int const font_size = global().fontSize();
+  bool const team_mode = tournament_->isTeamMode();
   if ( global().execDialog( this, tournament_->isUndefinedMode() ) ) {
     if ( global().siteEnabled() != site_enabled ) {
       round_model_->setRound( round_model_->currentRound() );
+    }
+    if (team_mode != tournament_->isTeamMode()) {
+      updateView(TabMode::player);
     }
     updateView( TabMode::round );
     if ( global().fontSize() != font_size ) {
@@ -224,7 +248,9 @@ void MainWindow::loadPlayerList()
 
 void MainWindow::savePlayerList()
 {
-  if ( last_save_dir.isEmpty() ) last_save_dir = last_load_dir;
+  if ( last_save_dir.isEmpty() ) {
+    last_save_dir = last_load_dir.isEmpty() ? global().dataDir() : last_load_dir;
+  }
   if ( player_model_->isEmpty() ) return;
   QString filename = QFileDialog::getSaveFileName(
     this,
@@ -249,28 +275,24 @@ void MainWindow::newRound()
 {
   QString title = tr( "Neue Runde erzeugen" );
   int const n_player = tournament_->selectedPlayerCount();
-  if ( n_player < 8 ) {
+  if ( n_player < 4 ) {
     QMessageBox::warning(
       this,
       title,
-      tr( "Es %1 nur %2 Spieler ausgewählt, nicht genug " \
-          "für eine neue Runde." )
-        .arg( n_player == 1 ? tr( "ist" ) : tr( "sind" ) )
-        .arg( n_player ) );
+      tr( "Es ist nur %n Spieler ausgewählt", "", n_player ) +
+      tr( ", nicht genug für eine neue Runde." ) );
     activateTab( TabMode::player );
     return;
   }
   if ( global().siteEnabled() ) {
-    int const n_site = tournament_->selectedSiteCount();
-    if ( n_site < n_player / 4 ) {
+    int const n_sites = tournament_->selectedSiteCount();
+    int const n_needed = tournament_->neededSites();
+    if ( n_sites < n_needed ) {
       QMessageBox::warning(
         this,
         title,
-        tr( "Es %1 nur %2 %3 ausgewählt, benötigt werden %4 Plätze" )
-          .arg( n_site == 1 ? tr( "ist" ) : tr( "sind" ) )
-          .arg( n_site )
-          .arg( n_site == 1 ? tr( "Platz" ) : tr( "Plätze" ) )
-          .arg( n_player / 4 ) );
+        tr( "Es ist nur %n Platz ausgewählt", "", n_sites ) +
+        tr( ", benötigt werden %1 Plätze." ).arg( n_needed ) );
       activateTab( TabMode::site );
       return;
     }
@@ -316,9 +338,9 @@ void MainWindow::newRound()
           "aktuelle Runde noch nicht beendet ist." ) );
     return;
   } else {
-    QString error_string;
-    if ( ! tournament_->createRound( round_idx, error_string ) ) {
-      QMessageBox::warning( this, title, error_string );
+    RoundCalculator round_calculator( ui_->tabWidget );
+    if ( ! tournament_->createRound( round_idx, round_calculator ) ) {
+      QMessageBox::warning( this, title, round_calculator.lastError() );
       return;
     }
   }
@@ -358,6 +380,8 @@ void MainWindow::updateView( TabMode tm )
     }
   }
   if ( ci == TI_Round || tm == TabMode::round || tm == TabMode::all ) {
+    ui_->tvMatchList->header()->setVisible( global().isTeamOnlyShown() );
+    ui_->tvMatchList->setSortingEnabled( global().isTeamOnlyShown() );
     for ( int col = 0; col < round_model_->columnCount() - 1; ++col ) {
       ui_->tvMatchList->resizeColumnToContents( col );
     }
@@ -435,11 +459,16 @@ void MainWindow::createWindow()
   if ( swd.isRoundWindow() ) {
     model = round_model_;
   }
-  else if ( tournament_->isTeamMode() ) {
-    model = team_result_model_;
+  else if ( swd.isResultWindow() ) {
+    if ( tournament_->isTeamMode() ) {
+      model = team_result_model_;
+    }
+    else {
+      model = player_result_model_;
+    }
   }
   else {
-    model = player_result_model_;
+    model = player_model_;
   }
   QSharedPointer<ExternalWindow> external_window( new ExternalWindow( *model, swd.fontSize() ) );
   window_register_.append( external_window );
@@ -459,10 +488,11 @@ void MainWindow::about()
   QMessageBox::information(
     this,
     tr( "Information" ),
-    tr( MY_PRODUCT_NAME "\n"
-        "Version " MY_VERSION_STRING "\n"
-        "von " MY_COMPANY_NAME "\n"
-        "©2022" ),
+    QStringLiteral(
+      MY_PRODUCT_NAME "\n"
+      "Version " MY_VERSION_STRING "\n"
+      MY_COMPANY_NAME "\n"
+      "©2022" ),
     QMessageBox::Ok );
 }
 
@@ -541,16 +571,8 @@ bool MainWindow::eventFilter( QObject* obj, QEvent *evt )
           player_model_->setAllChecked( checked );
           return true;
         } else if ( isSimulateKey( ke ) ) {
-          QTimer::singleShot( 10, [this]()
-            {
-              PlayerList pl = TournamentSimulator( *tournament_ ).createRandomPlayers( this );
-              if ( ! pl.isEmpty() ) {
-                foreach( Player const& p, pl ) {
-                  player_model_->addPlayer( p );
-                }
-                updateView( TabMode::player );
-              }
-            } );
+          simulateGeneratePlayers();
+          return true;
         }
         break;
       case TI_Site:
@@ -562,14 +584,7 @@ bool MainWindow::eventFilter( QObject* obj, QEvent *evt )
         break;
       case TI_Round:
         if ( isSimulateKey( ke ) ) {
-          QTimer::singleShot( 10, [this]()
-            {
-            int r_idx = round_model_->currentRound();
-            Round round = TournamentSimulator::createRandomResults( tournament_->round( r_idx ) );
-            tournament_->setRound( r_idx, round );
-            round_model_->setRound( r_idx );
-            updateView( TabMode::round );
-            } );
+          simulateGenerateResults();
           return true;
         }
         break;
@@ -586,4 +601,58 @@ void MainWindow::closeEvent( QCloseEvent* event )
     deleteAllWindows();
     event->accept();
   }
+}
+
+void MainWindow::playerListContextMenu( const QPoint& pos )
+{
+  context_menu_ = new QMenu( ui_->tvPlayerList );
+  context_menu_->addAction( ui_->actionMarkAllPlayers );
+  context_menu_->addAction( ui_->actionUnmarkAllPlayers );
+  if ( global().simulationEnabled() ) {
+    context_menu_->addAction( ui_->actionSimulatePlayers );
+  }
+  context_menu_->popup( ui_->tvPlayerList->mapToGlobal( pos ) );
+}
+
+void MainWindow::siteListContextMenu( const QPoint& pos )
+{
+  context_menu_ = new QMenu( ui_->tvPlayerList );
+  context_menu_->addAction( ui_->actionMarkAllSites );
+  context_menu_->addAction( ui_->actionUnmarkAllSites );
+  context_menu_->popup( ui_->tvSiteList->mapToGlobal( pos ) );
+}
+
+void MainWindow::matchListContextMenu( const QPoint& pos )
+{
+  if ( !global().simulationEnabled() ) return;
+  context_menu_ = new QMenu( ui_->tvMatchList );
+  context_menu_->addAction( ui_->actionSimulateResults );
+  context_menu_->popup( ui_->tvPlayerList->mapToGlobal( pos ) );
+}
+
+void MainWindow::simulateGeneratePlayers()
+{
+  QTimer::singleShot( 10, [this]()
+  {
+    PlayerList pl = TournamentSimulator( *tournament_ ).createRandomPlayers( this );
+    if ( ! pl.isEmpty() ) {
+      foreach( Player const& p, pl ) {
+        player_model_->addPlayer( p );
+      }
+      updateView( TabMode::player );
+    }
+  } );
+}
+
+void MainWindow::simulateGenerateResults()
+{
+  QTimer::singleShot( 10, [this]()
+  {
+    int r_idx = round_model_->currentRound();
+    Round round = TournamentSimulator::createRandomResults( tournament_->round( r_idx ) );
+    tournament_->setRound( r_idx, round );
+    round_model_->setRound( r_idx );
+    finishRound();
+    updateView( TabMode::round );
+  } );
 }

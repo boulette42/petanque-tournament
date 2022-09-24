@@ -59,6 +59,11 @@ void Player::setMatch( int round_idx, Match const& match )
   result_->setMatch( round_idx, match );
 }
 
+void Player::updatePoints()
+{
+  points_ = result_ ? result_->resultPoints() : 0;
+}
+
 Player Player::fromCsvLine( QString const& line, QString& error_string, char delimiter )
 {
   Player player;

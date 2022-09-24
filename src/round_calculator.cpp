@@ -9,8 +9,6 @@
 #include <qrandom.h>
 #include <qset.h>
 
-extern Round readRoundFile( QString const& filepath, QString& error_string );
-
 
 namespace {
 
@@ -29,6 +27,14 @@ const int OPPONENT_DOUBLET = 6;   // Gegner-Wiederholung in Doublette
 const int MAX_TRY_PER_ITERATION = 10000;
 const int MAX_TRY_ABSOLUTE = 1000000;
 const int MAX_POINTS = 10;        // Ergebnisse oberhalb verwerfen
+
+
+void clearIdList( IdList& id_list, int first_pos )
+{
+  int const n = id_list.size();
+  while ( first_pos < n ) id_list[first_pos++] = INVALID_ID;
+}
+
 
 struct Randomizer
 {
@@ -111,6 +117,7 @@ public:
           if ( t < 2 ) {
             return Round();
           }
+          clearIdList( status, t );
           --t;
           team_used_[status[t]] = false;
           --t;
@@ -587,11 +594,10 @@ class SiteCalculator
 
   Round const round_;
   QVector<SiteCalc> sorted_sites_;
-  using PlayerSiteMap = QMap<int, IdxList>;
-  PlayerSiteMap player_used_sites_;
+  using MatchSites = QVector<IdList>;
+  MatchSites pre_used_sites_;
   FlagList site_used_;
-  IdList site_idx_;
-  IdList min_site_idx_;
+  IdxList site_idx_;
 
 public:
   SiteCalculator( Round const& round )
@@ -605,33 +611,41 @@ public:
     initUsedSites( tournament );
     int const n_matches = round_.size();
     int const n_sites = sorted_sites_.size();
-    int min_result = -1;
-    int s_idx = 0;
+    int pos_max = n_matches;	// keine Überschneidung
+    int pos = 0;        // match-position
     do {
-      int idx = nextUnusedIdx( site_idx_[s_idx] );
+      int idx = nextUnusedIdx( site_idx_[pos] );
       if ( idx != INVALID_IDX ) {
-        site_idx_[s_idx] = idx;
-        if ( s_idx + 1 < n_sites ) {
-          site_used_[idx] = true;
-          ++s_idx;
-          continue;
+        site_idx_[pos] = idx;
+        if ( !pre_used_sites_[pos].contains( sorted_sites_[idx].site_id_ ) ) {
+          ++pos;
+          if ( pos < pos_max ) {
+            site_used_[idx] = true;
+            continue;
+          }
+          // Ziel erreicht
+          if ( pos < n_matches ) fillRemaining( pos );
+          return sortRound();
         }
-        int result = calcSiteMalus();
-        if ( result == 0 ) {
-          return sortRound( site_idx_ );
-        }
-        if ( min_result < 0 || result < min_result ) {
-          min_result = result;
-          min_site_idx_ = site_idx_;
+        continue;
+      }
+      site_idx_[pos] = INVALID_IDX;
+      if ( pos == 0 ) {
+        // kein optimaler gefunden: Anspruch senken
+        --pos_max;
+        if ( pos_max < 3 ) {
+          // weiteres suchen nicht mehr sinnvoll: Zufalls-Lösung nehmen
+          for ( idx = 0; idx < site_idx_.size(); ++idx ) {
+            site_idx_[idx] = idx;
+          }
+          return sortRound();
         }
       }
-      --s_idx;
-      if ( s_idx < 0 ) {
-        // keiner mit '0': bisher besten nehmen
-        return sortRound( min_site_idx_ );
+      else {
+        --pos;
+        idx = site_idx_[pos];
+        site_used_[idx] = false;
       }
-      idx = site_idx_[s_idx];
-      site_used_[idx] = false;
     } while ( 1 );
   }
 
@@ -648,7 +662,7 @@ private:
     int const n_defined_sites = site_list.size();
     int const n_sites = qMax( n_matches, n_defined_sites );
     site_used_ = FlagList( n_sites, false );
-    site_idx_ = IdList( n_sites, INVALID_IDX );
+    site_idx_ = IdList( n_matches, INVALID_IDX );
     int last_id = 0;
     for ( int i = 0; i < n_defined_sites; ++i ) {
       last_id = qMax( site_list[i].id(), last_id );
@@ -676,59 +690,42 @@ private:
 
   void initUsedSites( Tournament const& tournament )
   {
-    player_used_sites_.clear();    int n_matches = round_.size();
+    pre_used_sites_ = MatchSites( round_.size() );
+    int n_matches = round_.size();
     for ( int i = 0; i < n_matches; ++i ) {
       Match const& match( round_[i] );
-      addUsedSites( match.team_lt_, tournament );
-      addUsedSites( match.team_rt_, tournament );
+      pre_used_sites_[i] += usedTeamSites( match.team_lt_, tournament );
+      pre_used_sites_[i] += usedTeamSites( match.team_rt_, tournament );
     }
   }
 
-  void addUsedSites( Team const& team, Tournament const& tournament )
+  IdList usedTeamSites( Team const& team, Tournament const& tournament )
   {
+    IdList ret;
     for ( int t = 0; t < team.size(); ++t ) {
       int p_id = team.playerId( t );
-      PlayerSiteMap::iterator p_it = player_used_sites_.find( p_id );
-      if ( p_it == player_used_sites_.end() ) {
-        p_it = player_used_sites_.insert( p_id, IdxList() );
-      }
       Player const& player = tournament.player( p_id );
       if ( player.result() ) {
         for ( int r = 0; r < player.result()->rounds(); ++r ) {
-          p_it->append( player.result()->match( r ).site_id_ );
+          ret.append( player.result()->match( r ).site_id_ );
         }
       }
     }
+    return ret;
   }
 
-  int calcSiteMalus()
+  void fillRemaining( int pos )
   {
-    int res = 0;
-    int n_matches = round_.size();
-    for ( int i = 0; i < n_matches; ++i ) {
-      int idx = site_idx_[i];
-      int site_id = sorted_sites_[idx].site_id_;
-      Match const& match( round_[i] );
-      res += calcSiteMalus( site_id, match.team_lt_ );
-      res += calcSiteMalus( site_id, match.team_rt_ );
-    }
-    return res;
+     while ( pos < site_idx_.size() ) {
+       // kein optimales Ergebnis, Rest aufsteigend zuordnen
+       int idx = nextUnusedIdx( INVALID_IDX );
+       site_idx_[pos] = idx;
+       site_used_[idx] = true;
+       ++pos;
+     }
   }
 
-  int calcSiteMalus( int site_id, Team const& team )
-  {
-    int res = 0;
-    for ( int t = 0; t < team.size(); ++t ) {
-      int p_id = team.playerId( t );
-      PlayerSiteMap::iterator p_it = player_used_sites_.find( p_id );
-      if ( p_it != player_used_sites_.end() ) {
-        res += p_it->contains( site_id );
-      }
-    }
-    return res;
-  }
-
-  Round sortRound( IdList const& site_idx )
+  Round sortRound()
   {
     struct LessThan {
       bool operator()( Match const& lhs, Match const& rhs ) {
@@ -738,7 +735,7 @@ private:
 
     Round ret = round_;
     for ( int i = 0; i < ret.size(); ++i ) {
-      int idx = site_idx[i];
+      int idx = site_idx_[i];
       ret[i].site_id_ = sorted_sites_[idx].site_id_;
     }
     std::sort( ret.begin(), ret.end(), LessThan() );
@@ -756,19 +753,34 @@ private:
 };
 
 
-// --- interface -------------------------------------------------------------
+// --- class RoundCalculator -------------------------------------------------
 
-Round calcRound( PlayerList const& player_list )
+RoundCalculator::RoundCalculator( QWidget* parent )
+  : parent_( parent )
+{
+}
+
+Round RoundCalculator::calcRound( PlayerList const& player_list )
 {
   return SuperMeleeRoundCalculator().exec( player_list );
 }
 
-Round calcRound( PlayerList const& player_list, TeamList const& team_list )
+Round RoundCalculator::calcRound( PlayerList const& player_list, TeamList const& team_list )
 {
   return TeamRoundCalculator( player_list, team_list ).exec();
 }
 
-Round calcSites( Round const& round, Tournament const& tournament )
+Round RoundCalculator::calcSites( Round const& round, Tournament const& tournament )
 {
   return SiteCalculator( round ).exec( tournament );
+}
+
+void RoundCalculator::setError( QString const& error_string )
+{
+  error_string_ = error_string;
+}
+
+QString RoundCalculator::lastError() const
+{
+  return error_string_;
 }

@@ -16,6 +16,7 @@ namespace {
   QString const v_mode( QStringLiteral( "Modus" ) );
   QString const v_mode_s( QStringLiteral( "Supermelee" ) );
   QString const v_mode_t( QStringLiteral( "Teams" ) );
+  QString const v_team_only( QStringLiteral( "TeamOnly" ) );
   QString const v_data_dir( QStringLiteral( "DataDir" ) );
   QString const v_font_size( QStringLiteral( "FontSize" ) );
   QString const v_site_enabled( QStringLiteral( "SiteEnabled" ) );
@@ -38,6 +39,7 @@ struct SettingsCore
   ProgMode mode_ = ProgMode::super_melee;
   int font_size_ = 0;
   bool site_enabled_ = true;
+  bool team_only_ = false;
   bool simulation_enabled_ = false;
 
   void load()
@@ -47,6 +49,7 @@ struct SettingsCore
     mode_ = mode.compare( v_mode_t, Qt::CaseInsensitive ) == 0
       ? ProgMode::teams
       : ProgMode::super_melee;
+    team_only_ = s.value( v_team_only ).toBool();
     data_dir_ = s.value( v_data_dir ).toString();
     site_enabled_ = s.value( v_site_enabled ).toBool();
     font_size_ = s.value( v_font_size ).toInt();
@@ -64,6 +67,7 @@ struct SettingsCore
   {
     QSettings s( company, app_name );
     s.setValue( v_mode, mode_ == ProgMode::teams ? v_mode_t : v_mode_s );
+    s.setValue( v_team_only, team_only_ );
     s.setValue( v_data_dir, data_dir_ );
     s.setValue( v_site_enabled, site_enabled_ );
     s.setValue( v_font_size, font_size_ );
@@ -120,11 +124,13 @@ public:
     ui_->rbTeams->setChecked( settings.mode_ == ProgMode::teams  );
     ui_->leDataDir->setText( settings.data_dir_.isEmpty() ? defaultDataDir() : settings.data_dir_ );
     ui_->cbSiteEnabled->setChecked( settings.site_enabled_ );
+    ui_->cbTeamsOnly->setChecked( settings.team_only_ );
     ui_->leFontSize->setText( QString::number( settings.font_size_ ) );
     if ( ! dlg_->exec() ) return false;
     settings.data_dir_ = ui_->leDataDir->text();
     settings.mode_ = ui_->rbSuperMelee->isChecked() ? ProgMode::super_melee : ProgMode::teams;
     settings.site_enabled_ = ui_->cbSiteEnabled->isChecked();
+    settings.team_only_ = ui_->cbTeamsOnly->isChecked();
     int font_size = ui_->leFontSize->text().toInt();
     if ( font_size >= MIN_FONT_SIZE && font_size <= MAX_FONT_SIZE ) {
       settings.font_size_ = font_size;
@@ -146,6 +152,9 @@ public:
   void validateAccept()
   {
     QString const dir( ui_->leDataDir->text() );
+    if ( dir == defaultDataDir() && !QDir( dir ).exists() ) {
+      QDir( dir ).mkdir( dir );
+    }
     if ( dir.isEmpty() || QDir( dir ).exists() ) {
       dlg_->accept();
       return;
@@ -203,6 +212,11 @@ int Settings::fontSize() const
 bool Settings::siteEnabled() const
 {
   return m_->site_enabled_;
+}
+
+bool Settings::isTeamOnlyShown() const
+{
+  return m_->team_only_;
 }
 
 bool Settings::simulationEnabled() const

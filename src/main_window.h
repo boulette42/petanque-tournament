@@ -34,6 +34,7 @@ class MainWindow : public QMainWindow
   QPointer<PlayerResultModel> player_result_model_;
   QPointer<TeamResultModel> team_result_model_;
   QVector<QSharedPointer<ExternalWindow> > window_register_;
+  QPointer<QMenu> context_menu_;
 
 public:
   explicit MainWindow( Tournament const& tournament );
@@ -67,6 +68,11 @@ private slots:
   void matchActivated( QModelIndex const& index );
   void resultActivated( QModelIndex const& index );
   void roundChanged( int round_idx );
+  void playerListContextMenu( const QPoint& );
+  void siteListContextMenu( const QPoint& );
+  void matchListContextMenu( const QPoint& );
+  void simulateGeneratePlayers();
+  void simulateGenerateResults();
 };
 
 #endif  // MAIN_WINDOW_H

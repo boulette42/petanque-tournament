@@ -16,6 +16,7 @@ public:
   int resultPoints() const;
   int resultPoints( int round_idx ) const;
   int wonRounds() const;
+  int wonRoundsUntil( int max_round ) const;
 };
 
 #endif  // PLAYER_RESULT_H

@@ -44,6 +44,7 @@ public:
   void setSelected( bool selected ) { selected_ = selected; }
 
   void setMatch( int round_idx, Match const& match );
+  void updatePoints();
 
   static Player fromCsvLine( QString const& line, QString& error_string, char delimiter = ';' );
   QString toCsvLine( char delimiter = ';' ) const;
