@@ -19,6 +19,8 @@ public:
   bool exec();
   int fontSize() const;
   bool isRoundWindow() const;
+  bool isResultWindow() const;
+  bool isPlayerWindow() const;
 };
 
 #endif  // SELECT_WINDOW_DLG_H

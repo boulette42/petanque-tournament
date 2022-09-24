@@ -58,3 +58,13 @@ bool SelectWindowDlg::isRoundWindow() const
 {
   return ui_->rbRound->isChecked();
 }
+
+bool SelectWindowDlg::isResultWindow() const
+{
+  return ui_->rbResult->isChecked();
+}
+
+bool SelectWindowDlg::isPlayerWindow() const
+{
+  return ui_->rbPlayer->isChecked();
+}

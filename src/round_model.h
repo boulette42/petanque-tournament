@@ -19,7 +19,9 @@ class RoundModelBase : public QAbstractItemModel
 protected:
   Tournament& tournament_;
   Round round_;
+  int round_idx_;
   QVector<int> row_to_match_;
+  QVector<int> sorted_;
 
 public:
   explicit RoundModelBase( Tournament& tournament );
@@ -27,14 +29,18 @@ public:
 
 protected:
   void initRound( Round const& round );
+  void initRound( Round const& round, int round_idx );
   int matchRowCount() const;
+  bool isTeamOnlyShown() const;
 
   QModelIndex index( int row, int column, QModelIndex const& parent = QModelIndex() ) const override;
   QModelIndex parent( QModelIndex const& /*mi*/ ) const override;
   int rowCount( QModelIndex const& parent ) const override;
   int columnCount( QModelIndex const& parent ) const override;
   QVariant data( QModelIndex const& mi, int role ) const override;
+  QVariant RoundModelBase::teamOnlyData( QModelIndex const& mi, int role ) const;
   QVariant headerData( int section, Qt::Orientation orientation, int role ) const override;
+  void sort( int column, Qt::SortOrder order ) override;
 };
 
 

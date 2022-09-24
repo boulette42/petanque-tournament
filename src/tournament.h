@@ -4,6 +4,7 @@
 #include "config.h"
 
 class PlayerModel;
+class RoundCalculator;
 class SiteModel;
 class QJsonObject;
 
@@ -32,7 +33,7 @@ public:
 
   int lastRoundIdx() const;
   Round const& round( int round_idx ) const;
-  bool createRound( int round_idx, QString& error_string );
+  bool createRound( int round_idx, RoundCalculator& round_calculator );
   void setRound( int round_idx, Round const& round );
   bool lastRoundFinished() const { return last_round_finished_; }
   void setLastRoundFinished( bool last_round_finished ) { last_round_finished_ = last_round_finished; }
@@ -53,6 +54,7 @@ public:
   int siteCount() const { return site_cnt_; }
   bool setSiteCount( int site_cnt );
   int selectedSiteCount() const;
+  int neededSites() const;
 
   static TeamList setTeams( PlayerList const& player_list, QString& error_string );
 

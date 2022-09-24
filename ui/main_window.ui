@@ -326,6 +326,54 @@
     <bool>false</bool>
    </property>
   </action>
+  <action name="actionMarkAllPlayers">
+   <property name="text">
+    <string>Alle Markierungen setzen</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="actionUnmarkAllPlayers">
+   <property name="text">
+    <string>Alle Markierungen entfernen</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="actionSimulatePlayers">
+   <property name="text">
+    <string>Simulierte Spieler erzeugen</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="actionMarkAllSites">
+   <property name="text">
+    <string>Alle Markierungen setzen</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="actionUnmarkAllSites">
+   <property name="text">
+    <string>Alle Markierungen entfernen</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="actionSimulateResults">
+   <property name="text">
+    <string>Simulierte Ergebnisse erzeugen</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>false</bool>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>

@@ -19,6 +19,7 @@ public:
   int fontSize() const;
   bool isTeamMode() const;
   bool siteEnabled() const;
+  bool isTeamOnlyShown() const;
   bool simulationEnabled() const;
 };
 

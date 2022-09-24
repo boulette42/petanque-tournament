@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>470</width>
-    <height>231</height>
+    <height>272</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -115,6 +115,13 @@
     <widget class="QCheckBox" name="cbSiteEnabled">
      <property name="text">
       <string>Plätze berücksichtigen</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QCheckBox" name="cbTeamsOnly">
+     <property name="text">
+      <string>Runde nur mit Teams anzeigen (ohne Spieler)</string>
      </property>
     </widget>
    </item>
