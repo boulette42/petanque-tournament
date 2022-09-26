@@ -15,6 +15,7 @@
 #include <qjsondocument.h>
 #include <qjsonobject.h>
 #include <qmap.h>
+#include <qmessagebox.h>
 #include <qregexp.h>
 
 
@@ -25,8 +26,10 @@ QString const DATE_PATTERN = QLatin1String( "yyyy-MM-dd" );
 
 PlayerList::iterator getPlayerIterator( PlayerList& player_list, int id )
 {
-  for ( PlayerList::iterator it = player_list.begin(); it != player_list.end(); ++it ) {
-    if ( it->id() == id ) return it;
+  if ( id != INVALID_ID ) {
+    for ( PlayerList::iterator it = player_list.begin(); it != player_list.end(); ++it ) {
+      if ( it->id() == id ) return it;
+    }
   }
   return player_list.end();
 }
@@ -99,7 +102,16 @@ int lastPlayerId( PlayerList const& player_list )
   return last_player_id;
 }
 
+uchar guessDelimiter(QByteArray const& line)
+{
+  if ( line.contains( ';' ) ) return ';';
+  if ( line.contains( '\t' ) ) return '\t';
+  if ( line.contains( ',' ) ) return ',';
+  if ( line.contains( '|' ) ) return '|';
+  return 0;
 }
+
+}  // anonymous namespace
 
 
 // --- Tournament ------------------------------------------------------------------
@@ -431,42 +443,63 @@ bool Tournament::savePlayerList( QString const& csv_name ) const
 
 bool Tournament::loadPlayerList( QString const& csv_name )
 {
-  uchar const delimiter = ';';
+  uchar delimiter = 0;
   QFile fi( csv_name );
   if ( ! fi.open( QIODevice::ReadOnly ) ) {
-   //p_error->fatal( QStringLiteral( "Datei '%1' kann nicht geladen werden" ).arg( file_path ) );
     return false;
   }
   PlayerList player_list;
+  QStringList error_list;
+  int line_no = 0;
   while ( ! fi.atEnd() ) {
+    ++line_no;
     QByteArray line = fi.readLine();
     int len = line.length();
-    while ( len > 0 ) {
-      uchar uc = line[len - 1];
-      if ( uc == delimiter || uc >= 32 ) break;
+    while ( len > 0 && line.at(len - 1) > '\x20' ) {
       --len;
     }
     if ( len > 0 ) {
+      if ( delimiter == 0 ) {
+        delimiter = guessDelimiter( line );
+      }
       QString s_line = QString::fromLatin1( line.left( len ) );
       QString error_string;
       Player player = Player::fromCsvLine( s_line, error_string, delimiter );
       if ( error_string.isEmpty() ) {
         player_list.append( player );
       } else {
-        //p_error->warning( QStringLiteral( "Zeile '%1' nicht gelesen: %2" )
-        //  .arg( s_line, error_string ) );
+        if ( error_list.isEmpty() ) {
+          error_list.append( tr( "Fehlerliste" ) );
+        }
+        error_list.append( tr("Zeile %1: %2").arg( line_no ).arg( error_string ) );
       }
     }
   }
-  if ( player_list.isEmpty() ) return false;
-  int last_player_id = lastPlayerId( player_list );
+  int const n_players = player_list.size();
+  if ( error_list.isEmpty() ) {
+    if ( !n_players ) return false; // leere datei
+    QMessageBox::information(
+      nullptr,
+      tr( "Spieler-Datei lesen" ),
+      tr( "%1 Spieler gelesen" ).arg( n_players ) );
+  }
+  else {
+    if ( n_players > 0 ) {
+      error_list.prepend( tr( "%1 Spieler gelesen" ).arg( n_players ) );
+    }
+    QMessageBox::StandardButton button = QMessageBox::warning(
+      nullptr,
+      tr( "Spieler-Datei fehlerhaft" ),
+      error_list.join( QLatin1Char('\n') ),
+      QMessageBox::Ok | QMessageBox::Cancel
+    );
+    if ( !n_players || button == QMessageBox::Cancel ) return false;
+  }
   player_list_.clear();
   foreach ( Player const& player, player_list ) {
-    if ( getPlayerIterator( player_list_, player.id() ) == player_list_.end() ) {
-      player_list_.append( player );
-    } else {
-      ++last_player_id;
-      player_list_.append( Player( last_player_id, player ) );
+    if ( !addPlayer( player ) ) {
+      // id mehrfach vergeben
+      addPlayer( Player( INVALID_ID, player ) );
     }
   }
   round_list_.clear();

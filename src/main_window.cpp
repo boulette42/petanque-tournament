@@ -3,6 +3,7 @@
 #include "edit_match_dlg.h"
 #include "edit_player_dlg.h"
 #include "external_window.h"
+#include "lock_screen.h"
 #include "match.h"
 #include "player.h"
 #include "player_model.h"
@@ -25,6 +26,10 @@
 #include <qfiledialog.h>
 #include <qmessagebox.h>
 #include <qtimer.h>
+
+#if QT_VERSION >= QT_VERSION_CHECK(5,15,0)
+# define HAS_SET_TAB_VISIBLE
+#endif
 
 
 namespace {
@@ -76,6 +81,74 @@ enum TabIdx {
 }
 
 
+class TabWidgetHelper
+{
+  QTabWidget* tab_widget_ = nullptr;
+  struct TabHidden {
+    QWidget* widget = nullptr;
+    QString label;
+    bool hidden = false;
+  };
+  QVector<TabHidden> tabs_;
+
+public:
+  explicit TabWidgetHelper(QTabWidget* tab_widget)
+  {
+    tab_widget_ = tab_widget;
+#ifndef HAS_SET_TAB_VISIBLE
+    if (tab_widget) {
+      int const size = tab_widget->count();
+      tabs_.resize(size);
+      for (int i = 0; i < size; ++i) {
+        tabs_[i].widget = tab_widget->widget(i);
+        tabs_[i].label = tab_widget->tabText(i);
+      }
+    }
+#endif
+  }
+
+  void setTabVisible(int index, bool visible)
+  {
+#ifdef HAS_SET_TAB_VISIBLE
+    tab_widget_->setTabVisible(index, visible);
+#else
+    if (index < 0 || tabs_.size() <= index) return;
+    if (visible) showWidget(index);
+    else         hideWidget(index);
+#endif
+  }
+
+private:
+  void hideWidget(int index)
+  {
+    if (tabs_[index].hidden) return;
+    int ipos = effectiveIndex(index);
+    tab_widget_->removeTab(ipos);
+    tabs_[index].hidden = true;
+  }
+
+  void showWidget(int index)
+  {
+    if (index < 0 || tabs_.size() <= index) return;
+    if (!tabs_[index].hidden) return;
+    tab_widget_->setUpdatesEnabled(false);
+    int ipos = effectiveIndex(index);
+    tab_widget_->insertTab(ipos, tabs_[index].widget, tabs_[index].label);
+    tabs_[index].hidden = false;
+    tab_widget_->setUpdatesEnabled(true);
+  }
+
+  int effectiveIndex(int index)
+  {
+    int ipos = 0;
+    for (int i = 0; i < index; ++i) {
+      if (!tabs_[i].hidden) ++ipos;
+    }
+    return ipos;
+  }
+};
+
+
 // --- MainWindow ------------------------------------------------------------
 
 MainWindow::MainWindow( Tournament const& tournament )
@@ -88,6 +161,7 @@ MainWindow::MainWindow( Tournament const& tournament )
     tournament_->loadTournament( currentTournamentName() );
   }
   ui_->setupUi( this );
+  tab_widget_helper_.reset( new TabWidgetHelper( ui_->tabWidget ) );
   connect( ui_->actionBackup, &QAction::triggered, this, &MainWindow::exportTournament );
   connect( ui_->actionSettings, &QAction::triggered, this, &MainWindow::editSettings );
   connect( ui_->actionQuit, &QAction::triggered, this, &MainWindow::close );
@@ -98,6 +172,7 @@ MainWindow::MainWindow( Tournament const& tournament )
   connect( ui_->actionRoundFinish, &QAction::triggered, this, &MainWindow::finishRound );
   connect( ui_->actionCreateWindow, &QAction::triggered, this, &MainWindow::createWindow );
   connect( ui_->actionDeleteAllWindows, &QAction::triggered, this, &MainWindow::deleteAllWindows );
+  connect( ui_->actionLockScreen, &QAction::triggered, this, &MainWindow::lockScreen );
   connect( ui_->actionAbout, &QAction::triggered, this, &MainWindow::about );
   connect( ui_->pbSetSiteCnt, &QPushButton::clicked, this, &MainWindow::updateSiteCount );
   connect( ui_->tvPlayerList, &QAbstractItemView::activated, this, &MainWindow::playerActivated );
@@ -364,9 +439,9 @@ void MainWindow::initModels()
 void MainWindow::updateView( TabMode tm )
 {
   bool const team_mode = tournament_->isTeamMode();
-  ui_->tabWidget->setTabVisible( TI_Site, global().siteEnabled() );
-  ui_->tabWidget->setTabVisible( TI_PlayerResult, ! team_mode );
-  ui_->tabWidget->setTabVisible( TI_TeamResult, team_mode );
+  tab_widget_helper_->setTabVisible( TI_Site, global().siteEnabled() );
+  tab_widget_helper_->setTabVisible( TI_PlayerResult, ! team_mode );
+  tab_widget_helper_->setTabVisible( TI_TeamResult, team_mode );
 
   int ci = tm == TabMode::current ? ui_->tabWidget->currentIndex() : INVALID_IDX;
   if ( ci == TI_Player || tm == TabMode::player || tm == TabMode::all ) {
@@ -471,6 +546,10 @@ void MainWindow::createWindow()
     model = player_model_;
   }
   QSharedPointer<ExternalWindow> external_window( new ExternalWindow( *model, swd.fontSize() ) );
+  if ( swd.screen() > 0 ) {
+    external_window->setScreen( swd.screen() );
+  }
+  external_window->show();
   window_register_.append( external_window );
 }
 
@@ -481,6 +560,11 @@ void MainWindow::deleteAllWindows()
     p = nullptr;
   }
   window_register_.clear();
+}
+
+void MainWindow::lockScreen()
+{
+  LockScreen( this ).exec();
 }
 
 void MainWindow::about()

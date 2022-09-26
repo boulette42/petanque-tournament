@@ -1,5 +1,13 @@
 changes of petanque-tournament
 
+Version 0.95b - 2022-09-26
+feature
+- LockScreen with password (for real tournaments)
+- more accepted delimiters in player files
+- automatic creation of ids from player files
+- automatic fullscreen window on second screen
+- support of Qt5.12
+
 Version 0.95b - 2022-09-14
 feature
 - draw of sites accelerated

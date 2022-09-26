@@ -17,6 +17,7 @@ public:
   ~SelectWindowDlg();
 
   bool exec();
+  int screen() const;
   int fontSize() const;
   bool isRoundWindow() const;
   bool isResultWindow() const;
