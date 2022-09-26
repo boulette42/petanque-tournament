@@ -20,6 +20,7 @@ namespace {
   QString const v_data_dir( QStringLiteral( "DataDir" ) );
   QString const v_font_size( QStringLiteral( "FontSize" ) );
   QString const v_site_enabled( QStringLiteral( "SiteEnabled" ) );
+  QString const v_password( QStringLiteral( "Password" ) );
 
   const int MIN_FONT_SIZE = 7;
   const int MAX_FONT_SIZE = 24;
@@ -41,6 +42,7 @@ struct SettingsCore
   bool site_enabled_ = true;
   bool team_only_ = false;
   bool simulation_enabled_ = false;
+  QString password_;
 
   void load()
   {
@@ -53,6 +55,7 @@ struct SettingsCore
     data_dir_ = s.value( v_data_dir ).toString();
     site_enabled_ = s.value( v_site_enabled ).toBool();
     font_size_ = s.value( v_font_size ).toInt();
+    password_ = s.value(v_password).toString();
     simulation_enabled_ = false;
     QStringList const args = QCoreApplication::arguments();
     for (int i = 1; i < args.count(); ++i ) {
@@ -71,29 +74,12 @@ struct SettingsCore
     s.setValue( v_data_dir, data_dir_ );
     s.setValue( v_site_enabled, site_enabled_ );
     s.setValue( v_font_size, font_size_ );
+    s.setValue( v_password, password_ );
   }
 };
 
 
 namespace {
-
-class ZoomValidator : public QValidator
-{
-public:
-  ZoomValidator( QObject* parent ) : QValidator( parent ) { }
-
-  QValidator::State validate( QString& input, int& /*pos*/ ) const override
-  {
-    if ( ! input.isEmpty() ) {
-      bool ok = false;
-      int i = input.toInt( &ok );
-      if ( ! ok ) return QValidator::Invalid;
-      if ( i != 0 && i > MAX_FONT_SIZE ) return QValidator::Invalid;
-    }
-    return QValidator::Acceptable;
-  }
-};
-
 
 class SettingsDlg : public QObject
 {
@@ -110,7 +96,10 @@ public:
     ui_->setupUi( dlg_ );
     updateStyleSheet( *dlg_ );
     QFontMetrics fm( ui_->leFontSize->font() );
-    ui_->leFontSize->setMaximumWidth( fm.horizontalAdvance( QLatin1String( "5555" ) ) );
+    int const w = fm.horizontalAdvance( QLatin1String( "5" ) );
+    ui_->leFontSize->setMaximumWidth( 4*w );
+    ui_->lePassword->setMaximumWidth( 30*w );
+    ui_->lePasswordCopy->setMaximumWidth( 30*w );
     connect( ui_->tbSelectDir, &QToolButton::clicked, this, &SettingsDlg::selectDir );
     connect( ui_->buttonBox, &QDialogButtonBox::accepted, this, &SettingsDlg::validateAccept );
   }
@@ -126,6 +115,8 @@ public:
     ui_->cbSiteEnabled->setChecked( settings.site_enabled_ );
     ui_->cbTeamsOnly->setChecked( settings.team_only_ );
     ui_->leFontSize->setText( QString::number( settings.font_size_ ) );
+    ui_->lePassword->setText( settings.password_ );
+    ui_->lePasswordCopy->setText( settings.password_ );
     if ( ! dlg_->exec() ) return false;
     settings.data_dir_ = ui_->leDataDir->text();
     settings.mode_ = ui_->rbSuperMelee->isChecked() ? ProgMode::super_melee : ProgMode::teams;
@@ -137,6 +128,7 @@ public:
     } else {
       settings.font_size_ = 0;
     }
+    settings.password_ = ui_->lePassword->text();
     settings.save();
     return true;
   }
@@ -151,6 +143,10 @@ public:
 
   void validateAccept()
   {
+    if ( ui_->lePassword->text() != ui_->lePasswordCopy->text() ) {
+      QMessageBox::warning( dlg_, tr( "Passwort-Warnung" ), tr( "Die Passwörter stimmen nicht überein" ) );
+      return;
+    }
     QString const dir( ui_->leDataDir->text() );
     if ( dir == defaultDataDir() && !QDir( dir ).exists() ) {
       QDir( dir ).mkdir( dir );
@@ -224,6 +220,11 @@ bool Settings::simulationEnabled() const
   return m_->simulation_enabled_;
 }
 
+QString Settings::password() const
+{
+  return m_->password_;
+}
+
 void updateStyleSheet(QWidget& dlg)
 {
   updateStyleSheet( dlg, global().fontSize() );
@@ -238,10 +239,10 @@ void updateStyleSheet( QWidget& dlg, int font_size )
     dlg.setStyleSheet( style_sheet );
   } else {
     QString const style_sheet = QStringLiteral(
-      "QHeaderView { font-size: %1pt };\n"
-      "QLabel { font-size: %1pt };\n"
-      "QLineEdit { font-size: %1pt };\n"
-      "QPushButton { font-size: %1pt };\n" )
+      "QHeaderView { font-size: %1pt }\n"
+      "QLabel { font-size: %1pt }\n"
+      "QLineEdit { font-size: %1pt }\n"
+      "QPushButton { font-size: %1pt }\n" )
       .arg(initial_font_size );
     dlg.setStyleSheet( style_sheet );
   }

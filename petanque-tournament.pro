@@ -61,6 +61,7 @@ HEADERS += \
   src/edit_player_dlg.h \
   src/external_window.h \
   src/json_common.h \
+  src/lock_screen.h \
   src/main_window.h \
   src/match.h \
   src/player.h \
@@ -86,6 +87,7 @@ SOURCES += \
   src/edit_player_dlg.cpp \
   src/external_window.cpp \
   src/json_common.cpp \
+  src/lock_screen.cpp \
   src/main.cpp \
   src/main_window.cpp \
   src/match.cpp \

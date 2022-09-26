@@ -69,18 +69,18 @@ Player Player::fromCsvLine( QString const& line, QString& error_string, char del
   Player player;
   QStringList fields = line.split( QLatin1Char( delimiter ) );
   int const n = fields.size();
-  if ( n < 2 ) {
-    error_string = QStringLiteral( "Name oder ID nicht angegeben" );
-  } else for ( int i = 0; i < n; ++i ) {
+  for ( int i = 0; i < n; ++i ) {
     QString fld = fields[i].trimmed();
     switch ( i ) {
-    case 0: {
-      bool ok = false;
-      player.id_ = fld.toInt( &ok );
-      if ( ! ok ) {
-        error_string = QStringLiteral( "ID nicht nummerisch" );
+    case 0:
+      if ( !fld.isEmpty() ) {
+        bool ok = false;
+        player.id_ = fld.toInt( &ok );
+        if ( ! ok ) {
+          error_string = tr( "ID nicht nummerisch" );
+        }
       }
-      break; }
+      break;
     case 1:
       player.first_name_ = fld;
       break;
@@ -97,6 +97,9 @@ Player Player::fromCsvLine( QString const& line, QString& error_string, char del
       player.team_ = fld;
       break;
     }
+  }
+  if ( player.firstName().isEmpty() && player.lastName().isEmpty() ) {
+    error_string = tr( "Spielername nicht angegeben" );
   }
   return player;
 }

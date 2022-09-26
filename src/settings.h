@@ -21,6 +21,7 @@ public:
   bool siteEnabled() const;
   bool isTeamOnlyShown() const;
   bool simulationEnabled() const;
+  QString password() const;
 };
 
 

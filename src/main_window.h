@@ -12,6 +12,7 @@ class SiteModel;
 class TeamResultModel;
 class Ui_MainWindow;
 class QModelIndex;
+class TabWidgetHelper;
 
 class MainWindow : public QMainWindow
 {
@@ -33,6 +34,7 @@ class MainWindow : public QMainWindow
   QPointer<RoundModel> round_model_;
   QPointer<PlayerResultModel> player_result_model_;
   QPointer<TeamResultModel> team_result_model_;
+  QSharedPointer<TabWidgetHelper> tab_widget_helper_;
   QVector<QSharedPointer<ExternalWindow> > window_register_;
   QPointer<QMenu> context_menu_;
 
@@ -62,6 +64,7 @@ private slots:
   void finishRound();
   void createWindow();
   void deleteAllWindows();
+  void lockScreen();
   void about();
   void updateSiteCount();
   void playerActivated( QModelIndex const& index );
