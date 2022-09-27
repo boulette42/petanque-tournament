@@ -140,10 +140,10 @@ Round const& Tournament::round( int round_idx ) const
     : empty_round;
 }
 
-bool Tournament::createRound( int round_idx, RoundCalculator& round_calculator )
+bool Tournament::createRound( RoundCalculator& round_calculator )
 {
   int n_rounds = round_list_.size();
-  if ( round_idx < n_rounds - 1 ) {
+  if ( round_calculator.roundIndex() < n_rounds - 1 ) {
     round_calculator.setError( tr( "Runden-Parameter unplausibel" ) );
     // Programmfehler: nicht neue Runde
     return false;
@@ -172,10 +172,10 @@ bool Tournament::createRound( int round_idx, RoundCalculator& round_calculator )
   if ( global().siteEnabled() ) {
     round = round_calculator.calcSites( round, *this );
   }
-  if ( round_idx == n_rounds ) {
+  if ( round_calculator.roundIndex() == n_rounds ) {
     round_list_.append( round );
   } else {
-    round_list_[round_idx] = round;
+    round_list_[round_calculator.roundIndex()] = round;
   }
   changed_ = true;
   last_round_finished_ = false;
@@ -409,7 +409,7 @@ int Tournament::neededSites() const
 {
   if ( isTeamMode() ) {
     QString error_string;
-    TeamList team_list = setTeams( player_list_, error_string );
+    TeamList team_list = setTeams( selectedPlayerList(), error_string );
     return ( team_list.size() + 1 ) / 2;
   }
   else {

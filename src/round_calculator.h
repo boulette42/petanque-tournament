@@ -10,9 +10,11 @@ class RoundCalculator
 {
   QWidget* parent_;
   QString error_string_;
+  int round_idx_ = -1;
 
 public:
-  explicit RoundCalculator( QWidget* parent );
+  explicit RoundCalculator( QWidget* parent, int round_idx );
+  int roundIndex() const { return round_idx_; }
 
   Round calcRound( PlayerList const& player_list );
   Round calcRound( PlayerList const& player_list, TeamList const& team_list );

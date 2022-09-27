@@ -14,26 +14,24 @@ namespace {
 
 using FlagList = QVector<bool>;
 
-// Strafpunkte
-const int DIFF_LEVEL_1S = 3;      // Unterschied gewonnene Runden == 1 selbes Team
-const int DIFF_LEVEL_2S = 8;      // Unterschied gewonnene Runden == 2 selbes Team
+// Supermelee Strafpunkte
+const int DIFF_LEVEL_1S = 30;     // Unterschied gewonnene Runden == 1 selbes Team
+const int DIFF_LEVEL_2S = 80;     // Unterschied gewonnene Runden == 2 selbes Team
 const int DIFF_LEVEL_FACTOR = 1;  // Unterschied gewonnene Runden zwischen Teams * Runden
-const int DIFF_LEVEL_N = 10;      // Unterschied gewonnene Runden > 2  (kommt nicht vor)
-const int DOUBLE_TRIPLET = 15;    // Spieler-Wiederholung in Triplette
-const int DOUBLE_DOUBLET = 25;    // Spieler-Wiederholung in Doublette
-const int OPPONENT_TRIPLET = 3;   // Gegner-Wiederholung in Triplette
-const int OPPONENT_DOUBLET = 6;   // Gegner-Wiederholung in Doublette
+const int DIFF_LEVEL_N = 100;     // Unterschied gewonnene Runden > 2  (kommt nicht vor)
+const int DOUBLE_TRIPLET = 150;   // Spieler-Wiederholung in Triplette
+const int DOUBLE_DOUBLET = 250;   // Spieler-Wiederholung in Doublette
+const int OPPONENT_TRIPLET = 30;  // Gegner-Wiederholung in Triplette
+const int OPPONENT_DOUBLET = 60;  // Gegner-Wiederholung in Doublette
+
+// Team-Strafpunkte
+const int T_SAME_TEAM = 10000;      // erneut gegen selbes team spielen
+const int T_OTHER_POINTS = 100;     // gegen Team mit anderer Punktzahl
+const int T_SAME_ASSOC = 1;         // Gegner im selben Verein
 
 const int MAX_TRY_PER_ITERATION = 10000;
 const int MAX_TRY_ABSOLUTE = 1000000;
-const int MAX_POINTS = 10;        // Ergebnisse oberhalb verwerfen
-
-
-void clearIdList( IdList& id_list, int first_pos )
-{
-  int const n = id_list.size();
-  while ( first_pos < n ) id_list[first_pos++] = INVALID_ID;
-}
+const int MAX_POINTS = 100;       // Ergebnisse oberhalb verwerfen
 
 
 struct Randomizer
@@ -82,69 +80,104 @@ struct PlayerCalc : public Randomizer
 
 class TeamRoundCalculator
 {
+  using CrcList = QVector<quint16>;
+
   struct TeamCalc : public Randomizer
   {
     int team_idx_ = INVALID_IDX;
     int won_rounds_ = 0;
-    int points_ = 0;
+    IdList opponents_;
+    CrcList assocs_;
+
     TeamCalc() = default;
+
+    void appendAssoc( QString const& association )
+    {
+      QByteArray ba( association.toUtf8() );
+      assocs_.append( qChecksum( ba, ba.size() ) );
+    }
   };
 
   PlayerList const player_list_;
   TeamList const team_list_;
+  int round_idx_ = -1;
   QVector<TeamCalc> sorted_teams_;
   FlagList team_used_;
 
 public:
-  TeamRoundCalculator( PlayerList const& player_list, TeamList const& team_list )
+  TeamRoundCalculator( PlayerList const& player_list, TeamList const& team_list, int round_idx )
     : player_list_( player_list )
     , team_list_( team_list )
+    , round_idx_( round_idx )
   {
   }
 
   Round exec()
   {
-    sortTeams();
+    initSortedTeams();
     int const n_teams = sorted_teams_.size();
-    team_used_ = FlagList( n_teams, false );
-    IdList status( n_teams, -1 );
-    int t = 0;                          // aktuelle Team-Position
-    do {
-      if ( t % 2 ) {
-        // rechtes Team
-        int idx_rt = nextValidTeam( status[t-1], status[t] );
-        if ( idx_rt == INVALID_IDX ) {
-          if ( t < 2 ) {
-            return Round();
+    int abort_values[] = { T_OTHER_POINTS * ( round_idx_ + 1 ), T_SAME_TEAM, INT_MAX };
+    for (int i_try = 0; i_try < 3; ++i_try) {
+      int points = 0;
+      int min_points = abort_values[i_try];
+      team_used_ = FlagList( n_teams, false );
+      IdxList status( n_teams, -1 );
+      IdxList best_status;
+      QVector<int> point_status( n_teams, 0 );
+      int t = 0;                          // aktuelle Team-Position
+      do {
+        if ( t % 2 ) {
+          // rechtes Team
+          int malus = 0;
+          int idx_rt = calcNextValidTeam( status[t-1], status[t], malus );
+          if ( idx_rt == INVALID_IDX ) {
+            do {
+              if ( t < 2 ) {
+                if ( !best_status.isEmpty() ) return toRound( best_status );
+                break;
+              }
+              --t;
+              team_used_[status[t]] = false;
+              --t;
+              team_used_[status[t]] = false;
+              points = point_status[t];
+            } while ( points >= min_points );
+            if ( t < 2 ) break;   // neuer versuch mit geringeren anforderungen
+          } else {
+            status[t] = idx_rt;
+            if ( points + malus < min_points ) {
+              team_used_[idx_rt] = true;
+              points += malus;
+              point_status[t] = points;
+              ++t;
+              if ( t == n_teams ) {
+                if ( points == 0 ) return toRound( status );
+                if ( min_points > points ) {
+                  min_points = points;
+                  best_status = status;
+                }
+                --t;
+                team_used_[status[t]] = false;
+              }
+            }
           }
-          clearIdList( status, t );
-          --t;
-          team_used_[status[t]] = false;
-          --t;
-          team_used_[status[t]] = false;
         } else {
-          team_used_[idx_rt] = true;
-          status[t] = idx_rt;
+          // linkes team
+          int idx_lt = nextUnusedIdx( 0 );
+          if ( idx_lt == INVALID_ID ) break;  // <?> es gibt keine gültige Runde mehr
+          team_used_[idx_lt] = true;
+          status[t] = idx_lt;
           ++t;
+          status[t] = idx_lt;  // start für rechtes Team
         }
-      } else {
-        // linkes team
-        int idx_lt = nextUnusedIdx( 0 );
-        if ( idx_lt == INVALID_ID ) {
-          // es gibt keine gültige Runde mehr
-          return Round();
-        }
-        team_used_[idx_lt] = true;
-        status[t] = idx_lt;
-        ++t;
-        if ( t == n_teams ) {
-          // ungerade Anzahl Teams !?
-          break;
-        }
-        status[t] = idx_lt;  // start für rechtes Team
-      }
-    } while ( t < n_teams );
-    int n_matches = n_teams / 2;
+      } while ( t < n_teams );
+    }
+    return Round();
+  }
+
+  Round toRound( IdxList const& status )
+  {
+    int const n_matches = status.size() / 2;
     Round ret( n_matches );
     for ( int m = 0; m < n_matches; ++m ) {
       Match& match( ret[m] );
@@ -155,7 +188,7 @@ public:
   }
 
 private:
-  void sortTeams()
+  void initSortedTeams()
   {
     struct GreaterThanTeam
     {
@@ -169,33 +202,64 @@ private:
       }
     };
 
-    QVector<TeamCalc> ret;
+    QVector<TeamCalc> tc_list;
+    QMap<int,int> player_to_team = getPlayerToTeam( team_list_ );  // player-id -> team-idx
     int const n_teams = team_list_.size();
-    ret.reserve( n_teams );
+    tc_list.reserve( n_teams );
     for ( int i = 0; i < n_teams; ++i ) {
-      int const id = team_list_[i].playerId( 0 );
-      PlayerList::const_iterator it = getPlayerIterator( id );
-      if ( it != player_list_.end() ) {
-        TeamCalc tc;
-        tc.team_idx_ = i;
-        tc.points_ = it->result() ? it->result()->resultPoints() : 0;
-        tc.won_rounds_ = it->result() ? it->result()->wonRounds() : 0;
-        ret.append( tc );
+      bool first = true;
+      Team const& team( team_list_[i] );
+      TeamCalc tc;
+      tc.team_idx_ = i;
+      for ( int p = 0; p < team.size(); ++ p ) {
+        int const id = team.playerId( p );
+        PlayerList::const_iterator it = getPlayerIterator( id );
+        if ( it != player_list_.end() ) {
+          if ( first ) {
+            first = false;
+            QSharedPointer<PlayerResult> result( it->result() );
+            if ( result ) {
+              tc.won_rounds_ = result->wonRounds();
+              for ( int ri = 0; ri < result->rounds(); ++ri ) {
+                Match const& m( result->match( ri ) );
+                Team const& t_opp( m.team_lt_.containsPlayer( id ) ? m.team_rt_ : m.team_lt_ );
+                tc.opponents_.append( player_to_team[t_opp.playerId( 0 )] );
+              }
+            }
+          }
+          tc.appendAssoc(it->association());
+        }
       }
+      tc_list.append( tc );
     }
-    std::sort( ret.begin(), ret.end(), GreaterThanTeam() );
-    sorted_teams_ = ret;
+    std::sort( tc_list.begin(), tc_list.end(), GreaterThanTeam() );
+    sorted_teams_ = tc_list;
   }
 
-  int nextValidTeam( int idx_lt, int idx_rt )
+  static QMap<int,int> getPlayerToTeam( TeamList const& team_list )
   {
-    Team const& team_lt = currentTeam( idx_lt );
-    for ( ;; ) {
-      idx_rt = nextUnusedIdx( idx_rt + 1 );
-      if ( idx_rt == INVALID_IDX ) break;
-      Team const& team_rt = currentTeam( idx_rt );
-      if ( ! alreadyCoupled( team_lt, team_rt ) ) break;
+    QMap<int,int> ret;
+    for ( int ti = 0, tn = team_list.size(); ti < tn; ++ti ) {
+      Team const& team( team_list[ti] );
+      for ( int pi = 0; pi < team.size(); ++pi ) {
+        ret[team.playerId( pi )] = ti;
+      }
     }
+    return ret;
+  }
+
+  int calcNextValidTeam( int idx_lt, int idx_rt, int& malus )
+  {
+    malus = 0;
+    TeamCalc const& tc_lt( sorted_teams_[idx_lt] );
+    idx_rt = nextUnusedIdx( idx_rt + 1 );
+    if ( idx_rt == INVALID_IDX ) return INVALID_IDX;
+    TeamCalc const& tc_rt( sorted_teams_[idx_rt] );
+    if ( tc_lt.opponents_.contains( tc_rt.team_idx_ ) ) malus += T_SAME_TEAM;
+    int won_diff = tc_lt.won_rounds_ - tc_rt.won_rounds_;
+    if ( won_diff >= 0 ) malus += won_diff * T_OTHER_POINTS;
+    else                 malus -= won_diff * T_OTHER_POINTS;
+    malus += sameAssoc( tc_lt.assocs_, tc_rt.assocs_) * T_SAME_ASSOC;
     return idx_rt;
   }
 
@@ -205,34 +269,6 @@ private:
       if ( ! team_used_[i] ) return i;
     }
     return INVALID_IDX;
-  }
-
-  bool alreadyCoupled( Team const& team_lt, Team const& team_rt ) const
-  {
-    // Spieler, die das Team wchseln, werden hier nicht berücksichtigt
-    int id_lt = team_lt.playerId( 0 );
-    PlayerList::const_iterator it_lt = getPlayerIterator( id_lt );
-    if ( it_lt == player_list_.constEnd() ) return false;
-    QString const team_name = it_lt->team();
-    int id_rt = team_rt.playerId( 0 );
-    PlayerList::const_iterator it_rt = getPlayerIterator( id_rt );
-    if ( it_rt == player_list_.constEnd() ) return false;
-    QSharedPointer<PlayerResult> result = it_rt->result();
-    if ( ! result ) return false;
-    for ( int i = 0, n = result->rounds(); i < n; ++i ) {
-      Match const& match( result->match( i ) );
-      if ( alreadyCoupled( match.team_lt_, team_name ) ) return true;
-      if ( alreadyCoupled( match.team_rt_, team_name ) ) return true;
-    }
-    return false;
-  }
-
-  bool alreadyCoupled( Team const& team_lt, QString const& team_name_rt ) const
-  {
-    int id_lt = team_lt.playerId( 0 );
-    PlayerList::const_iterator it_lt = getPlayerIterator( id_lt );
-    if ( it_lt == player_list_.constEnd() ) return false;
-    return team_name_rt.compare( it_lt->team(), Qt::CaseInsensitive ) == 0;
   }
 
   Team const& currentTeam( int idx ) const
@@ -250,6 +286,25 @@ private:
       if ( it->id() == id ) return it;
     }
     return player_list_.constEnd();
+  }
+
+  int sameAssoc( CrcList const& a_lt, CrcList const& a_rt )
+  {
+    int ret = 0;
+    QVector<int> used( a_rt.size(), -1 );
+    for ( int i = 0; i < a_lt.size(); ++i ) {
+      int p = -1;
+      for (;;) {
+        p = a_rt.indexOf( a_lt[i], p+1 );
+        if ( p < 0 ) break;
+        if ( !used.contains( p ) ) {
+          ++ret;
+          used.append( p );
+          break;
+        }
+      }
+    }
+    return ret;
   }
 };
 
@@ -755,8 +810,9 @@ private:
 
 // --- class RoundCalculator -------------------------------------------------
 
-RoundCalculator::RoundCalculator( QWidget* parent )
+RoundCalculator::RoundCalculator( QWidget* parent, int round_idx )
   : parent_( parent )
+  , round_idx_( round_idx )
 {
 }
 
@@ -767,7 +823,7 @@ Round RoundCalculator::calcRound( PlayerList const& player_list )
 
 Round RoundCalculator::calcRound( PlayerList const& player_list, TeamList const& team_list )
 {
-  return TeamRoundCalculator( player_list, team_list ).exec();
+  return TeamRoundCalculator( player_list, team_list, round_idx_ ).exec();
 }
 
 Round RoundCalculator::calcSites( Round const& round, Tournament const& tournament )

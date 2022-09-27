@@ -413,8 +413,8 @@ void MainWindow::newRound()
           "aktuelle Runde noch nicht beendet ist." ) );
     return;
   } else {
-    RoundCalculator round_calculator( ui_->tabWidget );
-    if ( ! tournament_->createRound( round_idx, round_calculator ) ) {
+    RoundCalculator round_calculator( ui_->tabWidget, round_idx );
+    if ( ! tournament_->createRound( round_calculator ) ) {
       QMessageBox::warning( this, title, round_calculator.lastError() );
       return;
     }
