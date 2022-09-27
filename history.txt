@@ -1,9 +1,12 @@
 changes of petanque-tournament
 
+Version 0.96c - 2022-09-27
+bug
+- potential endless loop in draw for team-mode
+
 Version 0.96a - 2022-09-27
 bug
-- wrong minimum number of sites for team-mode with triplettes
-  and selected players
+- wrong minimum number of sites for team-mode
 feature
 - new algorithm for draw in team mode: selection based on
   opponents, won games and different player associations

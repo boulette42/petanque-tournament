@@ -171,6 +171,7 @@ public:
           status[t] = idx_lt;  // start für rechtes Team
         }
       } while ( t < n_teams );
+      if ( !best_status.isEmpty() ) return toRound( best_status );
     }
     return Round();
   }

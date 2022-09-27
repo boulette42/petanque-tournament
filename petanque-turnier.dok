@@ -1,7 +1,7 @@
 Dokumentation zum Programm 'Petanque-Turnier'
 
 Autor    Boulette 42
-Version  2022-07-16
+Version  2022-09-27
 
 Einleitung
 
@@ -13,15 +13,16 @@ Ablauf
 
 Zunächst müssen die Spieler erfasst werden. Diese können aus einer CSV-Datei im Format
   ID;Vorname;Nachname;Punkte;Verein;Team
-eingelesen oder über die Oberfläche einzeln erfasst werden. Die Daten können nachträglich verändert werden.
+eingelesen oder über die Oberfläche einzeln erfasst werden. Bei einem leeren ID-Feld wird die ID beim Einlesen erzeugt. Die Daten können nachträglich verändert werden.
   Tipp: Nach der Eingabe der Spielerdaten empfiehlt es sich, die Spieler-Liste
         unter einem aussagekräftigen Namen abzuspeichern, um sie in zukünftigen
         Turnieren wieder aufrufen zu können.
-Die Spieler, die an dem Turnier teilnehmen sollen, müssen in der Liste aktiviert werden. Das kann durch Anklicken der Checkbox geschehen. Alternativ kann man durch Betätigung der Leertaste den aktuellen Spieler aktivieren oder deaktivieren. Mit der Tasten-Kombination '<strg>+a' kann man die Markierung bei allen Spielern aktivieren, die Tasten-Kombination '<shift>+<strg>+a' löscht alle Markierungen.
+Die Spieler, die an dem Turnier teilnehmen sollen, müssen in der Liste aktiviert werden. Das kann durch Anklicken der Checkboxen geschehen. Alternativ kann man durch Betätigung der Leertaste den aktuellen Spieler aktivieren oder deaktivieren. Mit der Tasten-Kombination '<strg>+a' kann man die Markierung bei allen Spielern aktivieren, die Tasten-Kombination '<shift>+<strg>+a' löscht alle Markierungen. Auch im Kontext-Menü werden entsprechende Optionen angeboten.
 Wenn die Auswahl der Spieler abgeschlossen ist, wird über das Menü
   Runde -> Runde erzeugen
 eine neue Runde ausgelost. Im Modus 'Supermêlée' werden dabei Doublette-Mannschaften ausgelost, so dass möglichst Spieler mit ähnlichen Ergebnissen zusammen und gegeneinander spielen. Dabei wird darauf geachtet, dass man möglichst mit unterschiedlichen Partnern zusammenspielt und unterschiedliche Gegner hat. Der jetzige Spielmodus sieht vor, dass keine Freilose verteilt werden, dass es also bei einer ungeraden Spieleranzahl zu einer unechten Triplette 2:3 kommt.
-Nach dem Beenden eines Spiels wird das Ergebnis eingetragen, nachdem das betreffende Spiel per Doppelklick (oder <RETURN>) aktiviert worden ist.
+Im Team-Mode werden möglichst Mannschaften mit der gleichen Anzahl siegreicher Begegnungen gegeneinander gelost. Eine geringere Priorität hat die Tatsache, die Anzahl der Begegnungen innerhalb eines Vereins gering zu halten.
+Nach dem Beenden eines Spiels wird das Ergebnis eingetragen, indem das betreffende Spiel per Doppelklick (oder <RETURN>) aktiviert wird.
 Wenn alle Ergebnisse eingetragen sind, werden über das Menü
   Runde -> Runde beenden
 alle Ergebnisse in die Ergebnisliste übertragen. Danach kann über den o.g. Menüpunkt eine neue Runde ausgelost werden.
@@ -31,10 +32,10 @@ Programm-Modi
 Das Programm unterstützt zwei Modi:
 Im Supermêlée-Modus werden die Spieler einzeln bewertet und in jeder Runde in zufällig zusammengestellte Mannschaften gelost.
 Im Team-Modus werden die Spieler über ihren Team-Namen festen Teams zugeordnet. Dabei werden jeweils zwei oder drei Spieler in einem Team zusammengestellt. Die Anzahl der resultierenden Teams muss gerade sein, Freilose werden nicht unterstützt. 
-  Tipp: Bei einer ungeraden Anzahl von Teams wird ein Pseudo-Team aus zwei
-        erfundenen Spielern mit demselben (erfundenen) Team-Namen gebildet.
-        Jedes Team, das gegen dieses Pseudo-Team gelost wird, wird mit dem
-        Sieg-Ergebnis 13:12 gewertet.
+  Tipp: Bei einer ungeraden Anzahl von Teams wird ein Pseudo-Team namens
+        "Freilos" aus zwei erfundenen Spielern gebildet. Jedes Team, das
+        gegen dieses Pseudo-Team gelost wird, wird mit dem Sieg-Ergebnis
+        13:12 gewertet.
 Der Modus wird in den Einstellungen ausgewählt. Wenn ein Turnier beim Programm-Aufruf geladen wurde und hier bereits ein Modus festgelegt ist, ist dieser hinterher nicht mehr änderbar. Erst das Laden einer neuen Spieler-Liste ermöglicht einen anderen Modus.
 
 Automatische Turnier-Speicherung
@@ -44,7 +45,8 @@ Das Verzeichnis, in dem diese automatischen Speicherungen stattfinden, lässt si
 Mehrere Bildschirme
 Das Programm unterstützt die Anzeige auf mehreren Bildschirmen. Wenn z.B auf einem zweiten Bildschirm die ausgeloste Runde für die Spieler angezeigt werden soll, kann für diesen über den Menüpunkt
   Ansicht -> neues Fenster erzeugen...
-eine Kopie der aktuellen Rundenanzeige oder der aktuellen Ergebnisliste erzeugt werden. Dieses Fenster kann auf einen anderen Bildschirm verschoben werden und wird dort synchron aktiúalisiert.
+eine Kopie der aktuellen Rundenanzeige oder der aktuellen Ergebnisliste erzeugt werden. Dieses Fenster wird automatisch in maximaler Größe auf einem anderen Bildschirm angezeigt, sofern dieser vorhanden ist.
+Der Hauptbildschirm kann dann mit einem Passwort gesperrt werden, damit das Programm nicht versehentlich bedient werden kann.
 
 Aufruf-Parameter
 Um ein gespeichertes Turnier explizit zu laden, kann das Programm mit dem Aufruf-Parameter
@@ -65,6 +67,8 @@ Menü-Punkte
     Ein Dialog eird aufgerufen, mit dem der Turnier-Modus und das Zielverzeichnis der automatischen Speicherung festgelegt werden können.
     Die Option, ob die Plätze bei der Auswahl berücksichtigt werden sollen, kann hier aktiviert werden.
     Außerdem kann hier die generelle Schriftgröße festgelegt werden. Die Eingabe von '0' aktiviert die Standard-Größe. Jede andere Zahl von '7' bis '24' stellt genau diese Schriftgröße ein.
+    Als weiere Option kann für den Team-Modus festgelegt werden, dass nur die Teamnamen und nicht die Spielernamen in der Paarungs-Liste angezeigt werden. Das ist bei einer großen Anzahl von Teams sinnvoll, damit alle Teams ohne Scrollen auf einen Bildschirm passen.
+    Als weitere Angabe kann in diesem Dialog ein Passwort festgelegt werden, das die Sperrung des Haupt-Bildschirms aufhebt.
  Spieler
  -> Spieler hinzufügen...
     Die Eingabemaske für die Daten eines neuen Spielers erscheint.
@@ -84,8 +88,11 @@ Menü-Punkte
     Es erscheint ein Dialog, in dem die Schriftgröße und die Art des neuen Fensters (Runden- oder Ergebnis-Anzeige) ausgewählt werden kann. Nach Bestätigung wird ein synchronisiertes Fenster erzeugt, das z.B. auf einen anderen Bildschirm geschoben werden kann.
  -> Alle Fenster löschen
     Alle über den vorigen Menüpunkt erzeugten Fenster werden gelöscht
+ -> Bildschirm sperren
+    Besonders bei Turnieren, bei denen der Spielleiter nicht dauern am Computer sitzt, kann es sinnvoll sein, den Haupt-Bildschirm zu sperren, während auf dem zweiten Bildschirm noch die aktuelle Paarungsliste angezeigt wird.
+    Durch die Eingabe des in den Einstellungen festgelegten Passworts wird der Bildschirm wieder entsp
  Hilfe
- -> Über
+ -> Über...
     Es erfolgt die Anzeige der Programm-Version
 
 Bildschirm
