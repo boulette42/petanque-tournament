@@ -1,11 +1,19 @@
 changes of petanque-tournament
 
-Version 0.95b - 2022-09-26
+Version 0.96a - 2022-09-27
+bug
+- wrong minimum number of sites for team-mode with triplettes
+  and selected players
+feature
+- new algorithm for draw in team mode: selection based on
+  opponents, won games and different player associations
+
+Version 0.95c - 2022-09-26
 feature
 - LockScreen with password (for real tournaments)
+- automatic fullscreen mode for window on second screen
 - more accepted delimiters in player files
 - automatic creation of ids from player files
-- automatic fullscreen window on second screen
 - support of Qt5.12
 
 Version 0.95b - 2022-09-14

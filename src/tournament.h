@@ -33,7 +33,7 @@ public:
 
   int lastRoundIdx() const;
   Round const& round( int round_idx ) const;
-  bool createRound( int round_idx, RoundCalculator& round_calculator );
+  bool createRound( RoundCalculator& round_calculator );
   void setRound( int round_idx, Round const& round );
   bool lastRoundFinished() const { return last_round_finished_; }
   void setLastRoundFinished( bool last_round_finished ) { last_round_finished_ = last_round_finished; }
