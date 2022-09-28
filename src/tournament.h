@@ -56,6 +56,8 @@ public:
   int selectedSiteCount() const;
   int neededSites() const;
 
+  int getOpponentPoints( int id ) const;
+
   static TeamList setTeams( PlayerList const& player_list, QString& error_string );
 
   bool loadTournament( QString const& tournament_name );

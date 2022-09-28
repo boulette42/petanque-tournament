@@ -116,62 +116,56 @@ public:
   {
     initSortedTeams();
     int const n_teams = sorted_teams_.size();
-    int abort_values[] = { T_OTHER_POINTS * ( round_idx_ + 1 ), T_SAME_TEAM, INT_MAX };
-    for (int i_try = 0; i_try < 3; ++i_try) {
-      int points = 0;
-      int min_points = abort_values[i_try];
-      team_used_ = FlagList( n_teams, false );
-      IdxList status( n_teams, -1 );
-      IdxList best_status;
-      QVector<int> point_status( n_teams, 0 );
-      int t = 0;                          // aktuelle Team-Position
-      do {
-        if ( t % 2 ) {
-          // rechtes Team
-          int malus = 0;
-          int idx_rt = calcNextValidTeam( status[t-1], status[t], malus );
-          if ( idx_rt == INVALID_IDX ) {
-            do {
-              if ( t < 2 ) {
-                if ( !best_status.isEmpty() ) return toRound( best_status );
-                break;
+    int points = 0;
+    int min_points = INT_MAX;
+    team_used_ = FlagList( n_teams, false );
+    IdxList status( n_teams, -1 );
+    IdxList best_status;
+    QVector<int> base_points( n_teams/2, 0 );
+    int t = 0;                          // aktuelle Team-Position
+    for (;;) {
+      if ( t % 2 ) {
+        // rechtes Team
+        int malus = 0;
+        int idx_rt = calcNextValidTeam( status[t-1], status[t], malus );
+        if ( idx_rt == INVALID_IDX ) {
+          do {
+            if ( t < 2 ) {
+              if ( !best_status.isEmpty() ) return toRound( best_status );
+              return Round();   // kein Ergebnis
+            }
+            --t;
+            team_used_[status[t]] = false;
+            --t;
+            team_used_[status[t]] = false;
+            points = base_points[t/2];
+          } while ( points >= min_points );
+        } else {
+          status[t] = idx_rt;
+          if ( points + malus < min_points ) {
+            points += malus;
+            if ( t == n_teams-1 ) {
+              if ( points == 0 ) return toRound( status );  // optimal
+              if ( min_points > points ) {
+                min_points = points;
+                best_status = status;
               }
-              --t;
-              team_used_[status[t]] = false;
-              --t;
-              team_used_[status[t]] = false;
-              points = point_status[t];
-            } while ( points >= min_points );
-            if ( t < 2 ) break;   // neuer versuch mit geringeren anforderungen
-          } else {
-            status[t] = idx_rt;
-            if ( points + malus < min_points ) {
+            } else {
               team_used_[idx_rt] = true;
-              points += malus;
-              point_status[t] = points;
               ++t;
-              if ( t == n_teams ) {
-                if ( points == 0 ) return toRound( status );
-                if ( min_points > points ) {
-                  min_points = points;
-                  best_status = status;
-                }
-                --t;
-                team_used_[status[t]] = false;
-              }
+              base_points[t/2] = points;
             }
           }
-        } else {
-          // linkes team
-          int idx_lt = nextUnusedIdx( 0 );
-          if ( idx_lt == INVALID_ID ) break;  // <?> es gibt keine gültige Runde mehr
-          team_used_[idx_lt] = true;
-          status[t] = idx_lt;
-          ++t;
-          status[t] = idx_lt;  // start für rechtes Team
         }
-      } while ( t < n_teams );
-      if ( !best_status.isEmpty() ) return toRound( best_status );
+      } else {
+        // linkes team
+        int idx_lt = nextUnusedIdx( 0 );
+        if ( idx_lt == INVALID_ID ) break;  // <?> es gibt keine gültige Runde mehr
+        team_used_[idx_lt] = true;
+        status[t] = idx_lt;
+        ++t;
+        status[t] = idx_lt;  // start für rechtes Team
+      }
     }
     return Round();
   }

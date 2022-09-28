@@ -69,7 +69,8 @@ private slots:
   void updateSiteCount();
   void playerActivated( QModelIndex const& index );
   void matchActivated( QModelIndex const& index );
-  void resultActivated( QModelIndex const& index );
+  void playerResultActivated( QModelIndex const& index );
+  void teamResultActivated( QModelIndex const& index );
   void roundChanged( int round_idx );
   void playerListContextMenu( const QPoint& );
   void siteListContextMenu( const QPoint& );

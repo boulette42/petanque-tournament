@@ -178,8 +178,8 @@ MainWindow::MainWindow( Tournament const& tournament )
   connect( ui_->tvPlayerList, &QAbstractItemView::activated, this, &MainWindow::playerActivated );
   //connect( ui_->tvSiteList, &QAbstractItemView::activated, this, &MainWindow::siteActivated );
   connect( ui_->tvMatchList, &QAbstractItemView::activated, this, &MainWindow::matchActivated );
-  connect( ui_->tvPlayerResultList, &QAbstractItemView::activated, this, &MainWindow::resultActivated );
-  connect( ui_->tvTeamResultList, &QAbstractItemView::activated, this, &MainWindow::resultActivated );
+  connect( ui_->tvPlayerResultList, &QAbstractItemView::activated, this, &MainWindow::playerResultActivated );
+  connect( ui_->tvTeamResultList, &QAbstractItemView::activated, this, &MainWindow::teamResultActivated );
   connect( ui_->cmbRound, SIGNAL(currentIndexChanged(int)), this, SLOT(roundChanged(int)) );
   connect( ui_->tvPlayerList, &QAbstractItemView::customContextMenuRequested, this, &MainWindow::playerListContextMenu );
   connect( ui_->tvSiteList, &QAbstractItemView::customContextMenuRequested, this, &MainWindow::siteListContextMenu );
@@ -599,16 +599,18 @@ void MainWindow::matchActivated( QModelIndex const& index )
   }
 }
 
-void MainWindow::resultActivated( QModelIndex const& mi )
+void MainWindow::playerResultActivated( QModelIndex const& mi )
 {
   ShowResultDlg dlg( this );
-  if ( tournament_->isTeamMode() ) {
-    Team team( team_result_model_->getTeam( mi ) );
-    dlg.exec( *tournament_, team );
-  } else {
-    Player player( player_result_model_->getPlayer( mi ) );
-    dlg.exec( *tournament_, player );
-  }
+  Player player( player_result_model_->getPlayer( mi ) );
+  dlg.exec( *tournament_, player );
+}
+
+void MainWindow::teamResultActivated( QModelIndex const& mi )
+{
+  ShowResultDlg dlg( this );
+  Team team( team_result_model_->getTeam( mi ) );
+  dlg.exec( *tournament_, team );
 }
 
 void MainWindow::roundChanged( int round_idx )
