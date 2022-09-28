@@ -152,21 +152,24 @@ void TeamResultModel::sort( int /*column*/, Qt::SortOrder /*order*/ )
 {
   struct GreaterThan
   {
-    PlayerList const& player_list_;
+    Tournament const& tournament_;
 
-    GreaterThan( PlayerList const& player_list )
-      : player_list_( player_list )
+    GreaterThan( Tournament const& tournament )
+      : tournament_( tournament )
     { }
 
     bool operator()( int i_lhs, int i_rhs ) {
-      Player const& lhs( player_list_[i_lhs] );
-      Player const& rhs( player_list_[i_rhs] );
+      Player const& lhs( tournament_.playerList()[i_lhs] );
+      Player const& rhs( tournament_.playerList()[i_rhs] );
       int res_lhs = lhs.result() ? lhs.result()->resultPoints() : 0;
       int res_rhs = rhs.result() ? rhs.result()->resultPoints() : 0;
+      if ( res_lhs != res_rhs ) return res_lhs > res_rhs;
+      res_lhs = tournament_.getOpponentPoints( lhs.id() );
+      res_rhs = tournament_.getOpponentPoints( rhs.id() );
       return res_lhs > res_rhs;
     }
   };
   beginResetModel();
-  std::sort( sorted_.begin(), sorted_.end(), GreaterThan( tournament_.playerList() ) );
+  std::sort( sorted_.begin(), sorted_.end(), GreaterThan( tournament_ ) );
   endResetModel();
 }

@@ -417,6 +417,25 @@ int Tournament::neededSites() const
   }
 }
 
+int Tournament::getOpponentPoints( int player_id ) const
+{
+  int ret = 0;
+  QSharedPointer<PlayerResult> result = player( player_id ).result();
+  if ( !result ) return ret;
+  for ( int r = 0; r < result->rounds(); ++r ) {
+    Match const& match( result->match( r ) );
+    Team const& team( match.team_lt_.containsPlayer( player_id )
+      ? match.team_rt_
+      : match.team_lt_ );
+    for ( int i = 0; i < team.size(); ++i ) {
+      int p_id = team.playerId( i );
+      QSharedPointer<PlayerResult> opp_result = player( p_id ).result();
+      if ( opp_result ) ret += opp_result->resultPoints();
+    }
+  }
+  return ret;
+}
+
 bool Tournament::savePlayerList( QString const& csv_name ) const
 {
   struct GreaterThanPoints {
