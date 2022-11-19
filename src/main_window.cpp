@@ -78,7 +78,53 @@ enum TabIdx {
   TI_TeamResult
 };
 
-}
+
+class ItemModelAdaptor : public QAbstractItemModel
+{
+  QAbstractItemModel const* model_;
+
+public:
+  explicit ItemModelAdaptor( QAbstractItemModel* model )
+    : model_( model )
+  {
+  }
+
+  bool exportToCsv( QString const& filename ) const
+  {
+    if ( !model_ ) return false;
+    QFile fo(filename);
+    if ( !fo.open( QFile::WriteOnly ) ) return false;
+    QChar const delimiter( QChar::fromLatin1('\t') );
+    QStringList header;
+    for ( int c = 0; c < columnCount( ); ++c ) {
+      header << model_->headerData( c, Qt::Horizontal, Qt::DisplayRole ).toString();
+    }
+    fo.write( header.join( delimiter ).toUtf8() );
+    fo.write( "\n" );
+    for ( int r = 0; r < rowCount(); ++r ) {
+      QStringList line;
+      for ( int c = 0; c < columnCount(); ++c ) {
+        line << data( index( r, c ), Qt::DisplayRole ).toString();
+      }
+      fo.write( line.join( delimiter ).toUtf8() );
+      fo.write( "\n" );
+    }
+    return true;
+  }
+
+  QModelIndex index(int row, int column, QModelIndex const& parent = QModelIndex()) const override
+  { return model_->index( row, column, parent ); }
+  QModelIndex parent( QModelIndex const& mi ) const override
+  { return model_->parent( mi ); }
+  int rowCount( QModelIndex const& parent = QModelIndex() ) const override
+  { return model_->rowCount( parent ); }
+  int columnCount( QModelIndex const& parent = QModelIndex() ) const override
+  { return model_->columnCount( parent ); }
+  QVariant data( QModelIndex const& mi, int role ) const override
+  { return model_->data( mi, role ); }
+};
+
+}  // anonymous namespace
 
 
 class TabWidgetHelper
@@ -184,6 +230,8 @@ MainWindow::MainWindow( Tournament const& tournament )
   connect( ui_->tvPlayerList, &QAbstractItemView::customContextMenuRequested, this, &MainWindow::playerListContextMenu );
   connect( ui_->tvSiteList, &QAbstractItemView::customContextMenuRequested, this, &MainWindow::siteListContextMenu );
   connect( ui_->tvMatchList, &QAbstractItemView::customContextMenuRequested, this, &MainWindow::matchListContextMenu );
+  connect( ui_->tvPlayerResultList, &QAbstractItemView::customContextMenuRequested, this, &MainWindow::resultListContextMenu );
+  connect( ui_->tvTeamResultList, &QAbstractItemView::customContextMenuRequested, this, &MainWindow::resultListContextMenu );
   connect( ui_->actionMarkAllPlayers, &QAction::triggered,
            this, [this]() { player_model_->setAllChecked( true ); } );
   connect( ui_->actionUnmarkAllPlayers, &QAction::triggered,
@@ -196,6 +244,8 @@ MainWindow::MainWindow( Tournament const& tournament )
            this, [this]() { site_model_->setAllChecked( false ); } );
   connect( ui_->actionSimulateResults, &QAction::triggered,
            this, &MainWindow::simulateGenerateResults );
+  connect( ui_->actionExportWindow, &QAction::triggered,
+    this, &MainWindow::exportWindowToCsv );
   updateStyleSheet( *this );
   QFontMetrics fm( ui_->leSiteCnt->font() );
   ui_->leSiteCnt->setMaximumWidth( fm.horizontalAdvance( QLatin1String( "55555" ) ) );
@@ -216,6 +266,8 @@ MainWindow::MainWindow( Tournament const& tournament )
   ui_->leSiteCnt->installEventFilter( this );
   ui_->tvMatchList->installEventFilter( this );
   ui_->tvMatchList->setContextMenuPolicy( Qt::CustomContextMenu );
+  ui_->tvPlayerResultList->setContextMenuPolicy( Qt::CustomContextMenu );
+  ui_->tvTeamResultList->setContextMenuPolicy( Qt::CustomContextMenu );
   ui_->tabRound->installEventFilter( this );
   player_model_->triggerSort();
   updateView( TabMode::round );
@@ -270,6 +322,7 @@ void MainWindow::editSettings()
 {
   bool const site_enabled = global().siteEnabled();
   int const font_size = global().fontSize();
+  int const site_count = global().siteCount();
   bool const team_mode = tournament_->isTeamMode();
   if ( global().execDialog( this, tournament_->isUndefinedMode() ) ) {
     if ( global().siteEnabled() != site_enabled ) {
@@ -277,6 +330,11 @@ void MainWindow::editSettings()
     }
     if (team_mode != tournament_->isTeamMode()) {
       updateView(TabMode::player);
+    }
+    if ( global().siteCount() != site_count ) {
+      if ( ! tournament_->isChanged() ) {
+        tournament_->setSiteCount( global().siteCount() );
+      }
     }
     updateView( TabMode::round );
     if ( global().fontSize() != font_size ) {
@@ -714,6 +772,42 @@ void MainWindow::matchListContextMenu( const QPoint& pos )
   context_menu_ = new QMenu( ui_->tvMatchList );
   context_menu_->addAction( ui_->actionSimulateResults );
   context_menu_->popup( ui_->tvPlayerList->mapToGlobal( pos ) );
+}
+
+void MainWindow::resultListContextMenu( const QPoint& pos )
+{
+  QTreeView* tv = ui_->tabWidget->currentIndex() == TI_PlayerResult
+    ? ui_->tvPlayerResultList
+    : ui_->tvTeamResultList;
+  context_menu_ = new QMenu( tv );
+  context_menu_->addAction( ui_->actionExportWindow );
+  context_menu_->popup( ui_->tvPlayerList->mapToGlobal( pos ) );
+}
+
+void MainWindow::exportWindowToCsv()
+{
+  if ( tournament_->lastRoundIdx() < 0 ) return;
+  QAbstractItemModel* model = nullptr;
+  switch ( ui_->tabWidget->currentIndex() ) {
+  case TI_PlayerResult:
+    model = player_result_model_;
+    break;
+  case TI_TeamResult:
+    model = team_result_model_;
+    break;
+  }
+  if ( !model || model->rowCount() < 1 ) return;
+  if ( last_save_dir.isEmpty() ) {
+    last_save_dir = last_load_dir.isEmpty() ? global().dataDir() : last_load_dir;
+  }
+  QString filename = QFileDialog::getSaveFileName(
+    this,
+    tr( "Ergebnisse exportieren"),
+    last_save_dir,
+    tr( "CSV-Dateien (*.csv *.txt)" ) );
+  if ( filename.isEmpty() ) return;
+  last_save_dir = QFileInfo( filename ).absoluteDir().absolutePath();
+  ItemModelAdaptor( model ).exportToCsv( filename );
 }
 
 void MainWindow::simulateGeneratePlayers()

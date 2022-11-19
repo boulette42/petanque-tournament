@@ -381,6 +381,11 @@
     <string>Bildschirm sperren</string>
    </property>
   </action>
+  <action name="actionExportWindow">
+   <property name="text">
+    <string>Daten exportieren...</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>

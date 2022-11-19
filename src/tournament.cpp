@@ -117,7 +117,7 @@ uchar guessDelimiter(QByteArray const& line)
 // --- Tournament ------------------------------------------------------------------
 
 Tournament::Tournament()
-  : site_cnt_( INITIAL_SITE_COUNT )
+  : site_cnt_( global().siteCount() )
 {
   site_list_.reserve( site_cnt_ );
   for ( int i = 0; i < site_cnt_; ++i ) {
@@ -522,7 +522,7 @@ bool Tournament::loadPlayerList( QString const& csv_name )
     }
   }
   round_list_.clear();
-  setSiteCount( INITIAL_SITE_COUNT );
+  setSiteCount( global().siteCount() );
   mode_ = ProgMode::undefined;
   return true;
 }
