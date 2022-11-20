@@ -15,8 +15,6 @@ class Tournament
   friend PlayerModel;
   friend SiteModel;
 
-  int const INITIAL_SITE_COUNT = 9;
-
   PlayerList player_list_;
   QVector<Round> round_list_;
   QVector<Site> site_list_;

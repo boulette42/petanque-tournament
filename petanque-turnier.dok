@@ -1,7 +1,7 @@
 Dokumentation zum Programm 'Petanque-Turnier'
 
 Autor    Boulette 42
-Version  2022-09-27
+Version  2022-10-10
 
 Einleitung
 
@@ -67,7 +67,7 @@ Menü-Punkte
     Ein Dialog eird aufgerufen, mit dem der Turnier-Modus und das Zielverzeichnis der automatischen Speicherung festgelegt werden können.
     Die Option, ob die Plätze bei der Auswahl berücksichtigt werden sollen, kann hier aktiviert werden.
     Außerdem kann hier die generelle Schriftgröße festgelegt werden. Die Eingabe von '0' aktiviert die Standard-Größe. Jede andere Zahl von '7' bis '24' stellt genau diese Schriftgröße ein.
-    Als weiere Option kann für den Team-Modus festgelegt werden, dass nur die Teamnamen und nicht die Spielernamen in der Paarungs-Liste angezeigt werden. Das ist bei einer großen Anzahl von Teams sinnvoll, damit alle Teams ohne Scrollen auf einen Bildschirm passen.
+    Als weitere Option kann für den Team-Modus festgelegt werden, dass nur die Teamnamen und nicht die Spielernamen in der Paarungs-Liste angezeigt werden. Das ist bei einer großen Anzahl von Teams sinnvoll, damit alle Teams ohne Scrollen auf einen Bildschirm passen.
     Als weitere Angabe kann in diesem Dialog ein Passwort festgelegt werden, das die Sperrung des Haupt-Bildschirms aufhebt.
  Spieler
  -> Spieler hinzufügen...
@@ -85,12 +85,12 @@ Menü-Punkte
     Diese Aktion muss auch erfolgen, wenn ein Ergebnis korrigiert wurde.
  Ansicht
  -> Neues Fenster erzeugen...
-    Es erscheint ein Dialog, in dem die Schriftgröße und die Art des neuen Fensters (Runden- oder Ergebnis-Anzeige) ausgewählt werden kann. Nach Bestätigung wird ein synchronisiertes Fenster erzeugt, das z.B. auf einen anderen Bildschirm geschoben werden kann.
+    Es erscheint ein Dialog, in dem die Schriftgröße und die Art des neuen Fensters (Runden- oder Ergebnis-Anzeige) ausgewählt werden kann. Nach Bestätigung wird ein synchronisiertes Fenster erzeugt. Als Voreinstellung wird das Fenster in maximaler Größe auf einem anderen Bildschirm angezeigt (soweit vorhanden).
  -> Alle Fenster löschen
-    Alle über den vorigen Menüpunkt erzeugten Fenster werden gelöscht
+    Alle über den vorigen Menüpunkt erzeugten Fenster werden gelöscht.
  -> Bildschirm sperren
     Besonders bei Turnieren, bei denen der Spielleiter nicht dauern am Computer sitzt, kann es sinnvoll sein, den Haupt-Bildschirm zu sperren, während auf dem zweiten Bildschirm noch die aktuelle Paarungsliste angezeigt wird.
-    Durch die Eingabe des in den Einstellungen festgelegten Passworts wird der Bildschirm wieder entsp
+    Durch die Eingabe des in den Einstellungen festgelegten Passworts wird der Bildschirm wieder entsperrt.
  Hilfe
  -> Über...
     Es erfolgt die Anzeige der Programm-Version
@@ -98,8 +98,8 @@ Menü-Punkte
 Bildschirm
  -> Spieler-Liste
     Auf der Spieler-Liste sind alle bisher eingegebenen Spieler zu finden. Eine aktivierte Checkbox vor der Spieler-ID bedeutet, dass dieser Spieler bei der nächsten Runden-Erstellung einbezogen wird. Ein späteres Hinzufügen eines Spielers oder ein Verlassen des laufenden Turniers ist möglich.
-    Im Team-Modus ist zusätzlich zum Vereins-Namen der Name des Teams relevant: Spieler mit demselben Team-Namen werden demselben Team zugeordnet. Da in einem Team nur entweder zwei oder drei Spieler erlaubt sind, müssen ggf. die Team-Namen der Spieler entsprechend angepasst werden.
-    Die Spieler lassen sich nach jeder der Spalten (ID, Name, Vorname, Verein, Team oder Punkte) auf und absteigend sortieren, in dem auf die Spalten-Überschrift geklickt wird.
+    Im Team-Modus ist der Name des Teams relevant: Spieler mit demselben Team-Namen werden demselben Team zugeordnet. Da in einem Team nur entweder zwei oder drei Spieler erlaubt sind, müssen ggf. die Team-Namen der Spieler entsprechend angepasst werden.
+    Die Spieler lassen sich nach jeder der Spalten (ID, Name, Vorname, Verein, Team oder Punkte) auf und absteigend sortieren, in dem auf die Spalten-Überschrift geklickt wird. Der Vereinsname ist nur insofern von Bedeutung, dass bei der Auslosung möglichst Teams unterschiedlicher Vereine gegeneinander gelost werden.
     Ein Doppelklick auf einen Spieler ermöglicht die Änderung der Spieler-Daten.
  -> Plätze
     Diese Liste erscheint nur, wenn in den Einstellungen festgelegt wurde, dass die Plätze berücksichtigt werden sollen. In diesem Fall kann hier die Gesamtzahl der zur Verfügung stehenden Plätze angegeben werden. Nach Eingabe der neuen Anzahl muss diese mit dem daneben liegenden Button bestätigt werden. Einzelne Plätze können von der Verwendung ausgeschlossen werden, indem man die entsprechende Checkbox deaktiviert.

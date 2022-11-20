@@ -39,11 +39,9 @@ Round TournamentSimulator::createRandomResults( Round const& round )
 {
   Round ret( round );
   for ( Round::iterator it = ret.begin(); it != ret.end(); ++it ) {
-    if ( it->result_.pointsLeft() == 0 && it->result_.pointsRight() == 0 ) {
-      uint random = QRandomGenerator::global()->generate();
-      it->result_.setPointsLeft( random % 2 ? random % 13 : 13 );
-      it->result_.setPointsRight( random % 2 ? 13 : random % 13 );
-    }
+    uint random = QRandomGenerator::global()->generate();
+    it->result_.setPointsLeft( random % 2 ? random % 13 : 13 );
+    it->result_.setPointsRight( random % 2 ? 13 : random % 13 );
   }
   return ret;
 }

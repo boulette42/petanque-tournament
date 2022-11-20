@@ -210,13 +210,13 @@
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
-     <string>Hilfe</string>
+     <string>&amp;Hilfe</string>
     </property>
     <addaction name="actionAbout"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
-     <string>Ansicht</string>
+     <string>&amp;Ansicht</string>
     </property>
     <addaction name="actionCreateWindow"/>
     <addaction name="actionDeleteAllWindows"/>
@@ -379,6 +379,11 @@
   <action name="actionLockScreen">
    <property name="text">
     <string>Bildschirm sperren</string>
+   </property>
+  </action>
+  <action name="actionExportWindow">
+   <property name="text">
+    <string>Daten exportieren...</string>
    </property>
   </action>
  </widget>

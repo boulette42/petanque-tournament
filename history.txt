@@ -1,10 +1,15 @@
 changes of petanque-tournament
 
+Version 0.96e - 2022-11-19
+features
+- set initial sitecount in settings
+- export current playerlist as csv file
+
 Version 0.96d - 2022-09-28
 bug
 - off-by-one error in calculating team pairings
 feature
-- use points of opponents to sort teams with identical points
+- use points of opponents to sort teams with identical score
 
 Version 0.96c - 2022-09-27
 bug

@@ -20,6 +20,7 @@ namespace {
   QString const v_data_dir( QStringLiteral( "DataDir" ) );
   QString const v_font_size( QStringLiteral( "FontSize" ) );
   QString const v_site_enabled( QStringLiteral( "SiteEnabled" ) );
+  QString const v_site_count( QStringLiteral( "SiteCount" ) );
   QString const v_password( QStringLiteral( "Password" ) );
 
   const int MIN_FONT_SIZE = 7;
@@ -40,6 +41,7 @@ struct SettingsCore
   ProgMode mode_ = ProgMode::super_melee;
   int font_size_ = 0;
   bool site_enabled_ = true;
+  int site_count_ = 9;
   bool team_only_ = false;
   bool simulation_enabled_ = false;
   QString password_;
@@ -54,6 +56,8 @@ struct SettingsCore
     team_only_ = s.value( v_team_only ).toBool();
     data_dir_ = s.value( v_data_dir ).toString();
     site_enabled_ = s.value( v_site_enabled ).toBool();
+    site_count_ = s.value( v_site_count ).toInt();
+    if ( site_count_ < 1 ) site_count_ = 9;
     font_size_ = s.value( v_font_size ).toInt();
     password_ = s.value(v_password).toString();
     simulation_enabled_ = false;
@@ -73,6 +77,7 @@ struct SettingsCore
     s.setValue( v_team_only, team_only_ );
     s.setValue( v_data_dir, data_dir_ );
     s.setValue( v_site_enabled, site_enabled_ );
+    s.setValue( v_site_count, site_count_ );
     s.setValue( v_font_size, font_size_ );
     s.setValue( v_password, password_ );
   }
@@ -100,8 +105,12 @@ public:
     ui_->leFontSize->setMaximumWidth( 4*w );
     ui_->lePassword->setMaximumWidth( 30*w );
     ui_->lePasswordCopy->setMaximumWidth( 30*w );
+    ui_->leSiteCount->setMaximumWidth( 4*w );
+    ui_->leSiteCount->setValidator( new QIntValidator( 1, 999, this ) );
     connect( ui_->tbSelectDir, &QToolButton::clicked, this, &SettingsDlg::selectDir );
     connect( ui_->buttonBox, &QDialogButtonBox::accepted, this, &SettingsDlg::validateAccept );
+    connect( ui_->rbTeams, &QRadioButton::toggled, this, &SettingsDlg::updateView );
+    connect( ui_->cbSiteEnabled, &QCheckBox::toggled, this, &SettingsDlg::updateView );
   }
 
   ~SettingsDlg() = default;
@@ -113,6 +122,7 @@ public:
     ui_->rbTeams->setChecked( settings.mode_ == ProgMode::teams  );
     ui_->leDataDir->setText( settings.data_dir_.isEmpty() ? defaultDataDir() : settings.data_dir_ );
     ui_->cbSiteEnabled->setChecked( settings.site_enabled_ );
+    ui_->leSiteCount->setText( QString::number( settings.site_count_ ) );
     ui_->cbTeamsOnly->setChecked( settings.team_only_ );
     ui_->leFontSize->setText( QString::number( settings.font_size_ ) );
     ui_->lePassword->setText( settings.password_ );
@@ -121,6 +131,7 @@ public:
     settings.data_dir_ = ui_->leDataDir->text();
     settings.mode_ = ui_->rbSuperMelee->isChecked() ? ProgMode::super_melee : ProgMode::teams;
     settings.site_enabled_ = ui_->cbSiteEnabled->isChecked();
+    settings.site_count_ = ui_->leSiteCount->text().toInt();
     settings.team_only_ = ui_->cbTeamsOnly->isChecked();
     int font_size = ui_->leFontSize->text().toInt();
     if ( font_size >= MIN_FONT_SIZE && font_size <= MAX_FONT_SIZE ) {
@@ -156,6 +167,12 @@ public:
       return;
     }
     QMessageBox::warning( dlg_, tr( "Verzeichnis-Warnung" ), tr( "Das Verzeichnis ist nicht vorhanden" ) );
+  }
+
+  void updateView()
+  {
+    ui_->leSiteCount->setEnabled( ui_->cbSiteEnabled->isChecked() );
+    ui_->cbTeamsOnly->setEnabled( ui_->rbTeams->isChecked() );
   }
 };
 
@@ -208,6 +225,11 @@ int Settings::fontSize() const
 bool Settings::siteEnabled() const
 {
   return m_->site_enabled_;
+}
+
+int Settings::siteCount() const
+{
+  return m_->site_count_;
 }
 
 bool Settings::isTeamOnlyShown() const

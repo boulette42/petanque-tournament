@@ -75,6 +75,8 @@ private slots:
   void playerListContextMenu( const QPoint& );
   void siteListContextMenu( const QPoint& );
   void matchListContextMenu( const QPoint& );
+  void resultListContextMenu( const QPoint& );
+  void exportWindowToCsv();
   void simulateGeneratePlayers();
   void simulateGenerateResults();
 };
