@@ -11,6 +11,10 @@ The file 'petanque-tournament.pro' can be opened with 'qt-creator'.<br>
 Alternatively you have to use 'qmake' to create project files for your preferred IDE, e.g. 'qmake -tp vc petanque-tournament.pro' to create a Visual Studio project.<br>
 Under Windows there exists a build script 'make_all.bat', which compiles the 32bit- or 64bit-Binaries and creates a setup.exe.
 
+## Installation
+For everyone not capable of building from source there are Windows 64/32Bit installer (latest version) on Google Drive:<br>
+  https://drive.google.com/drive/folders/1mtkjt57c6VqEjHNfYZPfZxBPonmUhzha
+
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
