@@ -1,5 +1,6 @@
 ﻿#include "main_window.h"
 #include "ui_main_window.h"
+#include "about_dlg.h"
 #include "edit_match_dlg.h"
 #include "edit_player_dlg.h"
 #include "external_window.h"
@@ -627,15 +628,7 @@ void MainWindow::lockScreen()
 
 void MainWindow::about()
 {
-  QMessageBox::information(
-    this,
-    tr( "Information" ),
-    QStringLiteral(
-      MY_PRODUCT_NAME "\n"
-      "Version " MY_VERSION_STRING "\n"
-      MY_COMPANY_NAME "\n"
-      "©2022" ),
-    QMessageBox::Ok );
+  AboutDlg( this ).exec();
 }
 
 void MainWindow::playerActivated( QModelIndex const& index )

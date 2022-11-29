@@ -1,6 +1,6 @@
 ; Inno Setup Script Version 6.2
 ;
-; Version  2022-06-28
+; Version  2022-11-29
 ; Autor    Boulette42
 
 #include "../src/version.h"
@@ -25,13 +25,15 @@ SolidCompression=yes
 OutputDir=..\installer
 OutputBaseFilename=setup-petanque-turnier-{#MY_VERSION_STRING}
 
+#include "install_mode.inc"
+
 [Files]
 Source: "..\dist\exe\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs;
 
 [Icons]
 Name: "{group}\{#MY_PRODUCT_NAME}"; Filename: "{app}\petu.exe"
 Name: "{group}\{#MY_PRODUCT_NAME} entfernen"; Filename: "{uninstallexe}"
-Name: "{userdesktop}\{#MY_PRODUCT_NAME}"; Filename: "{app}\petu.exe"
+Name: "{commondesktop}\{#MY_PRODUCT_NAME}"; Filename: "{app}\petu.exe"
 
 [Run]
 Filename: "{app}\petu.exe"; Description: "Programm starten"; Flags: postinstall

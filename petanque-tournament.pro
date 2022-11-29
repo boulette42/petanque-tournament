@@ -48,19 +48,23 @@ win32-msvc* {
 
 #Input
 FORMS += \
+  ui/about_dlg.ui \
   ui/edit_match_dlg.ui \
   ui/edit_player_dlg.ui \
+  ui/licenses_dlg.ui \
   ui/main_window.ui \
   ui/select_window_dlg.ui \
   ui/settings_dlg.ui \
   ui/show_result_dlg.ui
 
 HEADERS += \
+  src/about_dlg.h \
   src/config.h \
   src/edit_match_dlg.h \
   src/edit_player_dlg.h \
   src/external_window.h \
   src/json_common.h \
+  src/licenses_dlg.h \
   src/lock_screen.h \
   src/main_window.h \
   src/match.h \
@@ -83,10 +87,12 @@ HEADERS += \
   src/version.h
 
 SOURCES += \
+  src/about_dlg.cpp \
   src/edit_match_dlg.cpp \
   src/edit_player_dlg.cpp \
   src/external_window.cpp \
   src/json_common.cpp \
+  src/licenses_dlg.cpp \
   src/lock_screen.cpp \
   src/main.cpp \
   src/main_window.cpp \

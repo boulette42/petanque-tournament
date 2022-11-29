@@ -13,6 +13,7 @@ QString getArg( char c )
   QStringList const args = QCoreApplication::arguments();
   int i = 1;
   while ( i < args.count() ) {
+    if ( c == 0 ) return args[i];
     QString const& arg = args[i];
     QByteArray b_arg = arg.toLocal8Bit();
     if ( b_arg[1] == c && ( b_arg[0] == '-' || b_arg[0] == '/' ) ) {
@@ -61,14 +62,17 @@ int main( int argc, char **argv )
   }
   app.setAttribute( Qt::AA_DontShowIconsInMenus, true );
   Tournament tournament;
-  QString const tournament_path = getArg( 't' );
-  if ( ! tournament_path.isEmpty() ) {
-    tournament.loadTournament( tournament_path );
-  } else {
+  QString tournament_path = getArg( 't' );
+  if ( tournament_path.isEmpty() ) {
     QString const csv_path = getArg( 'p' );
     if ( ! csv_path.isEmpty() ) {
       tournament.loadPlayerList( csv_path );
-    }
+    } else {
+      tournament_path = getArg( 0 );
+    } 
+  }
+  if ( ! tournament_path.isEmpty() ) {
+    tournament.loadTournament( tournament_path );
   }
   MainWindow mw( tournament );
   mw.show();

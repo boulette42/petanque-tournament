@@ -2,7 +2,7 @@
 ::
 ::use innosetup 6.x to create an installer
 ::
-::Version  2021-03-25
+::Version  2022-11-29
 ::Author   Boulette 42
 
 @echo off
@@ -20,6 +20,7 @@ if "%x86_x64_%" == "" (
   exit /b 1
 )
 
+set iss_inc_file_=setup\install_mode.inc
 set my_dir_=%~dp0
 set dist_=%my_dir_%dist
 
@@ -56,6 +57,7 @@ call :_COPY_FILE_TO_DIR %petu_src_dir_%\petu.exe %dist_%\exe
 call :_COPY_FILE_TO_DIR %petu_src_dir_%\petu_de.qm %dist_%\exe
 call :_COPY_FILE_TO_DIR %petu_src_dir_%\petu_en.qm %dist_%\exe
 call :_COPY_FILE_TO_DIR %petu_src_dir_%\petu_fr.qm %dist_%\exe
+call :_COPY_FILE_TO_DIR %mydir_%lizenzen.html %dist_%\exe
 call :_COPY_FILE_TO_FILE %mydir_%petanque-turnier.dok %dist_%\exe\petanque-turnier.dok.txt
 
 echo copying Qt-files...
@@ -76,6 +78,14 @@ call :_COPY_FILE_TO_DIR "%vc_src_dir_%\vcruntime140.dll" %dist_%\exe
 if exist "%vc_src_dir_%\vcruntime140_1.dll" (
   call :_COPY_FILE_TO_DIR "%vc_src_dir_%\vcruntime140_1.dll" %dist_%\exe
 )
+
+echo creating '%iss_inc_file_%'...
+if "%x86_x64_%" == "x86" (
+  set arg_=
+) else (
+  set arg_=x64
+)
+echo ArchitecturesInstallIn64BitMode=%arg_%> %iss_inc_file_%
 
 echo compiling setup...
 "%INNOSETUP_INSTALL_DIR%\IScc" setup\petu.iss -q
