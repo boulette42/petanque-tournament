@@ -1,5 +1,15 @@
 changes of petanque-tournament
 
+Version 0.96f - 2022-11-29
+setup
+- bugfix: 64bit version was installed in 'program files (x86)'
+- bugfix: desktop link appeared only for admin
+program start
+- allow tournament file as parameter without '-t' to allow
+  drag and drop
+ui
+- show qt license in about window
+
 Version 0.96e - 2022-11-19
 features
 - set initial sitecount in settings
