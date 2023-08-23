@@ -10,9 +10,7 @@ LicensesDlg::LicensesDlg( QWidget* parent )
   , ui_( new Ui_LicensesDialog() )
 {
   ui_->setupUi( dlg_ );
-  ui_->teLicenses->viewport()->setBackgroundRole( QPalette::Window );
-  ui_->teLicenses->viewport()->setForegroundRole( QPalette::WindowText );
-  dlg_->setModal( true );
+  ui_->teLicenses->setOpenLinks( false );
 }
 
 LicensesDlg::~LicensesDlg() = default;
@@ -29,7 +27,7 @@ void LicensesDlg::exec()
 
 bool LicensesDlg::licenseFileExists()
 {
-  return ! licenseFileName().isEmpty();
+  return QFile::exists( licenseFileName() );
 }
 
 QString LicensesDlg::loadLicenses()
@@ -43,7 +41,6 @@ QString LicensesDlg::loadLicenses()
 
 QString LicensesDlg::licenseFileName()
 {
-  QString licence_path = QCoreApplication::applicationDirPath();
-  QString fn = licence_path + QStringLiteral( "/lizenzen.html" );
-  return QFile::exists( fn ) ? fn : QString();
+  QString const licence_path = QCoreApplication::applicationDirPath();
+  return licence_path + QStringLiteral( "/lizenzen.html" );
 }

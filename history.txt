@@ -1,5 +1,13 @@
 changes of petanque-tournament
 
+Version 0.97a - 2023-08-24
+bug
+- supermelee algorithm completely changed: instead of pure
+  winner teams the players are arranged as teams with losers
+  and winners.
+- set minimum players of supermelee to 12
+- set maximum rounds of supermelee to 3 
+
 Version 0.96f - 2022-11-29
 setup
 - bugfix: 64bit version was installed in 'program files (x86)'
