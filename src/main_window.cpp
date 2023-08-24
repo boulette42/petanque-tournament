@@ -414,7 +414,7 @@ void MainWindow::newRound()
     QMessageBox::warning(
       this,
       title,
-      tr( "Es sind nur %n Spieler ausgewählt", "", n_player ) +
+      tr( "Es ist nur %n Spieler ausgewählt", "", n_player ) +
       tr( ", nicht genug für eine neue Runde." ) );
     activateTab( TabMode::player );
     return;
