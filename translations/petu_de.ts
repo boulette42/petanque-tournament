@@ -4,7 +4,7 @@
 <context>
     <name>MainWindow</name>
     <message numerus="yes">
-        <location filename="../src/main_window.cpp" line="256"/>
+        <location filename="../src/main_window.cpp" line="417"/>
         <source>Es ist nur %n Spieler ausgewählt</source>
         <translation>
             <numerusform>Es ist nur %n Spieler ausgewählt</numerusform>
@@ -12,7 +12,7 @@
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/main_window.cpp" line="267"/>
+        <location filename="../src/main_window.cpp" line="429"/>
         <source>Es ist nur %n Platz ausgewählt</source>
         <translation>
             <numerusform>Es ist nur %n Platz ausgewählt</numerusform>

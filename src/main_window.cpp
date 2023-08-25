@@ -409,7 +409,8 @@ void MainWindow::newRound()
 {
   QString title = tr( "Neue Runde erzeugen" );
   int const n_player = tournament_->selectedPlayerCount();
-  if ( n_player < 4 ) {
+  int const min_player = global().isTeamMode() ? 4 : 12;
+  if ( n_player < min_player ) {
     QMessageBox::warning(
       this,
       title,
@@ -464,12 +465,18 @@ void MainWindow::newRound()
     finishRound();
     last_round_finished = false;
   }
-  if ( ! last_round_finished ) {
+  if ( !last_round_finished ) {
     QMessageBox::warning(
       this,
       title,
       tr( "Eine neue Runde kann nicht erzeugt werden, wenn die " \
-          "aktuelle Runde noch nicht beendet ist." ) );
+        "aktuelle Runde noch nicht beendet ist." ) );
+    return;
+  } else if ( !global().isTeamMode() && round_idx >= 3 ) {
+    QMessageBox::warning(
+      this,
+      title,
+      tr( "Im Supermelee-Modus werden nur drei Runden unterstützt." ) );
     return;
   } else {
     RoundCalculator round_calculator( ui_->tabWidget, round_idx );

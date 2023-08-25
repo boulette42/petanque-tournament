@@ -2,6 +2,42 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="en_US">
 <context>
+    <name>AboutDialog</name>
+    <message>
+        <location filename="../ui/about_dlg.ui" line="20"/>
+        <source>Petanque-Turnier - Informationen</source>
+        <translation>Petanque tounament - Iinformation</translation>
+    </message>
+    <message>
+        <location filename="../ui/about_dlg.ui" line="33"/>
+        <location filename="../ui/about_dlg.ui" line="45"/>
+        <source>Version</source>
+        <translation>version</translation>
+    </message>
+    <message>
+        <location filename="../ui/about_dlg.ui" line="70"/>
+        <location filename="../ui/about_dlg.ui" line="82"/>
+        <source>Autor</source>
+        <translation>author</translation>
+    </message>
+    <message>
+        <location filename="../ui/about_dlg.ui" line="94"/>
+        <location filename="../ui/about_dlg.ui" line="106"/>
+        <source>Jahr</source>
+        <translation>year</translation>
+    </message>
+    <message>
+        <location filename="../ui/about_dlg.ui" line="130"/>
+        <source>Lizenzinfos...</source>
+        <translation>licence information</translation>
+    </message>
+    <message>
+        <location filename="../ui/about_dlg.ui" line="156"/>
+        <source>OK</source>
+        <translation>OK</translation>
+    </message>
+</context>
+<context>
     <name>EditMatchDialog</name>
     <message>
         <location filename="../ui/edit_match_dlg.ui" line="14"/>
@@ -132,6 +168,19 @@
         <location filename="../src/external_window.cpp" line="72"/>
         <source>Runde</source>
         <translation>Round</translation>
+    </message>
+</context>
+<context>
+    <name>LicensesDialog</name>
+    <message>
+        <location filename="../ui/licenses_dlg.ui" line="14"/>
+        <source>Lizenzen</source>
+        <translation>licences</translation>
+    </message>
+    <message>
+        <location filename="../ui/licenses_dlg.ui" line="41"/>
+        <source>OK</source>
+        <translation>OK</translation>
     </message>
 </context>
 <context>
@@ -325,50 +374,50 @@
         <translation>Create results</translation>
     </message>
     <message>
-        <location filename="../src/main_window.cpp" line="313"/>
-        <location filename="../src/main_window.cpp" line="390"/>
+        <location filename="../src/main_window.cpp" line="314"/>
+        <location filename="../src/main_window.cpp" line="391"/>
         <source>Spieler-Daten speichern</source>
         <translation>Save Players</translation>
     </message>
     <message>
-        <location filename="../src/main_window.cpp" line="315"/>
+        <location filename="../src/main_window.cpp" line="316"/>
         <source>JSON-Dateien (*.json)</source>
         <translation>JSON-files (*.json)</translation>
     </message>
     <message>
-        <location filename="../src/main_window.cpp" line="353"/>
+        <location filename="../src/main_window.cpp" line="354"/>
         <source>Daten speichern</source>
         <translation>Save tournament</translation>
     </message>
     <message>
-        <location filename="../src/main_window.cpp" line="354"/>
+        <location filename="../src/main_window.cpp" line="355"/>
         <source>Die Daten konnten nicht gespeichert werden:
 %1</source>
         <translation>Could not save data: %1</translation>
     </message>
     <message>
-        <location filename="../src/main_window.cpp" line="365"/>
+        <location filename="../src/main_window.cpp" line="366"/>
         <source>Spieler-Daten laden</source>
         <translation>Load Players</translation>
     </message>
     <message>
-        <location filename="../src/main_window.cpp" line="367"/>
+        <location filename="../src/main_window.cpp" line="368"/>
         <source>CSV-Dateien (*.csv *.txt);;Alle Dateien (*.*)</source>
         <translation>CSV-files (*.csv *.txt);;All files (*.*</translation>
     </message>
     <message>
-        <location filename="../src/main_window.cpp" line="392"/>
+        <location filename="../src/main_window.cpp" line="393"/>
         <location filename="../src/main_window.cpp" line="807"/>
         <source>CSV-Dateien (*.csv *.txt)</source>
         <translation>CSV-files (*.csv *.txt)</translation>
     </message>
     <message>
-        <location filename="../src/main_window.cpp" line="409"/>
+        <location filename="../src/main_window.cpp" line="410"/>
         <source>Neue Runde erzeugen</source>
         <translation>Create new round</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/main_window.cpp" line="415"/>
+        <location filename="../src/main_window.cpp" line="417"/>
         <source>Es ist nur %n Spieler ausgewählt</source>
         <translation>
             <numerusform>Only %n player selected</numerusform>
@@ -376,12 +425,12 @@
         </translation>
     </message>
     <message>
-        <location filename="../src/main_window.cpp" line="416"/>
+        <location filename="../src/main_window.cpp" line="418"/>
         <source>, nicht genug für eine neue Runde.</source>
         <translation>, not enough for a new round</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/main_window.cpp" line="427"/>
+        <location filename="../src/main_window.cpp" line="429"/>
         <source>Es ist nur %n Platz ausgewählt</source>
         <translation>
             <numerusform>Only %n site selected</numerusform>
@@ -389,40 +438,44 @@
         </translation>
     </message>
     <message>
-        <location filename="../src/main_window.cpp" line="428"/>
+        <location filename="../src/main_window.cpp" line="430"/>
         <source>, benötigt werden %1 Plätze.</source>
         <translation>, %1 sites are needed.</translation>
     </message>
     <message>
-        <location filename="../src/main_window.cpp" line="445"/>
+        <location filename="../src/main_window.cpp" line="447"/>
         <source>Die aktuelle Runde hat noch nicht begonnen.
 Soll diese Runde überschrieben werden?</source>
         <translation>Current round has not started yet. Overwrite?</translation>
     </message>
     <message>
-        <location filename="../src/main_window.cpp" line="470"/>
+        <location filename="../src/main_window.cpp" line="472"/>
         <source>Eine neue Runde kann nicht erzeugt werden, wenn die aktuelle Runde noch nicht beendet ist.</source>
         <translation>Can_t create new round, if current round is not finished yet.</translation>
     </message>
     <message>
-        <location filename="../src/main_window.cpp" line="540"/>
+        <location filename="../src/main_window.cpp" line="479"/>
+        <source>Im Supermelee-Modus werden nur drei Runden unterstützt.</source>
+        <translation>Supermelee - only three rounds are supported</translation>
+    </message>
+    <message>
+        <location filename="../src/main_window.cpp" line="548"/>
         <source>Runde %1</source>
         <translation>Round %1</translation>
     </message>
     <message>
-        <location filename="../src/main_window.cpp" line="582"/>
+        <location filename="../src/main_window.cpp" line="590"/>
         <source>Platzanzahl aktualisieren</source>
         <translation>Update site count</translation>
     </message>
     <message>
-        <location filename="../src/main_window.cpp" line="583"/>
+        <location filename="../src/main_window.cpp" line="591"/>
         <source>Die Platzanzahl konnten nicht übernommen werden</source>
         <translation>Couldn&apos;t save site count</translation>
     </message>
     <message>
-        <location filename="../src/main_window.cpp" line="632"/>
         <source>Information</source>
-        <translation>Information</translation>
+        <translation type="vanished">Information</translation>
     </message>
     <message>
         <location filename="../src/main_window.cpp" line="679"/>
@@ -737,58 +790,58 @@ They can be saved or ignored.</translation>
         <location filename="../src/tournament.cpp" line="222"/>
         <source>
 Team &apos;%1&apos; hat %2 Spieler</source>
-        <translation type="unfinished">
+        <translation>
 Team &apos;%1&apos; has %2 players</translation>
     </message>
     <message>
-        <location filename="../src/tournament.cpp" line="307"/>
+        <location filename="../src/tournament.cpp" line="308"/>
         <source>Platz %1</source>
         <translation>Site %1</translation>
     </message>
     <message>
-        <location filename="../src/tournament.cpp" line="491"/>
+        <location filename="../src/tournament.cpp" line="492"/>
         <source>Fehlerliste</source>
         <translation>Errorlist</translation>
     </message>
     <message>
-        <location filename="../src/tournament.cpp" line="493"/>
+        <location filename="../src/tournament.cpp" line="494"/>
         <source>Zeile %1: %2</source>
         <translation>Line %1:%2</translation>
     </message>
     <message>
-        <location filename="../src/tournament.cpp" line="502"/>
+        <location filename="../src/tournament.cpp" line="503"/>
         <source>Spieler-Datei lesen</source>
         <translation>Read player file</translation>
     </message>
     <message>
-        <location filename="../src/tournament.cpp" line="503"/>
-        <location filename="../src/tournament.cpp" line="507"/>
+        <location filename="../src/tournament.cpp" line="504"/>
+        <location filename="../src/tournament.cpp" line="508"/>
         <source>%1 Spieler gelesen</source>
         <translation>%1 players found</translation>
     </message>
     <message>
-        <location filename="../src/tournament.cpp" line="511"/>
+        <location filename="../src/tournament.cpp" line="512"/>
         <source>Spieler-Datei fehlerhaft</source>
         <translation>Errors in player file</translation>
     </message>
     <message>
-        <location filename="../src/tournament.cpp" line="541"/>
+        <location filename="../src/tournament.cpp" line="542"/>
         <source>Lesen fehlgeschlagen: %1</source>
         <translation>Could not read tournament data: %1</translation>
     </message>
     <message>
-        <location filename="../src/tournament.cpp" line="556"/>
+        <location filename="../src/tournament.cpp" line="557"/>
         <source>Datei &apos;%1&apos; lässt sich nicht speichern (%2)
 Bítte anderes Verzeichnis in den Einstellungen wählen.</source>
         <translation>Can&apos;t save file &apos;%1&apos; (%2). Please use settings to change target directory .</translation>
     </message>
     <message>
-        <location filename="../src/tournament.cpp" line="576"/>
+        <location filename="../src/tournament.cpp" line="577"/>
         <source>Array &apos;%1&apos; nicht definiert</source>
         <translation>Tag Players: Array &apos;%1&apos; not defined</translation>
     </message>
     <message>
-        <location filename="../src/tournament.cpp" line="666"/>
+        <location filename="../src/tournament.cpp" line="667"/>
         <source>Kann Datei &apos;%1&apos; nicht lesen</source>
         <translation>Can&apos;t read file &apos;%1&apos;</translation>
     </message>

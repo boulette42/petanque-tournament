@@ -1,7 +1,7 @@
 Dokumentation zum Programm 'Petanque-Turnier'
 
 Autor    Boulette 42
-Version  2022-11-29
+Version  2023-08-24
 
 Einleitung
 
@@ -20,7 +20,9 @@ eingelesen oder über die Oberfläche einzeln erfasst werden. Bei einem leeren I
 Die Spieler, die an dem Turnier teilnehmen sollen, müssen in der Liste aktiviert werden. Das kann durch Anklicken der Checkboxen geschehen. Alternativ kann man durch Betätigung der Leertaste den aktuellen Spieler aktivieren oder deaktivieren. Mit der Tasten-Kombination '<strg>+a' kann man die Markierung bei allen Spielern aktivieren, die Tasten-Kombination '<shift>+<strg>+a' löscht alle Markierungen. Auch im Kontext-Menü werden entsprechende Optionen angeboten.
 Wenn die Auswahl der Spieler abgeschlossen ist, wird über das Menü
   Runde -> Runde erzeugen
-eine neue Runde ausgelost. Im Modus 'Supermêlée' werden dabei Doublette-Mannschaften ausgelost, so dass möglichst Spieler mit ähnlichen Ergebnissen zusammen und gegeneinander spielen. Dabei wird darauf geachtet, dass man möglichst mit unterschiedlichen Partnern zusammenspielt und unterschiedliche Gegner hat. Der jetzige Spielmodus sieht vor, dass keine Freilose verteilt werden, dass es also bei einer ungeraden Spieleranzahl zu einer unechten Triplette 2:3 kommt.
+eine neue Runde ausgelost. 
+Im Modus 'Supermêlée' werden dabei Doublette-Mannschaften ausgelost, so dass Spieler mit möglichst unterschiedlichen Ergebnissen zusammen spielen. Die erste Runde wird zufällig ausgelost, wobei Spieler aus demselben Verein möglichst in unterschiedlichen Paarungen spielen. In der zweiten Runde spielt jeweils ein Spieler mit einem Sieg zusammen mit einem Spieler mit einer Niederlage - möglichst gegen andere Gegner als in der ersten Runde. In der dritten (und letzten) Runde werden Spieler mit zwei Siegen zusammen mit Spielern ohne Sieg in ein Team gelost. Die Spieler mit einem Sieg werden auf die restlichen Teams verteilt, so dass es möglichst viel Abwechslung bei Gegnern und Mitspielern gibt. 
+Der jetzige Spielmodus sieht vor, dass keine Freilose verteilt werden, dass es also bei einer ungeraden Spieleranzahl zu einer unechten Triplette 2:3 kommt.
 Im Team-Mode werden möglichst Mannschaften mit der gleichen Anzahl siegreicher Begegnungen gegeneinander gelost. Eine geringere Priorität hat die Tatsache, die Anzahl der Begegnungen innerhalb eines Vereins gering zu halten.
 Nach dem Beenden eines Spiels wird das Ergebnis eingetragen, indem das betreffende Spiel per Doppelklick (oder <RETURN>) aktiviert wird.
 Wenn alle Ergebnisse eingetragen sind, werden über das Menü

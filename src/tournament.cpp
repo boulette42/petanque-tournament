@@ -229,6 +229,7 @@ TeamList Tournament::setTeams( PlayerList const& player_list, QString& error_str
 
 void Tournament::setRound( int round_idx, Round const& round )
 {
+  if ( round_idx < 0 ) return;
   if ( round_idx >= round_list_.size() ) return;
   round_list_[round_idx] = round;
   foreach ( Match const& match, round ) {
