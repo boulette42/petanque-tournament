@@ -1,7 +1,7 @@
 Dokumentation zum Programm 'Petanque-Turnier'
 
 Autor    Boulette 42
-Version  2023-08-24
+Version  2024-08-21
 
 Einleitung
 
@@ -21,7 +21,7 @@ Die Spieler, die an dem Turnier teilnehmen sollen, müssen in der Liste aktivier
 Wenn die Auswahl der Spieler abgeschlossen ist, wird über das Menü
   Runde -> Runde erzeugen
 eine neue Runde ausgelost. 
-Im Modus 'Supermêlée' werden dabei Doublette-Mannschaften ausgelost, so dass Spieler mit möglichst unterschiedlichen Ergebnissen zusammen spielen. Die erste Runde wird zufällig ausgelost, wobei Spieler aus demselben Verein möglichst in unterschiedlichen Paarungen spielen. In der zweiten Runde spielt jeweils ein Spieler mit einem Sieg zusammen mit einem Spieler mit einer Niederlage - möglichst gegen andere Gegner als in der ersten Runde. In der dritten (und letzten) Runde werden Spieler mit zwei Siegen zusammen mit Spielern ohne Sieg in ein Team gelost. Die Spieler mit einem Sieg werden auf die restlichen Teams verteilt, so dass es möglichst viel Abwechslung bei Gegnern und Mitspielern gibt. 
+Im Modus 'Supermêlée' werden dabei Doublette-Mannschaften ausgelost, so dass Spieler mit möglichst unterschiedlichen Ergebnissen zusammen spielen. Es müssen mindestens acht Spieler vorhanden sein, um ein Supermêlée-Turnier durchführen zu können. Die erste Runde wird zufällig ausgelost, wobei Spieler aus demselben Verein möglichst in unterschiedlichen Paarungen spielen. In der zweiten Runde spielt jeweils ein Spieler mit einem Sieg zusammen mit einem Spieler mit einer Niederlage - möglichst gegen andere Gegner als in der ersten Runde. In der dritten (und letzten) Runde werden Spieler mit zwei Siegen zusammen mit Spielern ohne Sieg in ein Team gelost. Die Spieler mit einem Sieg werden auf die restlichen Teams verteilt, so dass es möglichst viel Abwechslung bei Gegnern und Mitspielern gibt. 
 Der jetzige Spielmodus sieht vor, dass keine Freilose verteilt werden, dass es also bei einer ungeraden Spieleranzahl zu einer unechten Triplette 2:3 kommt.
 Im Team-Mode werden möglichst Mannschaften mit der gleichen Anzahl siegreicher Begegnungen gegeneinander gelost. Eine geringere Priorität hat die Tatsache, die Anzahl der Begegnungen innerhalb eines Vereins gering zu halten.
 Nach dem Beenden eines Spiels wird das Ergebnis eingetragen, indem das betreffende Spiel per Doppelklick (oder <RETURN>) aktiviert wird.

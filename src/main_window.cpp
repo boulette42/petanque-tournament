@@ -409,7 +409,7 @@ void MainWindow::newRound()
 {
   QString title = tr( "Neue Runde erzeugen" );
   int const n_player = tournament_->selectedPlayerCount();
-  int const min_player = global().isTeamMode() ? 4 : 12;
+  int const min_player = global().isTeamMode() ? 4 : 8;
   if ( n_player < min_player ) {
     QMessageBox::warning(
       this,
