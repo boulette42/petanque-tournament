@@ -1,31 +1,5 @@
 #include "result.h"
-#include "config.h"
 #include <qstring.h>
-
-namespace {
-
-int calcPoints( int lt, int rt )
-{
-  int res = lt;
-  if ( lt > rt ) {
-    res += 100;
-    res += lt - rt;
-  }
-  return res;
-}
-
-}
-
-
-int Result::resultPointsLeft() const
-{
-  return points_lt_;
-}
-
-int Result::resultPointsRight() const
-{
-  return points_rt_;
-}
 
 QString Result::toString() const
 {

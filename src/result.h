@@ -15,8 +15,6 @@ public:
   void setPointsLeft( unsigned short points ) { points_lt_ = points; }
   int pointsRight() const { return points_rt_; }
   void setPointsRight( unsigned short points ) { points_rt_ = points; }
-  int resultPointsLeft() const;
-  int resultPointsRight() const;
   QString toString() const;
   bool operator==( Result const& rhs ) const;
 };

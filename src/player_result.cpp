@@ -75,12 +75,12 @@ int PlayerResult::resultPoints( int round_idx, bool formule_x ) const
   int res_mine = 0;
   int res_other = 0;
   if ( m.team_lt_.containsPlayer( id_ ) ) {
-    res_mine = m.result_.resultPointsLeft();
-    res_other = m.result_.resultPointsRight();
+    res_mine = m.result_.pointsLeft();
+    res_other = m.result_.pointsRight();
   }
   if ( m.team_rt_.containsPlayer( id_ ) ) {
-    res_mine = m.result_.resultPointsRight();
-    res_other = m.result_.resultPointsLeft();
+    res_mine = m.result_.pointsRight();
+    res_other = m.result_.pointsLeft();
   }
   if ( formule_x ) {
     if ( res_mine > res_other ) return 100 + res_mine + res_mine - res_other;
