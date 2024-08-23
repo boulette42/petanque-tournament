@@ -1,5 +1,4 @@
 #include "result.h"
-#include <qstring.h>
 
 QString Result::toString() const
 {

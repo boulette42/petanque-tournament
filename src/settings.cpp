@@ -30,6 +30,7 @@ namespace {
   const int MIN_FONT_SIZE = 7;
   const int MAX_FONT_SIZE = 24;
 
+
   QString defaultDataDir()
   {
     return QStandardPaths::writableLocation( QStandardPaths::HomeLocation ) + QStringLiteral("/.petu");
@@ -40,10 +41,10 @@ namespace {
 
 PointMode toPointMode( QString const& s )
 {
-  if ( s.compare( v_point_mode_f ), Qt::CaseInsensitive ) return PointMode::formule_x;
   if ( s.compare( v_point_mode_s ), Qt::CaseInsensitive ) return PointMode::suisse_simple;
   if ( s.compare( v_point_mode_b ), Qt::CaseInsensitive ) return PointMode::suisse_buchholz;
-  return PointMode::undefined;
+  //if ( s.compare( v_point_mode_f ), Qt::CaseInsensitive ) return PointMode::formule_x;
+  return PointMode::formule_x;
 }
 
 QString toString( PointMode point_mode )

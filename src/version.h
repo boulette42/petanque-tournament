@@ -4,9 +4,8 @@
 #define MY_MAJOR_VERSION 0
 #define MY_MINOR_VERSION 9
 #define MY_MAJOR_SUB_VERSION 7
-#define MY_MINOR_SUB_VERSION 2
-#define MY_VERSION_STRING "0.97b"
-#define SUB_VERSION_STRING "100"
+#define MY_MINOR_SUB_VERSION 3
+#define MY_VERSION_STRING "0.97c"
 
 #define MY_COMPANY_NAME "Boulette 42"
 #define MY_PRODUCT_NAME "Petanque Turnier"
