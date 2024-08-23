@@ -12,6 +12,7 @@ QString const J_LAST_NAME = QLatin1String( "lastName" );
 QString const J_MATCHES = QLatin1String( "matches" );
 QString const J_MODE = QLatin1String( "mode" );
 QString const J_PLAYERS = QLatin1String( "players" );
+QString const J_POINT_MODE = QLatin1String( "pointmode" );
 QString const J_POINTS = QLatin1String( "points" );
 QString const J_RESULTS = QLatin1String( "results" );
 QString const J_ROUNDS = QLatin1String( "rounds" );

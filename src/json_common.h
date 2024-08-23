@@ -14,6 +14,7 @@ extern QString const J_MATCHES;
 extern QString const J_MODE;
 extern QString const J_PLAYERS;
 extern QString const J_POINTS;
+extern QString const J_POINT_MODE;
 extern QString const J_RESULTS;
 extern QString const J_ROUNDS;
 extern QString const J_SELECTED;

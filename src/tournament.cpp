@@ -344,8 +344,8 @@ PlayerList Tournament::selectedPlayerList() const
   struct GreaterThanPoints {
     inline bool operator() ( Player const& lhs, Player const& rhs )
     {
-      int pts_lt = lhs.result() ? lhs.result()->resultPoints() : 0;
-      int pts_rt = rhs.result() ? rhs.result()->resultPoints() : 0;
+      int pts_lt = lhs.result() ? lhs.result()->resultPoints( global().isFormuleX() ) : 0;
+      int pts_rt = rhs.result() ? rhs.result()->resultPoints( global().isFormuleX() ) : 0;
       return pts_lt > pts_rt;
     }
   };
@@ -431,7 +431,7 @@ int Tournament::getOpponentPoints( int player_id ) const
     for ( int i = 0; i < team.size(); ++i ) {
       int p_id = team.playerId( i );
       QSharedPointer<PlayerResult> opp_result = player( p_id ).result();
-      if ( opp_result ) ret += opp_result->resultPoints();
+      if ( opp_result ) ret += opp_result->resultPoints( global().isFormuleX() );
     }
   }
   return ret;
@@ -442,8 +442,8 @@ bool Tournament::savePlayerList( QString const& csv_name ) const
   struct GreaterThanPoints {
     inline bool operator() ( Player const& lhs, Player const& rhs )
     {
-      int res_lt = lhs.result() ? lhs.result()->resultPoints() : 0;
-      int res_rt = rhs.result() ? rhs.result()->resultPoints() : 0;
+      int res_lt = lhs.result() ? lhs.result()->resultPoints( global().isFormuleX() ) : 0;
+      int res_rt = rhs.result() ? rhs.result()->resultPoints( global().isFormuleX() ) : 0;
       return lhs.points() + res_lt > rhs.points() + res_rt;
     }
   };
@@ -573,6 +573,11 @@ bool Tournament::readFromJson( QJsonObject const& json, QString& error_string )
     QString s_mode = json[J_MODE].toString();
     mode = s_mode == QLatin1String( "teams" ) ? ProgMode::teams : ProgMode::super_melee;
   }
+  PointMode point_mode = PointMode::undefined;
+  if ( json.contains( J_POINT_MODE ) && json[J_POINT_MODE].isString() ) {
+    QString s_point_mode = json[J_POINT_MODE].toString();
+    point_mode = toPointMode( s_point_mode );
+  }
   if ( ! json.contains( J_PLAYERS ) || ! json[J_PLAYERS].isArray() ) {
     error_string = tr( "Array '%1' nicht definiert" ).arg( J_PLAYERS );
     return false;
@@ -596,7 +601,8 @@ bool Tournament::readFromJson( QJsonObject const& json, QString& error_string )
       if ( ! error_string.isEmpty() ) return false;
       round_list_.append( round );
     }
-    if ( ! round_list_.isEmpty() || mode == ProgMode::undefined ) {
+    if ( ! round_list_.isEmpty() ) {
+      global().updateModes( mode, point_mode );
       mode_ = mode;
     }
   }
@@ -628,6 +634,12 @@ void Tournament::writeToJson( QJsonObject& json ) const
 {
   json[J_DATE] = QDate::currentDate().toString( DATE_PATTERN );
   json[J_MODE] = QLatin1String( isTeamMode() ? "teams" : "supermelee" );
+  PointMode point_mode = global().isFormuleX()
+    ? PointMode::formule_x
+    : global().isSuisseSimple()
+      ? PointMode::suisse_simple
+      : PointMode::suisse_buchholz;
+  json[J_POINT_MODE] = toString( point_mode );
   QJsonArray p_arr;
   foreach ( Player const& player, player_list_ ) {
     QJsonObject p_obj;

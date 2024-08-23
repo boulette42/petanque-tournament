@@ -29,4 +29,14 @@ enum class ProgMode {
   teams
 };
 
+enum class PointMode {
+  undefined,
+  formule_x,
+  suisse_simple,
+  suisse_buchholz
+};
+
+PointMode toPointMode( QString const& s );
+QString toString( PointMode point_mode );
+
 #endif  // CONFIG_H

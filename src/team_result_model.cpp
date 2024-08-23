@@ -3,6 +3,7 @@
 #include "match.h"
 #include "player.h"
 #include "player_result.h"
+#include "settings.h"
 
 
 namespace {
@@ -111,14 +112,20 @@ QVariant TeamResultModel::data( QModelIndex const& mi, int role ) const
       switch ( col ) {
       case C_TEAM:
         return player.team();
-      case C_POINTS:
+      case C_ROUNDS:
         return player.result()
-          ? player.result()->resultPoints()
+          ? player.result()->wonRounds()
           : 0;
+      case C_POINTS:
+        if ( !player.result() ) return 0;
+        if ( global().isFormuleX() ) return player.result()->resultPoints( true );
+        if ( global().isSuisseSimple() ) return player.result()->resultPoints( false );
+        return QStringLiteral("%1 (%2)").arg(player.result()->buchholzPoints(tournament_))
+          .arg(player.result()->buchholzFeinwertung(tournament_));
       default:
         if ( col-COLUMN_OFFSET <= tournament_.lastRoundIdx() ) {
           return player.result()
-            ? player.result()->resultPoints( col-COLUMN_OFFSET )
+            ? player.result()->resultPoints( col-COLUMN_OFFSET, global().isFormuleX() )
             : 0;
         }
       }
@@ -136,8 +143,12 @@ QVariant TeamResultModel::headerData( int section, Qt::Orientation orientation, 
       switch ( section ) {
       case C_TEAM:
         return Tournament::tr( "Team" );
+      case C_ROUNDS:
+        return Tournament::tr( "Siege" );
       case C_POINTS:
-        return Tournament::tr( "Punkte" );
+        return global().isFormuleX() || global().isSuisseSimple()
+          ? Tournament::tr( "Punkte" )
+          : Tournament::tr( "Buchh." );
       default:
         if ( section-COLUMN_OFFSET <= tournament_.lastRoundIdx() ) {
           return Tournament::tr( "Runde %1" ).arg( section-COLUMN_OFFSET+1 );
@@ -161,12 +172,22 @@ void TeamResultModel::sort( int /*column*/, Qt::SortOrder /*order*/ )
     bool operator()( int i_lhs, int i_rhs ) {
       Player const& lhs( tournament_.playerList()[i_lhs] );
       Player const& rhs( tournament_.playerList()[i_rhs] );
-      int res_lhs = lhs.result() ? lhs.result()->resultPoints() : 0;
-      int res_rhs = rhs.result() ? rhs.result()->resultPoints() : 0;
-      if ( res_lhs != res_rhs ) return res_lhs > res_rhs;
-      res_lhs = tournament_.getOpponentPoints( lhs.id() );
-      res_rhs = tournament_.getOpponentPoints( rhs.id() );
-      return res_lhs > res_rhs;
+      if ( !lhs.result() ) return false;
+      if ( !rhs.result() ) return true;
+      bool const formule_x = global().isFormuleX();
+      int const res_lhs = lhs.result()->resultPoints( formule_x );
+      int const res_rhs = rhs.result()->resultPoints( formule_x );
+      if ( formule_x ) return res_lhs > res_rhs;
+      int const wr_lhs = lhs.result()->wonRounds();
+      int const wr_rhs = rhs.result()->wonRounds();
+      if ( wr_lhs != wr_rhs ) return wr_lhs > wr_rhs;
+      if ( global().isSuisseSimple() ) return res_lhs > res_rhs;
+      int const bh_lhs = lhs.result()->buchholzPoints( tournament_ );
+      int const bh_rhs = rhs.result()->buchholzPoints( tournament_ );
+      if ( bh_lhs != bh_rhs ) return bh_lhs > bh_rhs;
+      int const fw_lhs = lhs.result()->buchholzFeinwertung( tournament_ );
+      int const fw_rhs = rhs.result()->buchholzFeinwertung( tournament_ );
+      return fw_lhs > fw_rhs;
     }
   };
   beginResetModel();

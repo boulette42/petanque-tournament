@@ -19,12 +19,12 @@ int calcPoints( int lt, int rt )
 
 int Result::resultPointsLeft() const
 {
-  return calcPoints( points_lt_, points_rt_ );
+  return points_lt_;
 }
 
 int Result::resultPointsRight() const
 {
-  return calcPoints( points_rt_, points_lt_ );
+  return points_rt_;
 }
 
 QString Result::toString() const

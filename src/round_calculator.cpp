@@ -453,9 +453,8 @@ public:
     WinLossArr( PlayerList const& players )
     {
       for ( Player const& p : players ) {
-        int pts = p.result()->resultPoints();
-        int x = pts / 100;
-        id_map_[x].push_back( p.id() );
+        int vic = p.result()->wonRounds();
+        id_map_[vic].push_back( p.id() );
       }
     }
 

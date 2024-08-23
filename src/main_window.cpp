@@ -325,6 +325,8 @@ void MainWindow::editSettings()
   int const font_size = global().fontSize();
   int const site_count = global().siteCount();
   bool const team_mode = tournament_->isTeamMode();
+  bool const formule_x = global().isFormuleX();
+  bool const suisse_simple = global().isSuisseSimple();
   if ( global().execDialog( this, tournament_->isUndefinedMode() ) ) {
     if ( global().siteEnabled() != site_enabled ) {
       round_model_->setRound( round_model_->currentRound() );
@@ -341,6 +343,10 @@ void MainWindow::editSettings()
     if ( global().fontSize() != font_size ) {
       updateStyleSheet( *this );
       updateView( TabMode::all );
+    }
+    if ( formule_x != global().isFormuleX()
+      || suisse_simple != global().isSuisseSimple() ) {
+      team_result_model_->updateTeamList();
     }
   }
 }

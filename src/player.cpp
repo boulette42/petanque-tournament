@@ -1,6 +1,7 @@
 ﻿#include "player.h"
 #include "json_common.h"
 #include "match.h"
+#include "settings.h"
 #include "player_result.h"
 #include <qjsonobject.h>
 #include <qstring.h>
@@ -61,7 +62,7 @@ void Player::setMatch( int round_idx, Match const& match )
 
 void Player::updatePoints()
 {
-  points_ = result_ ? result_->resultPoints() : 0;
+  points_ = result_ ? result_->resultPoints( global().isFormuleX() ) : 0;
 }
 
 Player Player::fromCsvLine( QString const& line, QString& error_string, char delimiter )
@@ -107,7 +108,7 @@ Player Player::fromCsvLine( QString const& line, QString& error_string, char del
 QString Player::toCsvLine( char delimiter ) const
 {
   int points = points_;
-  if ( result_ ) points += result_->resultPoints();
+  if ( result_ ) points += result_->resultPoints( global().isFormuleX() );
   return QStringLiteral( "%1%2%3%2%4%2%5%2%6%2%7" )
     .arg( id_ )
     .arg( QLatin1Char( delimiter ) )

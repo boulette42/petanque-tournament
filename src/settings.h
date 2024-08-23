@@ -18,11 +18,14 @@ public:
   QString dataDir( bool for_write = false ) const;
   int fontSize() const;
   bool isTeamMode() const;
+  bool isFormuleX() const;
+  bool isSuisseSimple() const;
   bool siteEnabled() const;
   bool isTeamOnlyShown() const;
   bool simulationEnabled() const;
   int siteCount() const;
   QString password() const;
+  void updateModes( ProgMode prog_mode, PointMode point_mode );
 };
 
 
