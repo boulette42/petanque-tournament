@@ -70,6 +70,14 @@ Match Match::readFromJson( QJsonObject const& json, TeamMap const& team_map, QSt
 
 void Match::writeToJson( QJsonObject& match_obj ) const
 {
+  writeTeamsToJson( match_obj );
+  if ( !result_.isEmpty() ) {
+    writeResultToJson( match_obj );
+  }
+}
+
+void Match::writeTeamsToJson( QJsonObject& match_obj ) const
+{
   QJsonArray team_arr;
   QJsonObject team_lt_obj;
   team_lt_.writeToJson( team_lt_obj );
@@ -78,16 +86,18 @@ void Match::writeToJson( QJsonObject& match_obj ) const
   team_rt_.writeToJson( team_rt_obj );
   team_arr.append( team_rt_obj );
   match_obj[J_TEAMS] = team_arr;
-  if ( ! result_.isEmpty() ) {
-    QJsonArray result_arr;
-    QJsonObject pts_lt_obj;
-    pts_lt_obj[J_POINTS] = result_.pointsLeft();
-    result_arr.append( pts_lt_obj );
-    QJsonObject pts_rt_obj;
-    pts_rt_obj[J_POINTS] = result_.pointsRight();
-    result_arr.append( pts_rt_obj );
-    match_obj[J_RESULTS] = result_arr;
-  }
+}
+
+void Match::writeResultToJson( QJsonObject& match_obj ) const
+{
+  QJsonArray result_arr;
+  QJsonObject pts_lt_obj;
+  pts_lt_obj[J_POINTS] = result_.pointsLeft();
+  result_arr.append( pts_lt_obj );
+  QJsonObject pts_rt_obj;
+  pts_rt_obj[J_POINTS] = result_.pointsRight();
+  result_arr.append( pts_rt_obj );
+  match_obj[J_RESULTS] = result_arr;
   if ( site_id_ != INVALID_ID ) {
     match_obj[J_SITE] = site_id_;
   }
