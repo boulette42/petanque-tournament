@@ -329,9 +329,7 @@ QString Settings::password() const
 void Settings::updateModes( ProgMode prog_mode, PointMode point_mode )
 {
   m_->mode_ = prog_mode;
-  m_->point_mode_ = point_mode == PointMode::undefined
-    ? PointMode::formule_x
-    : point_mode;
+  m_->point_mode_ = point_mode;
 }
 
 void updateStyleSheet(QWidget& dlg)

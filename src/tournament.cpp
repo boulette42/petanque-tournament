@@ -567,7 +567,7 @@ bool Tournament::readFromJson( QJsonObject const& json, QString& error_string )
     QString s_mode = json[J_MODE].toString();
     mode = s_mode == QLatin1String( "teams" ) ? ProgMode::teams : ProgMode::super_melee;
   }
-  PointMode point_mode = PointMode::undefined;
+  PointMode point_mode = PointMode::formule_x;
   if ( json.contains( J_POINT_MODE ) && json[J_POINT_MODE].isString() ) {
     QString s_point_mode = json[J_POINT_MODE].toString();
     point_mode = toPointMode( s_point_mode );

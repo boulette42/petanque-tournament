@@ -31,7 +31,6 @@ enum class ProgMode {
 };
 
 enum class PointMode {
-  undefined,
   formule_x,
   swiss_simple,
   swiss_buchholz
