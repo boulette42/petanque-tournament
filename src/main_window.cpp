@@ -421,7 +421,7 @@ void MainWindow::newRound()
       this,
       title,
       tr( "Es ist nur %n Spieler ausgewählt", "", n_player ) +
-      tr( ", nicht genug für eine neue Runde." ) );
+      tr( ", für eine neue Runde benötigt man %1." ).arg( min_player ) );
     activateTab( TabMode::player );
     return;
   }

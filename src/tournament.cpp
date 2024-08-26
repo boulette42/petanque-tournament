@@ -647,26 +647,24 @@ void Tournament::writeToJson( QJsonObject& json ) const
   foreach ( Round const& round, round_list_ ) {
     QJsonArray m_arr;
     foreach ( Match const& match, round ) {
-      if ( !match.result_.isEmpty() ) {
-        QJsonObject match_obj;
-        if ( isTeamMode() ) {
-          QJsonArray team_arr;
-          QJsonObject team_lt_obj;
-          int const id_lt = match.team_lt_.playerId( 0 );
-          team_lt_obj[J_TEAM_NAME] = player( id_lt ).team();
-          team_arr.append( team_lt_obj );
-          QJsonObject team_rt_obj;
-          int const id_rt = match.team_rt_.playerId( 0 );
-          team_rt_obj[J_TEAM_NAME] = player( id_rt ).team();
-          team_arr.append( team_rt_obj );
-          match_obj[J_TEAMS] = team_arr;
-          match.writeResultToJson( match_obj );
-        }
-        else {
-          match.writeToJson( match_obj );
-        }
-        m_arr.append( match_obj );
+      QJsonObject match_obj;
+      if ( isTeamMode() ) {
+        QJsonArray team_arr;
+        QJsonObject team_lt_obj;
+        int const id_lt = match.team_lt_.playerId( 0 );
+        team_lt_obj[J_TEAM_NAME] = player( id_lt ).team();
+        team_arr.append( team_lt_obj );
+        QJsonObject team_rt_obj;
+        int const id_rt = match.team_rt_.playerId( 0 );
+        team_rt_obj[J_TEAM_NAME] = player( id_rt ).team();
+        team_arr.append( team_rt_obj );
+        match_obj[J_TEAMS] = team_arr;
+        match.writeResultToJson( match_obj );
       }
+      else {
+        match.writeToJson( match_obj );
+      }
+      m_arr.append( match_obj );
     }
     QJsonObject r_obj;
     r_obj[J_MATCHES] = m_arr;
