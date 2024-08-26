@@ -117,7 +117,6 @@ TeamMap createTeamMap( PlayerList const& player_list )
   return team_map;
 }
 
-
 uchar guessDelimiter(QByteArray const& line)
 {
   if ( line.contains( ';' ) ) return ';';

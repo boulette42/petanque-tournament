@@ -15,7 +15,7 @@ Team::Team( IdList const& player_list )
 Team Team::readFromJson( QJsonObject const& json, QString& error_string )
 {
   Team ret;
-  if ( ! json.contains( J_TEAM ) || !json[J_TEAM].isArray() ) {
+  if ( !json.contains( J_TEAM ) || !json[J_TEAM].isArray() ) {
     return ret;
   }
   QJsonArray id_arr = json[J_TEAM].toArray();

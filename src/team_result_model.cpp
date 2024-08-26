@@ -117,7 +117,7 @@ int TeamResultModel::columnCount( QModelIndex const& parent ) const
     col_cnt = COLUMN_OFFSET + tournament_.lastRoundIdx() + 1;
     if ( show_teams ) col_cnt += tournament_.lastRoundIdx() + 1;
   }
-  // einer mehr, damit letzte Spalte auf Bildschirm gedehnt wird
+  // einer mehr, damit letzte Spalte auf Fenster-Breite gedehnt wird
   return col_cnt + 1;
 }
 
