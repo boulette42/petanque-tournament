@@ -18,8 +18,8 @@ namespace {
   QString const v_mode_t( QStringLiteral( "Teams" ) );
   QString const v_point_mode( QStringLiteral( "Punktmodus" ) );
   QString const v_point_mode_f( QStringLiteral( "FormuleX" ) );
-  QString const v_point_mode_s( QStringLiteral( "SuisseSimple" ) );
-  QString const v_point_mode_b( QStringLiteral( "SuisseBuchholz" ) );
+  QString const v_point_mode_s( QStringLiteral( "SwissSimple" ) );
+  QString const v_point_mode_b( QStringLiteral( "SwissBuchholz" ) );
   QString const v_team_only( QStringLiteral( "TeamOnly" ) );
   QString const v_data_dir( QStringLiteral( "DataDir" ) );
   QString const v_font_size( QStringLiteral( "FontSize" ) );
@@ -41,9 +41,10 @@ namespace {
 
 PointMode toPointMode( QString const& s )
 {
-  if ( s.compare( v_point_mode_s ), Qt::CaseInsensitive ) return PointMode::suisse_simple;
-  if ( s.compare( v_point_mode_b ), Qt::CaseInsensitive ) return PointMode::suisse_buchholz;
-  //if ( s.compare( v_point_mode_f ), Qt::CaseInsensitive ) return PointMode::formule_x;
+  if ( ! s.compare( v_point_mode_s, Qt::CaseInsensitive ) ) return PointMode::swiss_simple;
+  if ( ! s.compare( v_point_mode_b, Qt::CaseInsensitive ) ) return PointMode::swiss_buchholz;
+  //if ( ! s.compare( v_point_mode_f, Qt::CaseInsensitive ) ) return PointMode::formule_x;
+  // Default, war initial fest verdrahtet
   return PointMode::formule_x;
 }
 
@@ -51,8 +52,8 @@ QString toString( PointMode point_mode )
 {
   switch ( point_mode ) {
   case PointMode::formule_x: return v_point_mode_f;
-  case PointMode::suisse_simple: return v_point_mode_s;
-  case PointMode::suisse_buchholz: return v_point_mode_b;
+  case PointMode::swiss_simple: return v_point_mode_s;
+  case PointMode::swiss_buchholz: return v_point_mode_b;
   }
   return QString();
 }
@@ -149,8 +150,8 @@ public:
     point_mode_ = settings.point_mode_;
     bool formule_x = point_mode_ == PointMode::formule_x || settings.mode_ == ProgMode::super_melee;
     ui_->rbFormuleX->setChecked( formule_x );
-    ui_->rbSuisseSimple->setChecked( !formule_x && point_mode_ == PointMode::suisse_simple );
-    ui_->rbSuisseBuchholz->setChecked( !formule_x && point_mode_ == PointMode::suisse_buchholz );
+    ui_->rbSwissSimple->setChecked( !formule_x && point_mode_ == PointMode::swiss_simple );
+    ui_->rbSwissBuchholz->setChecked( !formule_x && point_mode_ == PointMode::swiss_buchholz );
     ui_->leDataDir->setText( settings.data_dir_.isEmpty() ? defaultDataDir() : settings.data_dir_ );
     ui_->cbSiteEnabled->setChecked( settings.site_enabled_ );
     ui_->leSiteCount->setText( QString::number( settings.site_count_ ) );
@@ -165,11 +166,11 @@ public:
       settings.point_mode_ = PointMode::formule_x;
     }
     else {
-      if ( ui_->rbSuisseSimple->isChecked() ) {
-        settings.point_mode_ = PointMode::suisse_simple;
+      if ( ui_->rbSwissSimple->isChecked() ) {
+        settings.point_mode_ = PointMode::swiss_simple;
       }
       else {
-        settings.point_mode_ = PointMode::suisse_buchholz;
+        settings.point_mode_ = PointMode::swiss_buchholz;
       }
     }
     settings.site_enabled_ = ui_->cbSiteEnabled->isChecked();
@@ -223,21 +224,21 @@ public:
       if ( ui_->rbFormuleX->isChecked() ) {
         point_mode_ = PointMode::formule_x;
       }
-      if ( ui_->rbSuisseSimple->isChecked() ) {
-        point_mode_ = PointMode::suisse_simple;
+      if ( ui_->rbSwissSimple->isChecked() ) {
+        point_mode_ = PointMode::swiss_simple;
       }
-      if ( ui_->rbSuisseBuchholz->isChecked() ) {
-        point_mode_ = PointMode::suisse_buchholz;
+      if ( ui_->rbSwissBuchholz->isChecked() ) {
+        point_mode_ = PointMode::swiss_buchholz;
       }
       ui_->rbFormuleX->setChecked( true );
-      ui_->rbSuisseSimple->setChecked( false );
-      ui_->rbSuisseBuchholz->setChecked( false );
+      ui_->rbSwissSimple->setChecked( false );
+      ui_->rbSwissBuchholz->setChecked( false );
       ui_->gbPoints->setEnabled( false );
     }
     else {
       ui_->rbFormuleX->setChecked( point_mode_ == PointMode::formule_x );
-      ui_->rbSuisseSimple->setChecked( point_mode_ == PointMode::suisse_simple );
-      ui_->rbSuisseBuchholz->setChecked( point_mode_ == PointMode::suisse_buchholz );
+      ui_->rbSwissSimple->setChecked( point_mode_ == PointMode::swiss_simple );
+      ui_->rbSwissBuchholz->setChecked( point_mode_ == PointMode::swiss_buchholz );
       ui_->gbPoints->setEnabled( true );
     }
   }
@@ -278,9 +279,9 @@ bool Settings::isFormuleX() const
       || m_->point_mode_ == PointMode::formule_x;
 }
 
-bool Settings::isSuisseSimple() const
+bool Settings::isSwissSimple() const
 {
-  return m_->point_mode_ == PointMode::suisse_simple;
+  return m_->point_mode_ == PointMode::swiss_simple;
 }
 
 QString Settings::dataDir( bool to_write ) const

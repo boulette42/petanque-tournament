@@ -64,14 +64,14 @@
        </widget>
       </item>
       <item>
-       <widget class="QRadioButton" name="rbSuisseSimple">
+       <widget class="QRadioButton" name="rbSwissSimple">
         <property name="text">
          <string>Vereinf. Schweizer System</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QRadioButton" name="rbSuisseBuchholz">
+       <widget class="QRadioButton" name="rbSwissBuchholz">
         <property name="text">
          <string>Schweizer System mit Bucholz-Wertung</string>
         </property>
@@ -259,8 +259,8 @@
   <tabstop>rbSuperMelee</tabstop>
   <tabstop>rbTeams</tabstop>
   <tabstop>rbFormuleX</tabstop>
-  <tabstop>rbSuisseSimple</tabstop>
-  <tabstop>rbSuisseBuchholz</tabstop>
+  <tabstop>rbSwissSimple</tabstop>
+  <tabstop>rbSwissBuchholz</tabstop>
   <tabstop>leDataDir</tabstop>
   <tabstop>tbSelectDir</tabstop>
   <tabstop>leFontSize</tabstop>

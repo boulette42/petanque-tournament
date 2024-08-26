@@ -8,6 +8,8 @@
 
 namespace {
 
+bool show_teams = true;
+
 int playerIndex( PlayerList const& player_list, int id )
 {
   if ( id != INVALID_ID ) {
@@ -19,6 +21,19 @@ int playerIndex( PlayerList const& player_list, int id )
     }
   }
   return INVALID_IDX;
+}
+
+int opponentPlayer( Player const& player, int round_idx )
+{
+  int ret = INVALID_ID;
+  auto pr = player.result();
+  if ( pr && pr->rounds() > round_idx ) {
+    Match const& m = pr->match( round_idx );
+    ret = m.team_lt_.containsPlayer( player.id() )
+      ? m.team_rt_.playerId( 0 )
+      : m.team_lt_.playerId( 0 );
+  }
+  return ret;
 }
 
 }
@@ -97,8 +112,13 @@ int TeamResultModel::rowCount( QModelIndex const& parent ) const
 
 int TeamResultModel::columnCount( QModelIndex const& parent ) const
 {
-  if ( ! parent.isValid() ) return COLUMN_OFFSET + tournament_.lastRoundIdx() + 2;
-  else return 0;
+  int col_cnt = 0;
+  if ( ! parent.isValid() ) {
+    col_cnt = COLUMN_OFFSET + tournament_.lastRoundIdx() + 1;
+    if ( show_teams ) col_cnt += tournament_.lastRoundIdx() + 1;
+  }
+  // einer mehr, damit letzte Spalte auf Bildschirm gedehnt wird
+  return col_cnt + 1;
 }
 
 QVariant TeamResultModel::data( QModelIndex const& mi, int role ) const
@@ -106,7 +126,7 @@ QVariant TeamResultModel::data( QModelIndex const& mi, int role ) const
   int const row = mi.row();
   if ( 0 <= row && row < sorted_.size() ) {
     int const idx = sorted_[row];
-    int const col = mi.column();
+    int col = mi.column();
     if ( role == Qt::DisplayRole ) {
       Player const& player = tournament_.playerList()[idx];
       switch ( col ) {
@@ -119,14 +139,22 @@ QVariant TeamResultModel::data( QModelIndex const& mi, int role ) const
       case C_POINTS:
         if ( !player.result() ) return 0;
         if ( global().isFormuleX() ) return player.result()->resultPoints( true );
-        if ( global().isSuisseSimple() ) return player.result()->resultPoints( false );
+        if ( global().isSwissSimple() ) return player.result()->resultPoints( false );
         return QStringLiteral("%1 (%2)").arg(player.result()->buchholzPoints(tournament_))
-          .arg(player.result()->buchholzFeinwertung(tournament_));
+          .arg(player.result()->buchholzTieBreak(tournament_));
       default:
-        if ( col-COLUMN_OFFSET <= tournament_.lastRoundIdx() ) {
-          return player.result()
-            ? player.result()->resultPoints( col-COLUMN_OFFSET, global().isFormuleX() )
-            : 0;
+        if ( tournament_.lastRoundIdx() >= 0 ) {
+          col -= COLUMN_OFFSET;
+          if ( show_teams ) {
+            if ( ( col % 2 ) == 0 ) {
+              int opp_id = opponentPlayer( player, col / 2 );
+              return tournament_.player( opp_id ).team();
+            }
+            col /= 2;
+          }
+          if ( player.result() && player.result()->rounds() > col ) {
+            return player.result()->resultPoints( col, global().isFormuleX() );
+          }
         }
       }
     } else if ( role == Qt::TextAlignmentRole ) {
@@ -146,12 +174,22 @@ QVariant TeamResultModel::headerData( int section, Qt::Orientation orientation, 
       case C_ROUNDS:
         return Tournament::tr( "Siege" );
       case C_POINTS:
-        return global().isFormuleX() || global().isSuisseSimple()
+        return global().isFormuleX() || global().isSwissSimple()
           ? Tournament::tr( "Punkte" )
           : Tournament::tr( "Buchh." );
       default:
-        if ( section-COLUMN_OFFSET <= tournament_.lastRoundIdx() ) {
-          return Tournament::tr( "Runde %1" ).arg( section-COLUMN_OFFSET+1 );
+        if ( tournament_.lastRoundIdx() >= 0 ) {
+          section -= COLUMN_OFFSET;
+          if ( show_teams ) {
+            if ( section / 2 <= tournament_.lastRoundIdx() ) {
+              return ( section % 2 ) == 0
+                ? Tournament::tr( "Gg." )
+                : Tournament::tr( "+/-" );
+            }
+          }
+          else {
+            return Tournament::tr( "Runde %1" ).arg( section + 1 );
+          }
         }
       }
     }
@@ -181,12 +219,12 @@ void TeamResultModel::sort( int /*column*/, Qt::SortOrder /*order*/ )
       int const wr_lhs = lhs.result()->wonRounds();
       int const wr_rhs = rhs.result()->wonRounds();
       if ( wr_lhs != wr_rhs ) return wr_lhs > wr_rhs;
-      if ( global().isSuisseSimple() ) return res_lhs > res_rhs;
+      if ( global().isSwissSimple() ) return res_lhs > res_rhs;
       int const bh_lhs = lhs.result()->buchholzPoints( tournament_ );
       int const bh_rhs = rhs.result()->buchholzPoints( tournament_ );
       if ( bh_lhs != bh_rhs ) return bh_lhs > bh_rhs;
-      int const fw_lhs = lhs.result()->buchholzFeinwertung( tournament_ );
-      int const fw_rhs = rhs.result()->buchholzFeinwertung( tournament_ );
+      int const fw_lhs = lhs.result()->buchholzTieBreak( tournament_ );
+      int const fw_rhs = rhs.result()->buchholzTieBreak( tournament_ );
       return fw_lhs > fw_rhs;
     }
   };

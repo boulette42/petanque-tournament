@@ -22,6 +22,7 @@ extern QString const J_SITE_NAME;
 extern QString const J_SITE;
 extern QString const J_SITES;
 extern QString const J_TEAM;
+extern QString const J_TEAM_NAME;
 extern QString const J_TEAMS;
 
 

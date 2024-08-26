@@ -146,8 +146,8 @@ void PlayerResultModel::sort( int /*column*/, Qt::SortOrder /*order*/ )
       int const bh_lhs = lhs.result()->buchholzPoints( tournament_ );
       int const bh_rhs = rhs.result()->buchholzPoints( tournament_ );
       if ( bh_lhs != bh_rhs ) return bh_lhs > bh_rhs;
-      int const fw_lhs = lhs.result()->buchholzFeinwertung( tournament_ );
-      int const fw_rhs = rhs.result()->buchholzFeinwertung( tournament_ );
+      int const fw_lhs = lhs.result()->buchholzTieBreak( tournament_ );
+      int const fw_rhs = rhs.result()->buchholzTieBreak( tournament_ );
       return fw_lhs > fw_rhs;
     }
   };

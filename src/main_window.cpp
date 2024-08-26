@@ -326,7 +326,7 @@ void MainWindow::editSettings()
   int const site_count = global().siteCount();
   bool const team_mode = tournament_->isTeamMode();
   bool const formule_x = global().isFormuleX();
-  bool const suisse_simple = global().isSuisseSimple();
+  bool const swiss_simple = global().isSwissSimple();
   if ( global().execDialog( this, tournament_->isUndefinedMode() ) ) {
     if ( global().siteEnabled() != site_enabled ) {
       round_model_->setRound( round_model_->currentRound() );
@@ -345,7 +345,7 @@ void MainWindow::editSettings()
       updateView( TabMode::all );
     }
     if ( formule_x != global().isFormuleX()
-      || suisse_simple != global().isSuisseSimple() ) {
+      || swiss_simple != global().isSwissSimple() ) {
       team_result_model_->updateTeamList();
     }
   }

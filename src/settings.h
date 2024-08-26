@@ -19,7 +19,7 @@ public:
   int fontSize() const;
   bool isTeamMode() const;
   bool isFormuleX() const;
-  bool isSuisseSimple() const;
+  bool isSwissSimple() const;
   bool siteEnabled() const;
   bool isTeamOnlyShown() const;
   bool simulationEnabled() const;

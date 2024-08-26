@@ -34,7 +34,7 @@ PlayerList::iterator getPlayerIterator( PlayerList& player_list, int id )
   return player_list.end();
 }
 
-Round readRound( QJsonObject const& json, QString& error_string )
+Round readRound( QJsonObject const& json, TeamMap const& team_map, QString& error_string )
 {
   Round ret;
   if ( json.contains( J_MATCHES ) ) {
@@ -46,7 +46,7 @@ Round readRound( QJsonObject const& json, QString& error_string )
     ret.reserve( m_arr.size() );
     for ( int m_i = 0; m_i < m_arr.size(); ++m_i ) {
       QJsonObject m_obj = m_arr[m_i].toObject();
-      Match match = Match::readFromJson( m_obj, error_string );
+      Match match = Match::readFromJson( m_obj, team_map, error_string );
       if ( ! error_string.isEmpty() ) break;
       ret.append( match );
     }
@@ -101,6 +101,22 @@ int lastPlayerId( PlayerList const& player_list )
   }
   return last_player_id;
 }
+
+TeamMap createTeamMap( PlayerList const& player_list )
+{
+  TeamMap team_map;
+  for ( int i = 0, n = player_list.size(); i < n; i++ ) {
+    Player const& player( player_list[i] );
+    QString team_name = player.team().toLower();
+    TeamMap::iterator t_it = team_map.find( team_name );
+    if ( t_it == team_map.end() ) {
+      t_it = team_map.insert( team_name, IdList() );
+    }
+    t_it->append( player.id() );
+  }
+  return team_map;
+}
+
 
 uchar guessDelimiter(QByteArray const& line)
 {
@@ -184,35 +200,13 @@ bool Tournament::createRound( RoundCalculator& round_calculator )
 
 TeamList Tournament::setTeams( PlayerList const& player_list, QString& error_string )
 {
-  using TeamMap = QMap<QString, IdList>;
-  TeamMap team_map;
-  for ( int i = 0, n = player_list.size(); i < n; i++ ) {
-    Player const& player( player_list[i] );
-    QString team_name = player.team().toLower();
-    TeamMap::iterator t_it = team_map.find( team_name );
-    if ( t_it == team_map.end() ) {
-      t_it = team_map.insert( team_name, IdList() );
-    }
-    t_it->append( i );
-  }
-
-  auto setTeam = [player_list]( IdList const& id_list ) {
-    int const n = id_list.size();
-    if ( n < 2 || 3 < n ) return Team();
-    Team t( n == 2 ? Team::doublet() : Team::triplet() );
-    for ( int i = 0; i < n; ++i ) {
-      int const idx = id_list[i];
-      t.setPlayerId( i, player_list[idx].id() );
-    }
-    return t;
-  };
-
   TeamList ret;
+  TeamMap team_map = createTeamMap( player_list );
   for ( TeamMap::const_iterator it = team_map.constBegin();
     it != team_map.constEnd();
     ++it )
   {
-    Team t( setTeam( *it ) );
+    Team t( *it );
     if ( t.size() > 0 ) {
       ret.append( t );
     } else {
@@ -593,17 +587,19 @@ bool Tournament::readFromJson( QJsonObject const& json, QString& error_string )
   }
   round_list_.clear();
   if ( json.contains( J_ROUNDS ) && json[J_ROUNDS].isArray() ) {
+    global().updateModes( mode, point_mode );
+    mode_ = mode;
+    TeamMap team_map;
+    if ( mode == ProgMode::teams ) {
+      team_map = createTeamMap( player_list_ );
+    }
     QJsonArray r_arr = json[J_ROUNDS].toArray();
     round_list_.reserve( r_arr.size() );
     for ( int r_i = 0; r_i < r_arr.size(); ++r_i ) {
       QJsonObject r_obj = r_arr[r_i].toObject();
-      Round round = readRound( r_obj, error_string );
+      Round round = readRound( r_obj, team_map, error_string );
       if ( ! error_string.isEmpty() ) return false;
       round_list_.append( round );
-    }
-    if ( ! round_list_.isEmpty() ) {
-      global().updateModes( mode, point_mode );
-      mode_ = mode;
     }
   }
   site_list_.clear();
@@ -636,9 +632,9 @@ void Tournament::writeToJson( QJsonObject& json ) const
   json[J_MODE] = QLatin1String( isTeamMode() ? "teams" : "supermelee" );
   PointMode point_mode = global().isFormuleX()
     ? PointMode::formule_x
-    : global().isSuisseSimple()
-      ? PointMode::suisse_simple
-      : PointMode::suisse_buchholz;
+    : global().isSwissSimple()
+      ? PointMode::swiss_simple
+      : PointMode::swiss_buchholz;
   json[J_POINT_MODE] = toString( point_mode );
   QJsonArray p_arr;
   foreach ( Player const& player, player_list_ ) {
@@ -670,17 +666,4 @@ void Tournament::writeToJson( QJsonObject& json ) const
     s_arr.append( s_obj );
   }
   json[J_SITES] = s_arr;
-}
-
-Round readRoundFile( QString const& filepath, QString& error_string )
-{
-  QFile fi( filepath );
-  if ( ! fi.open( QIODevice::ReadOnly ) ) {
-    error_string = Tournament::tr( "Kann Datei '%1' nicht lesen" ).arg( filepath );
-    return Round();
-  }
-  QByteArray round_data = fi.readAll();
-  QJsonDocument round_doc( QJsonDocument::fromJson( round_data ) );
-  Round round = readRound( round_doc.object(), error_string );
-  return round;
 }

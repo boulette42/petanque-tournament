@@ -9,7 +9,6 @@
 PlayerResult::PlayerResult( int id )
   : id_( id )
 {
-  match_list_.reserve( 3 );
 }
 
 void PlayerResult::setMatch( int round_idx, Match const& match )
@@ -41,12 +40,12 @@ int PlayerResult::buchholzPoints( Tournament const& tournament ) const
       ? m.team_rt_.playerId( 0 )
       : m.team_lt_.playerId( 0 );
     auto pr = tournament.player( p_id ).result();
-    res += pr->wonRounds();
+    if ( pr ) res += pr->wonRounds();
   }
   return res;
 }
 
-int PlayerResult::buchholzFeinwertung( Tournament const& tournament ) const
+int PlayerResult::buchholzTieBreak( Tournament const& tournament ) const
 {
   int res = 0;
   for ( int ri = 0; ri < match_list_.size(); ++ri ) {
@@ -55,7 +54,7 @@ int PlayerResult::buchholzFeinwertung( Tournament const& tournament ) const
       ? m.team_rt_.playerId( 0 )
       : m.team_lt_.playerId( 0 );
     auto pr = tournament.player( p_id ).result();
-    res += pr->buchholzPoints( tournament );
+    if ( pr ) res += pr->buchholzPoints( tournament );
   }
   return res;
 }

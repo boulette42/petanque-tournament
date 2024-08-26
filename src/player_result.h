@@ -16,7 +16,7 @@ public:
   int wonRounds() const;
   int resultPoints( bool formule_x ) const;
   int buchholzPoints( Tournament const& tournament ) const;
-  int buchholzFeinwertung( Tournament const& tournament ) const;
+  int buchholzTieBreak( Tournament const& tournament ) const;
   int wonRoundsUntil( int max_round ) const;
   int resultPoints( int round_idx, bool formule_x ) const;
 };

@@ -14,6 +14,8 @@ class Team
 public:
   Team() = default;
 
+  explicit Team( IdList const& player_list );
+
   static Team doublet()
   {
     return Team( 2 );

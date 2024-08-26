@@ -18,6 +18,7 @@ using IdxList = QVector<int>;
 using Round = QVector<Match>;
 using PlayerList = QVector<Player>;
 using TeamList = QVector<Team>;
+using TeamMap = QMap<QString, IdList>;
 
 int const INVALID_ID = -1;
 int const INVALID_IDX = -1;
@@ -32,8 +33,8 @@ enum class ProgMode {
 enum class PointMode {
   undefined,
   formule_x,
-  suisse_simple,
-  suisse_buchholz
+  swiss_simple,
+  swiss_buchholz
 };
 
 PointMode toPointMode( QString const& s );
