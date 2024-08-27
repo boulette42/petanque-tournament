@@ -426,8 +426,12 @@
     </message>
     <message>
         <location filename="../src/main_window.cpp" line="424"/>
+        <source>, für eine neue Runde benötigt man %1.</source>
+        <translation>, %1 players needed.</translation>
+    </message>
+    <message>
         <source>, nicht genug für eine neue Runde.</source>
-        <translation>, not enough for a new round</translation>
+        <translation type="vanished">, not enough for a new round</translation>
     </message>
     <message numerus="yes">
         <location filename="../src/main_window.cpp" line="435"/>
@@ -714,12 +718,12 @@ They can be saved or ignored.</translation>
         <translation>Show teams only (no players)</translation>
     </message>
     <message>
-        <location filename="../ui/settings_dlg.ui" line="207"/>
+        <location filename="../ui/settings_dlg.ui" line="193"/>
         <source>Passwort</source>
         <translation>Password</translation>
     </message>
     <message>
-        <location filename="../ui/settings_dlg.ui" line="200"/>
+        <location filename="../ui/settings_dlg.ui" line="220"/>
         <source>Wiederholung</source>
         <translation>Repetition</translation>
     </message>
@@ -791,76 +795,76 @@ They can be saved or ignored.</translation>
         <translation>Can&apos;t create backup of file &apos;%1&apos; (%2)</translation>
     </message>
     <message>
-        <location filename="../src/tournament.cpp" line="163"/>
+        <location filename="../src/tournament.cpp" line="162"/>
         <source>Runden-Parameter unplausibel</source>
         <translation>Internal error: round settings</translation>
     </message>
     <message>
-        <location filename="../src/tournament.cpp" line="177"/>
+        <location filename="../src/tournament.cpp" line="176"/>
         <source>Ungerade Anzahl von Teams</source>
         <translation>Odd team count</translation>
     </message>
     <message>
-        <location filename="../src/tournament.cpp" line="185"/>
+        <location filename="../src/tournament.cpp" line="184"/>
         <source>Eine neue Runde konnte nicht erzeugt werden</source>
         <translation>Could not create new round</translation>
     </message>
     <message>
-        <location filename="../src/tournament.cpp" line="214"/>
+        <location filename="../src/tournament.cpp" line="213"/>
         <source>Die Anzahl der Team-Spieler stimmt nicht:</source>
         <translation>Wrong number of team players :</translation>
     </message>
     <message>
-        <location filename="../src/tournament.cpp" line="216"/>
+        <location filename="../src/tournament.cpp" line="215"/>
         <source>
 Team &apos;%1&apos; hat %2 Spieler</source>
         <translation>
 Team &apos;%1&apos; has %2 players</translation>
     </message>
     <message>
-        <location filename="../src/tournament.cpp" line="302"/>
+        <location filename="../src/tournament.cpp" line="301"/>
         <source>Platz %1</source>
         <translation>Site %1</translation>
     </message>
     <message>
-        <location filename="../src/tournament.cpp" line="486"/>
+        <location filename="../src/tournament.cpp" line="485"/>
         <source>Fehlerliste</source>
         <translation>Errorlist</translation>
     </message>
     <message>
-        <location filename="../src/tournament.cpp" line="488"/>
+        <location filename="../src/tournament.cpp" line="487"/>
         <source>Zeile %1: %2</source>
         <translation>Line %1:%2</translation>
     </message>
     <message>
-        <location filename="../src/tournament.cpp" line="497"/>
+        <location filename="../src/tournament.cpp" line="496"/>
         <source>Spieler-Datei lesen</source>
         <translation>Read player file</translation>
     </message>
     <message>
-        <location filename="../src/tournament.cpp" line="498"/>
-        <location filename="../src/tournament.cpp" line="502"/>
+        <location filename="../src/tournament.cpp" line="497"/>
+        <location filename="../src/tournament.cpp" line="501"/>
         <source>%1 Spieler gelesen</source>
         <translation>%1 players found</translation>
     </message>
     <message>
-        <location filename="../src/tournament.cpp" line="506"/>
+        <location filename="../src/tournament.cpp" line="505"/>
         <source>Spieler-Datei fehlerhaft</source>
         <translation>Errors in player file</translation>
     </message>
     <message>
-        <location filename="../src/tournament.cpp" line="536"/>
+        <location filename="../src/tournament.cpp" line="535"/>
         <source>Lesen fehlgeschlagen: %1</source>
         <translation>Could not read tournament data: %1</translation>
     </message>
     <message>
-        <location filename="../src/tournament.cpp" line="551"/>
+        <location filename="../src/tournament.cpp" line="550"/>
         <source>Datei &apos;%1&apos; lässt sich nicht speichern (%2)
 Bítte anderes Verzeichnis in den Einstellungen wählen.</source>
         <translation>Can&apos;t save file &apos;%1&apos; (%2). Please use settings to change target directory .</translation>
     </message>
     <message>
-        <location filename="../src/tournament.cpp" line="576"/>
+        <location filename="../src/tournament.cpp" line="575"/>
         <source>Array &apos;%1&apos; nicht definiert</source>
         <translation>Tag Players: Array &apos;%1&apos; not defined</translation>
     </message>
