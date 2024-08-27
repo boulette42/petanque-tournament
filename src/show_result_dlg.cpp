@@ -37,11 +37,11 @@ void ShowResultDlg::exec( Tournament const& tournament, Team const& team )
   int opponent_points = 0;
   for ( int i = 0; i < team.size(); ++i ) {
     int p_id = team.playerId( i );
-    Player const& player( tournament.player(  p_id ) );
+    Player const& player( tournament.player( p_id ) );
     if ( i == 0 ) {
       QSharedPointer<PlayerResult> result( player.result() );
       if ( result ) {
-        points = result->resultPoints();
+        points = result->resultPoints( true );
         opponent_points = tournament.getOpponentPoints( p_id ) / team.size();
       }
     }

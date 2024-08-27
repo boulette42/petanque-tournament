@@ -4,10 +4,10 @@
 #include <qjsonobject.h>
 
 
-Match Match::readFromJson( QJsonObject const& json, QString& error_string )
+Match Match::readFromJson( QJsonObject const& json, TeamMap const& team_map, QString& error_string )
 {
   Match ret;
-  if ( ! json.contains( J_TEAMS ) || ! json[J_TEAMS].isArray() ) {
+  if ( !json.contains( J_TEAMS ) || !json[J_TEAMS].isArray() ) {
     error_string = tr( "Teamliste nicht vorhanden" );
     return ret;
   }
@@ -17,12 +17,20 @@ Match Match::readFromJson( QJsonObject const& json, QString& error_string )
     error_string = tr( "Falsche Anzahl Teams" );
     return ret;
   }
-  QJsonObject team_obj = team_arr[0].toObject();
-  ret.team_lt_ = Team::readFromJson( team_obj, error_string );
-  if ( ! error_string.isEmpty() ) return Match();
-  team_obj = team_arr[1].toObject();
-  ret.team_rt_ = Team::readFromJson( team_obj, error_string );
-  if ( ! error_string.isEmpty() ) return Match();
+  QJsonObject json_lt = team_arr[0].toObject();
+  QJsonObject json_rt = team_arr[1].toObject();
+  if ( json_lt.contains( J_TEAM_NAME ) && json_lt[J_TEAM_NAME].isString() ) {
+    ret.team_lt_ = Team( *team_map.constFind( json_lt[J_TEAM_NAME].toString() ) );
+    if ( !ret.team_lt_.size() == 0 ) ret.team_rt_ = Team( *team_map.constFind( json_rt[J_TEAM_NAME].toString() ) );
+    if ( ret.team_rt_.size() == 0 ) {
+      error_string = tr( "Teams per Namen nicht gelesen" );
+    }
+  }
+  else {
+    ret.team_lt_ = Team::readFromJson( json_lt, error_string );
+    if ( error_string.isEmpty() ) ret.team_rt_ = Team::readFromJson( json_rt, error_string );
+  }
+  if ( !error_string.isEmpty() ) return Match();
   
   if ( json.contains( J_RESULTS ) ) {
     if ( ! json[J_RESULTS].isArray() ) {
@@ -62,6 +70,12 @@ Match Match::readFromJson( QJsonObject const& json, QString& error_string )
 
 void Match::writeToJson( QJsonObject& match_obj ) const
 {
+  writeTeamsToJson( match_obj );
+  writeResultToJson( match_obj );
+}
+
+void Match::writeTeamsToJson( QJsonObject& match_obj ) const
+{
   QJsonArray team_arr;
   QJsonObject team_lt_obj;
   team_lt_.writeToJson( team_lt_obj );
@@ -70,7 +84,11 @@ void Match::writeToJson( QJsonObject& match_obj ) const
   team_rt_.writeToJson( team_rt_obj );
   team_arr.append( team_rt_obj );
   match_obj[J_TEAMS] = team_arr;
-  if ( ! result_.isEmpty() ) {
+}
+
+void Match::writeResultToJson( QJsonObject& match_obj ) const
+{
+  if ( !result_.isEmpty() ) {
     QJsonArray result_arr;
     QJsonObject pts_lt_obj;
     pts_lt_obj[J_POINTS] = result_.pointsLeft();

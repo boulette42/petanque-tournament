@@ -19,9 +19,9 @@ class Tournament
   QVector<Round> round_list_;
   QVector<Site> site_list_;
   int site_cnt_ = 0;
+  ProgMode mode_ = ProgMode::undefined;
   bool last_round_finished_ = false;
   bool changed_ = false;
-  ProgMode mode_ = ProgMode::undefined;
 
 public:
   Tournament();

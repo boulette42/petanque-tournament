@@ -8,6 +8,7 @@ class TeamResultModel : public QAbstractItemModel
 {
   enum Columns {
     C_TEAM,
+    C_ROUNDS,
     C_POINTS,
     COLUMN_OFFSET
   };

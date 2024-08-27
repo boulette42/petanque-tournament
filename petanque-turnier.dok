@@ -1,7 +1,7 @@
 Dokumentation zum Programm 'Petanque-Turnier'
 
 Autor    Boulette 42
-Version  2023-08-24
+Version  2024-08-23
 
 Einleitung
 
@@ -21,7 +21,7 @@ Die Spieler, die an dem Turnier teilnehmen sollen, müssen in der Liste aktivier
 Wenn die Auswahl der Spieler abgeschlossen ist, wird über das Menü
   Runde -> Runde erzeugen
 eine neue Runde ausgelost. 
-Im Modus 'Supermêlée' werden dabei Doublette-Mannschaften ausgelost, so dass Spieler mit möglichst unterschiedlichen Ergebnissen zusammen spielen. Die erste Runde wird zufällig ausgelost, wobei Spieler aus demselben Verein möglichst in unterschiedlichen Paarungen spielen. In der zweiten Runde spielt jeweils ein Spieler mit einem Sieg zusammen mit einem Spieler mit einer Niederlage - möglichst gegen andere Gegner als in der ersten Runde. In der dritten (und letzten) Runde werden Spieler mit zwei Siegen zusammen mit Spielern ohne Sieg in ein Team gelost. Die Spieler mit einem Sieg werden auf die restlichen Teams verteilt, so dass es möglichst viel Abwechslung bei Gegnern und Mitspielern gibt. 
+Im Modus 'Supermelée' werden dabei Doublette-Mannschaften ausgelost, so dass Spieler mit möglichst unterschiedlichen Ergebnissen zusammen spielen. Es müssen mindestens acht Spieler vorhanden sein, um ein Supermelée-Turnier durchführen zu können. Die erste Runde wird zufällig ausgelost, wobei Spieler aus demselben Verein möglichst in unterschiedlichen Paarungen spielen. In der zweiten Runde spielt jeweils ein Spieler mit einem Sieg zusammen mit einem Spieler mit einer Niederlage - möglichst gegen andere Gegner als in der ersten Runde. In der dritten (und letzten) Runde werden Spieler mit zwei Siegen zusammen mit Spielern ohne Sieg in ein Team gelost. Die Spieler mit einem Sieg werden auf die restlichen Teams verteilt, so dass es möglichst viel Abwechslung bei Gegnern und Mitspielern gibt. 
 Der jetzige Spielmodus sieht vor, dass keine Freilose verteilt werden, dass es also bei einer ungeraden Spieleranzahl zu einer unechten Triplette 2:3 kommt.
 Im Team-Mode werden möglichst Mannschaften mit der gleichen Anzahl siegreicher Begegnungen gegeneinander gelost. Eine geringere Priorität hat die Tatsache, die Anzahl der Begegnungen innerhalb eines Vereins gering zu halten.
 Nach dem Beenden eines Spiels wird das Ergebnis eingetragen, indem das betreffende Spiel per Doppelklick (oder <RETURN>) aktiviert wird.
@@ -32,13 +32,30 @@ Ergebnisse aus früheren Runden können nachträglich geändert werden. Nach der
 
 Programm-Modi
 Das Programm unterstützt zwei Modi:
-Im Supermêlée-Modus werden die Spieler einzeln bewertet und in jeder Runde in zufällig zusammengestellte Mannschaften gelost.
+Im Supermelée-Modus werden die Spieler einzeln bewertet und in jeder Runde in zufällig zusammengestellte Mannschaften gelost.
 Im Team-Modus werden die Spieler über ihren Team-Namen festen Teams zugeordnet. Dabei werden jeweils zwei oder drei Spieler in einem Team zusammengestellt. Die Anzahl der resultierenden Teams muss gerade sein, Freilose werden nicht unterstützt. 
   Tipp: Bei einer ungeraden Anzahl von Teams wird ein Pseudo-Team namens
         "Freilos" aus zwei erfundenen Spielern gebildet. Jedes Team, das
         gegen dieses Pseudo-Team gelost wird, wird mit dem Sieg-Ergebnis
-        13:12 gewertet.
+        13:7 gewertet.
 Der Modus wird in den Einstellungen ausgewählt. Wenn ein Turnier beim Programm-Aufruf geladen wurde und hier bereits ein Modus festgelegt ist, ist dieser hinterher nicht mehr änderbar. Erst das Laden einer neuen Spieler-Liste ermöglicht einen anderen Modus.
+
+Wertungs-Modi
+Im Team-Modus werden drei Wertungs-Modi angeboten:
+- Formule X ist im Supermelée-Modus immer aktiv. Hier wird die erreichte
+  Punktzahl gewertet. Bei einem Sieg werden 100 Punkte plus die Differenz
+  zur Punktzahl des Gegners hinzugefügt, so dass bis zu 126 Punkte in
+  einem Spiel erreicht werden können (bei 13:0).
+- Die vereinfachte Wertung beim Schweizer System berücksichtigt zunächst
+  die Anzahl der gewonnenen Spiele. Als zweites Kriterium wird die Summe
+  der Differenzen zur jeweiligen Punktzahl des Gegners berücksichtigt,
+  d.h. je höher man gewinnt, desto besser für die Wertung.
+- Beim Schweizer System mit Buchholzwertung werden nach der Anzahl der
+  gewonnenen Spiele die Punkte der Gegner summiert. Bei Gleichheit wird
+  noch die Summe der Buchholzpunkte der Gegner als Feinwertung gewertet.
+  Hier ist die Stärke der Gegner, gegen die man gelost wurde, das wichtige
+  Kriterium, um die Ungerechtigkeit beim Losen auszugleichen.
+Der Wertungs-Modus ist jederzeit änderbar.
 
 Automatische Turnier-Speicherung
 Bei Programm-Ende wird ein begonnenes Turnier automatisch unter dem Tagesdatum gespeichert (Dateiname petu_daten_jjjjmmtt.json). Der erneute Aufruf des Programms ohne Aufruf-Parameter lädt das Turnier mit diesem Tagesdatum wieder mit dem gespeicherten Status.
@@ -67,8 +84,9 @@ Menü-Punkte
     Namen gespeichert. Das Laden einer solchen Sicherung kann mit dem
     Dateinamen als Parameter erfolgen.
  -> Einstellungen...
-    Ein Dialog eird aufgerufen, mit dem der Turnier-Modus und das
-    Zielverzeichnis der automatischen Speicherung festgelegt werden können.
+    Ein Dialog wird aufgerufen, mit dem der Turnier-Modus, der Wertungs-Modus
+    und das Zielverzeichnis der automatischen Speicherung festgelegt werden
+    können.
     Die Option, ob die Plätze bei der Auswahl berücksichtigt werden sollen,
     und die initiale Anzahl der Plätze kann hier aktiviert werden.
     Außerdem kann hier die generelle Schriftgröße festgelegt werden. Die

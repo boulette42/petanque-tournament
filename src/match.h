@@ -17,8 +17,10 @@ public:
 
   int playerCount() const { return team_lt_.size() + team_rt_.size(); }
 
-  static Match readFromJson( QJsonObject const& json, QString& error_string );
+  static Match readFromJson( QJsonObject const& json, TeamMap const& team_map, QString& error_string );
   void writeToJson( QJsonObject& json ) const;
+  void writeTeamsToJson( QJsonObject& json ) const;
+  void writeResultToJson( QJsonObject& json ) const;
 };
 
 inline bool operator==( Match const& lhs, Match const& rhs )

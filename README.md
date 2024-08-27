@@ -1,6 +1,6 @@
 # Petanque-tournament
 This application can be used to manage round-based competitions in Petanque/Boule. There is basic support for a list of players and the draw of teams and matches at supermêlée or team based competitions.<br>
-Die Sprache des Programms ist bisher ausschließlich "deutsch".
+The natural language of the software is german but there are translations to english and french.
 
 ## Requirements
 Qt5-framework of trolltech (www.qt.io) is required to build this project.<br>

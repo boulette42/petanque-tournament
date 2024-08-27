@@ -7,6 +7,7 @@
 enum Columns {
   C_ID,
   C_NAME,
+  C_ROUNDS,
   C_POINTS,
   COLUMN_OFFSET
 };

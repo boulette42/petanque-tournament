@@ -2,6 +2,7 @@
 #include "tournament.h"
 #include "player.h"
 #include "player_result.h"
+#include "settings.h"
 
 
 PlayerResultModel::PlayerResultModel( Tournament const& tournament )
@@ -75,14 +76,18 @@ QVariant PlayerResultModel::data( QModelIndex const& mi, int role ) const
         return player.id();
       case C_NAME:
         return QStringLiteral("%1, %2" ).arg( player.lastName(), player.firstName() );
+      case C_ROUNDS:
+        return player.result()
+          ? player.result()->wonRounds()
+          : 0;
       case C_POINTS:
         return player.result()
-          ? player.result()->resultPoints()
+          ? player.result()->resultPoints( global().isFormuleX() )
           : 0;
       default:
         if ( col-COLUMN_OFFSET <= tournament_.lastRoundIdx() ) {
           return player.result()
-            ? player.result()->resultPoints( col-COLUMN_OFFSET )
+            ? player.result()->resultPoints( col-COLUMN_OFFSET, global().isFormuleX() )
             : 0;
         }
       }
@@ -102,6 +107,8 @@ QVariant PlayerResultModel::headerData( int section, Qt::Orientation orientation
         return Tournament::tr( "ID" );
       case C_NAME:
         return Tournament::tr( "Name" );
+      case C_ROUNDS:
+        return Tournament::tr( "Siege" );
       case C_POINTS:
         return Tournament::tr( "Punkte" );
       default:
@@ -118,21 +125,33 @@ void PlayerResultModel::sort( int /*column*/, Qt::SortOrder /*order*/ )
 {
   struct GreaterThan
   {
-    PlayerList const& player_list_;
+    Tournament const& tournament_;
 
-    GreaterThan( PlayerList const& player_list )
-      : player_list_( player_list )
+    GreaterThan( Tournament const& tournament )
+      : tournament_( tournament )
     { }
 
     bool operator()( int i_lhs, int i_rhs ) {
-      Player const& lhs( player_list_[i_lhs] );
-      Player const& rhs( player_list_[i_rhs] );
-      int res_lhs = lhs.result() ? lhs.result()->resultPoints() : 0;
-      int res_rhs = rhs.result() ? rhs.result()->resultPoints() : 0;
-      return res_lhs > res_rhs;
+      Player const& lhs( tournament_.playerList()[i_lhs] );
+      Player const& rhs( tournament_.playerList()[i_rhs] );
+      if ( !lhs.result() ) return false;
+      if ( !rhs.result() ) return true;
+      bool const formule_x = global().isFormuleX();
+      int const res_lhs = lhs.result()->resultPoints( formule_x );
+      int const res_rhs = rhs.result()->resultPoints( formule_x );
+      if ( formule_x ) return res_lhs > res_rhs;
+      int const wr_lhs = lhs.result()->wonRounds();
+      int const wr_rhs = rhs.result()->wonRounds();
+      if ( wr_lhs != wr_rhs ) return wr_lhs > wr_rhs;
+      int const bh_lhs = lhs.result()->buchholzPoints( tournament_ );
+      int const bh_rhs = rhs.result()->buchholzPoints( tournament_ );
+      if ( bh_lhs != bh_rhs ) return bh_lhs > bh_rhs;
+      int const fw_lhs = lhs.result()->buchholzTieBreak( tournament_ );
+      int const fw_rhs = rhs.result()->buchholzTieBreak( tournament_ );
+      return fw_lhs > fw_rhs;
     }
   };
   beginResetModel();
-  std::sort( sorted_.begin(), sorted_.end(), GreaterThan( tournament_.playerList() ) );
+  std::sort( sorted_.begin(), sorted_.end(), GreaterThan( tournament_ ) );
   endResetModel();
 }

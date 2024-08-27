@@ -325,6 +325,8 @@ void MainWindow::editSettings()
   int const font_size = global().fontSize();
   int const site_count = global().siteCount();
   bool const team_mode = tournament_->isTeamMode();
+  bool const formule_x = global().isFormuleX();
+  bool const swiss_simple = global().isSwissSimple();
   if ( global().execDialog( this, tournament_->isUndefinedMode() ) ) {
     if ( global().siteEnabled() != site_enabled ) {
       round_model_->setRound( round_model_->currentRound() );
@@ -341,6 +343,10 @@ void MainWindow::editSettings()
     if ( global().fontSize() != font_size ) {
       updateStyleSheet( *this );
       updateView( TabMode::all );
+    }
+    if ( formule_x != global().isFormuleX()
+      || swiss_simple != global().isSwissSimple() ) {
+      team_result_model_->updateTeamList();
     }
   }
 }
@@ -409,13 +415,13 @@ void MainWindow::newRound()
 {
   QString title = tr( "Neue Runde erzeugen" );
   int const n_player = tournament_->selectedPlayerCount();
-  int const min_player = global().isTeamMode() ? 4 : 12;
+  int const min_player = global().isTeamMode() ? 4 : 8;
   if ( n_player < min_player ) {
     QMessageBox::warning(
       this,
       title,
       tr( "Es ist nur %n Spieler ausgewählt", "", n_player ) +
-      tr( ", nicht genug für eine neue Runde." ) );
+      tr( ", für eine neue Runde benötigt man %1." ).arg( min_player ) );
     activateTab( TabMode::player );
     return;
   }

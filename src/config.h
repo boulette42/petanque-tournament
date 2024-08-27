@@ -18,6 +18,7 @@ using IdxList = QVector<int>;
 using Round = QVector<Match>;
 using PlayerList = QVector<Player>;
 using TeamList = QVector<Team>;
+using TeamMap = QMap<QString, IdList>;
 
 int const INVALID_ID = -1;
 int const INVALID_IDX = -1;
@@ -28,5 +29,14 @@ enum class ProgMode {
   super_melee,
   teams
 };
+
+enum class PointMode {
+  formule_x,
+  swiss_simple,
+  swiss_buchholz
+};
+
+PointMode toPointMode( QString const& s );
+QString toString( PointMode point_mode );
 
 #endif  // CONFIG_H

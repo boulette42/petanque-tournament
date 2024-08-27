@@ -13,10 +13,12 @@ public:
   void setMatch( int round_idx, Match const& match );
   Match const& match( int round_idx ) const;
   int rounds() const { return match_list_.size(); }
-  int resultPoints() const;
-  int resultPoints( int round_idx ) const;
   int wonRounds() const;
+  int resultPoints( bool formule_x ) const;
+  int buchholzPoints( Tournament const& tournament ) const;
+  int buchholzTieBreak( Tournament const& tournament ) const;
   int wonRoundsUntil( int max_round ) const;
+  int resultPoints( int round_idx, bool formule_x ) const;
 };
 
 #endif  // PLAYER_RESULT_H
