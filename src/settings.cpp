@@ -13,9 +13,10 @@ namespace {
 
   QString const company( QStringLiteral( MY_COMPANY_NAME ) );
   QString const app_name( QStringLiteral( MY_PRODUCT_NAME ) );
-  QString const v_mode( QStringLiteral( "Modus" ) );
-  QString const v_mode_s( QStringLiteral( "Supermelee" ) );
-  QString const v_mode_t( QStringLiteral( "Teams" ) );
+  QString const v_prog_mode( QStringLiteral( "Modus" ) );
+  QString const v_prog_mode_s( QStringLiteral( "Supermelee" ) );
+  QString const v_prog_mode_t( QStringLiteral( "Teams" ) );
+  QString const v_prog_mode_1( QStringLiteral( "Tete" ) );
   QString const v_point_mode( QStringLiteral( "Punktmodus" ) );
   QString const v_point_mode_f( QStringLiteral( "FormuleX" ) );
   QString const v_point_mode_s( QStringLiteral( "SwissSimple" ) );
@@ -39,12 +40,31 @@ namespace {
 }
 
 
+ProgMode toProgMode( QString const& s )
+{
+  if ( ! s.compare( v_prog_mode_t, Qt::CaseInsensitive ) ) return ProgMode::teams;
+  if ( ! s.compare( v_prog_mode_1, Qt::CaseInsensitive ) ) return ProgMode::tete;
+  //if ( ! s.compare( v_prog_mode_s, Qt::CaseInsensitive ) ) return ProgMode::super_melee;
+  // default
+  return ProgMode::super_melee;
+}
+
+QString toString( ProgMode prog_mode_ )
+{
+  switch ( prog_mode_ ) {
+  case ProgMode::super_melee: return v_prog_mode_s;
+  case ProgMode::teams: return v_prog_mode_t;
+  case ProgMode::tete: return v_prog_mode_1;
+  }
+  return QString();
+}
+
 PointMode toPointMode( QString const& s )
 {
   if ( ! s.compare( v_point_mode_s, Qt::CaseInsensitive ) ) return PointMode::swiss_simple;
   if ( ! s.compare( v_point_mode_b, Qt::CaseInsensitive ) ) return PointMode::swiss_buchholz;
   //if ( ! s.compare( v_point_mode_f, Qt::CaseInsensitive ) ) return PointMode::formule_x;
-  // Default, war initial fest verdrahtet
+  // default
   return PointMode::formule_x;
 }
 
@@ -61,22 +81,19 @@ QString toString( PointMode point_mode )
 struct SettingsCore
 {
   QString data_dir_;
-  ProgMode mode_ = ProgMode::super_melee;
-  PointMode point_mode_ = PointMode::formule_x;
-  int font_size_ = 0;
-  int site_count_ = 9;
+  ProgMode prog_mode_{ ProgMode::super_melee };
+  PointMode point_mode_{ PointMode::formule_x };
+  int font_size_{ 0 };
+  int site_count_{ 9 };
   QString password_;
-  bool site_enabled_ = true;
-  bool team_only_ = false;
-  bool simulation_enabled_ = false;
+  bool site_enabled_{ true };
+  bool team_only_{ false };
+  bool simulation_enabled_{ false };
 
   void load()
   {
     QSettings s( company, app_name );
-    QString mode = s.value( v_mode ).toString();
-    mode_ = mode.compare( v_mode_t, Qt::CaseInsensitive ) == 0
-      ? ProgMode::teams
-      : ProgMode::super_melee;
+    prog_mode_ = toProgMode( s.value( v_prog_mode ).toString() );
     point_mode_ = toPointMode( s.value( v_point_mode ).toString() );
     team_only_ = s.value( v_team_only ).toBool();
     data_dir_ = s.value( v_data_dir ).toString();
@@ -98,7 +115,8 @@ struct SettingsCore
   void save()
   {
     QSettings s( company, app_name );
-    s.setValue( v_mode, mode_ == ProgMode::teams ? v_mode_t : v_mode_s );
+    s.setValue( v_prog_mode, toString( prog_mode_ ) );
+    s.setValue( v_point_mode, toString( point_mode_ ) );
     s.setValue( v_team_only, team_only_ );
     s.setValue( v_data_dir, data_dir_ );
     s.setValue( v_site_enabled, site_enabled_ );
@@ -117,7 +135,7 @@ class SettingsDlg : public QObject
 
   QPointer<QDialog> dlg_;
   QSharedPointer<Ui_SettingsDialog> ui_;
-  PointMode point_mode_ = PointMode::formule_x;
+  PointMode prev_point_mode_ = PointMode::formule_x;
 
 public:
   SettingsDlg( QWidget* parent )
@@ -144,14 +162,16 @@ public:
 
   bool exec( bool enable_mode, SettingsCore& settings )
   {
-    ui_->gbMode->setVisible( enable_mode );
-    ui_->rbSuperMelee->setChecked( settings.mode_ == ProgMode::super_melee );
-    ui_->rbTeams->setChecked( settings.mode_ == ProgMode::teams );
-    point_mode_ = settings.point_mode_;
-    bool formule_x = point_mode_ == PointMode::formule_x || settings.mode_ == ProgMode::super_melee;
+    ui_->gbMode->setEnabled( enable_mode );
+    ProgMode const prog_mode = settings.prog_mode_;
+    ui_->rbSuperMelee->setChecked( prog_mode == ProgMode::super_melee );
+    ui_->rbTeams->setChecked( prog_mode == ProgMode::teams );
+    ui_->rbTete->setChecked( prog_mode == ProgMode::tete );
+    PointMode const point_mode = prev_point_mode_ = settings.point_mode_;
+    bool const formule_x = point_mode == PointMode::formule_x || settings.prog_mode_ == ProgMode::super_melee;
     ui_->rbFormuleX->setChecked( formule_x );
-    ui_->rbSwissSimple->setChecked( !formule_x && point_mode_ == PointMode::swiss_simple );
-    ui_->rbSwissBuchholz->setChecked( !formule_x && point_mode_ == PointMode::swiss_buchholz );
+    ui_->rbSwissSimple->setChecked( !formule_x && point_mode == PointMode::swiss_simple );
+    ui_->rbSwissBuchholz->setChecked( !formule_x && point_mode == PointMode::swiss_buchholz );
     ui_->leDataDir->setText( settings.data_dir_.isEmpty() ? defaultDataDir() : settings.data_dir_ );
     ui_->cbSiteEnabled->setChecked( settings.site_enabled_ );
     ui_->leSiteCount->setText( QString::number( settings.site_count_ ) );
@@ -161,8 +181,12 @@ public:
     ui_->lePasswordCopy->setText( settings.password_ );
     if ( ! dlg_->exec() ) return false;
     settings.data_dir_ = ui_->leDataDir->text();
-    settings.mode_ = ui_->rbSuperMelee->isChecked() ? ProgMode::super_melee : ProgMode::teams;
-    if ( settings.mode_ == ProgMode::super_melee || ui_->rbFormuleX->isChecked() ) {
+    settings.prog_mode_ = ui_->rbSuperMelee->isChecked()
+      ? ProgMode::super_melee
+      :  ui_->rbTeams->isChecked()
+         ? ProgMode::teams
+         : ProgMode::tete;
+    if ( settings.prog_mode_ == ProgMode::super_melee || ui_->rbFormuleX->isChecked() ) {
       settings.point_mode_ = PointMode::formule_x;
     }
     else {
@@ -222,13 +246,13 @@ public:
   {
     if ( ui_->rbSuperMelee->isChecked() ) {
       if ( ui_->rbFormuleX->isChecked() ) {
-        point_mode_ = PointMode::formule_x;
+        prev_point_mode_ = PointMode::formule_x;
       }
       if ( ui_->rbSwissSimple->isChecked() ) {
-        point_mode_ = PointMode::swiss_simple;
+        prev_point_mode_ = PointMode::swiss_simple;
       }
       if ( ui_->rbSwissBuchholz->isChecked() ) {
-        point_mode_ = PointMode::swiss_buchholz;
+        prev_point_mode_ = PointMode::swiss_buchholz;
       }
       ui_->rbFormuleX->setChecked( true );
       ui_->rbSwissSimple->setChecked( false );
@@ -236,9 +260,9 @@ public:
       ui_->gbPoints->setEnabled( false );
     }
     else {
-      ui_->rbFormuleX->setChecked( point_mode_ == PointMode::formule_x );
-      ui_->rbSwissSimple->setChecked( point_mode_ == PointMode::swiss_simple );
-      ui_->rbSwissBuchholz->setChecked( point_mode_ == PointMode::swiss_buchholz );
+      ui_->rbFormuleX->setChecked( prev_point_mode_ == PointMode::formule_x );
+      ui_->rbSwissSimple->setChecked( prev_point_mode_ == PointMode::swiss_simple );
+      ui_->rbSwissBuchholz->setChecked( prev_point_mode_ == PointMode::swiss_buchholz );
       ui_->gbPoints->setEnabled( true );
     }
   }
@@ -270,12 +294,17 @@ bool Settings::execDialog(QWidget* parent, bool enable_mode)
 
 bool Settings::isTeamMode() const
 {
-  return m_->mode_ == ProgMode::teams;
+  return m_->prog_mode_ != ProgMode::super_melee;
+}
+
+bool Settings::isTeteMode() const
+{
+  return m_->prog_mode_ == ProgMode::tete;
 }
 
 bool Settings::isFormuleX() const
 {
-  return m_->mode_ == ProgMode::super_melee
+  return m_->prog_mode_ == ProgMode::super_melee
       || m_->point_mode_ == PointMode::formule_x;
 }
 
@@ -328,7 +357,7 @@ QString Settings::password() const
 
 void Settings::updateModes( ProgMode prog_mode, PointMode point_mode )
 {
-  m_->mode_ = prog_mode;
+  m_->prog_mode_ = prog_mode;
   m_->point_mode_ = point_mode;
 }
 

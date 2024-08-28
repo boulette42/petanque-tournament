@@ -2,6 +2,7 @@
 #define CONFIG_H
 
 #include <qcoreapplication.h>
+#include <qmap.h>
 #include <qpointer.h>
 #include <qstring.h>
 #include <qvector.h>
@@ -17,6 +18,7 @@ using IdList = QVector<int>;
 using IdxList = QVector<int>;
 using Round = QVector<Match>;
 using PlayerList = QVector<Player>;
+using SiteList = QVector<Site>;
 using TeamList = QVector<Team>;
 using TeamMap = QMap<QString, IdList>;
 
@@ -25,10 +27,13 @@ int const INVALID_IDX = -1;
 
 
 enum class ProgMode {
-  undefined,
   super_melee,
-  teams
+  teams,
+  tete
 };
+
+ProgMode toProgMode( QString const& s );
+QString toString( ProgMode point_mode );
 
 enum class PointMode {
   formule_x,

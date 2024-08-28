@@ -7,7 +7,9 @@
 class TeamResultModel : public QAbstractItemModel
 {
   enum Columns {
+    C_POS,
     C_TEAM,
+    C_NAME,
     C_ROUNDS,
     C_POINTS,
     COLUMN_OFFSET
@@ -30,6 +32,9 @@ protected:
   QVariant data( QModelIndex const& mi, int role ) const override;
   QVariant headerData( int section, Qt::Orientation orientation, int role ) const override;
   void sort( int column, Qt::SortOrder order ) override;
+
+private:
+  QVariant data( int row, int col ) const;
 };
 
 #endif  // TEAM_RESULT_MODEL_H

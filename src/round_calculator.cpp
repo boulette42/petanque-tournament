@@ -26,14 +26,11 @@ const int DOUBLE_DOUBLET = 250;   // Spieler-Wiederholung in Doublette
 const int OPPONENT_TRIPLET = 30;  // Gegner-Wiederholung in Triplette
 const int OPPONENT_DOUBLET = 60;  // Gegner-Wiederholung in Doublette
 
-// Team-Strafpunkte
-const int T_SAME_TEAM = 10000;      // erneut gegen selbes team spielen
-const int T_OTHER_POINTS = 100;     // gegen Team mit anderer Punktzahl
+// Team-Strafpunkte (bis 999 Teams disjunkt
+const int T_SAME_TEAM = 1000000;    // erneut gegen selbes team spielen
+const int T_OTHER_POINTS = 1000;    // gegen Team mit anderer Punktzahl
 const int T_SAME_ASSOC = 1;         // Gegner im selben Verein
-
-const int MAX_TRY_PER_ITERATION = 10000;
-const int MAX_TRY_ABSOLUTE = 1000000;
-const int MAX_POINTS = 100;       // Ergebnisse oberhalb verwerfen
+const int MAX_TRY_SAME_ASSOC = 10;  // Abbruch bei ausschließlich selben Verein
 
 
 struct Randomizer
@@ -120,6 +117,8 @@ public:
     int const n_teams = sorted_teams_.size();
     int points = 0;
     int min_points = INT_MAX;
+    int minimum_malus = calcMinimumMalus();
+    int max_try = MAX_TRY_SAME_ASSOC;
     team_used_ = FlagList( n_teams, false );
     IdxList status( n_teams, -1 );
     IdxList best_status;
@@ -144,13 +143,26 @@ public:
           } while ( points >= min_points );
         } else {
           status[t] = idx_rt;
-          if ( points + malus < min_points ) {
+          if ( points + malus <= min_points ) {
             points += malus;
             if ( t == n_teams-1 ) {
               if ( points == 0 ) return toRound( status );  // optimal
               if ( min_points > points ) {
                 min_points = points;
                 best_status = status;
+                if ( points < minimum_malus ) {
+                  minimum_malus = points;
+                  max_try = MAX_TRY_SAME_ASSOC;
+                }
+              }
+              if ( points <= minimum_malus ) {
+                // dies kann dazu führen, dass Spieler doch gegen andere Spieler
+                // des selben Vereins spielen. Nämlich wenn die gleichen Vereine
+                // das einzige Kriterium zum Ausschluss bilden und mehr als
+                // MAX_TRY_SAME_ASSOC Lösungen hintereinander gleich gut aber
+                // nicht die besten sind...
+                --max_try;
+                if ( max_try < 1 ) return toRound( status );
               }
             } else {
               team_used_[idx_rt] = true;
@@ -231,6 +243,34 @@ private:
     }
     std::sort( tc_list.begin(), tc_list.end(), GreaterThanTeam() );
     sorted_teams_ = tc_list;
+  }
+
+  int calcMinimumMalus() const
+  {
+    QVector<int> wr_cnt;
+    for ( TeamCalc const& tc : sorted_teams_ ) {
+      int wr = tc.won_rounds_;
+      if ( wr >= wr_cnt.size() ) {
+        wr_cnt.resize( wr + 1 );
+      }
+      wr_cnt[wr] += 1;
+    }
+    // Ungerade Anzahl von Teams mit derselben Punktzahl führt *immer*
+    // zu Malus-Punkten
+    int is_uneven = wr_cnt[0] % 2;
+    int different_wr_malus = is_uneven;
+    for ( int i = 1; i < wr_cnt.size(); ++i ) {
+      if ( ( wr_cnt[i] % 2 ) != is_uneven ) {
+        ++different_wr_malus;
+        is_uneven = 1 - is_uneven;
+      }
+    }
+    different_wr_malus *= T_OTHER_POINTS;
+    // ausschließlich Malus-Punkte wegen gleicher Vereine sollten irgendwann
+    // ignoriert werden können, insbesondere bei Vereins-internen Turnieren
+    int same_assoc_malus = player_list_.size() / 2;
+    same_assoc_malus *= T_SAME_ASSOC;
+    return different_wr_malus + same_assoc_malus;
   }
 
   static QMap<int,int> getPlayerToTeam( TeamList const& team_list )
@@ -367,8 +407,8 @@ public:
     for ( int i = 0; i < n; ++i ) {
       team_id_.push_back( t_id );
       match_id_.push_back( m_id );
-      if ( i < i_trpl && i % 2 == 1
-        || i >= i_trpl && i % 3 == 2 )
+      if ( i < i_trpl && ( i % 2 ) == 1
+        || i >= i_trpl && ( i % 3 ) == 2 )
       {
         ++t_id;
         if ( t_id % 2 == 0 ) {
@@ -404,7 +444,7 @@ public:
   TeamList getTeamList0( PlayerList const& players ) const
   {
     // group players by association
-    QMap<QString, QVector<int> > a_map;
+    QMap <QString, IdList> a_map;
     for ( Player const& p : players ) {
       QString assoc = p.association();
       int id = p.id();
@@ -422,7 +462,7 @@ public:
     //   second player left teams
     //   second player right team
     //   all other
-    QVector<Team> ret = initTeams();
+    TeamList ret = initTeams();
     int const tc = ret.size();
     int first_t_id = 0;
     int t_id = first_t_id;
@@ -474,7 +514,7 @@ public:
     }
 
     // stores unused winner/loser ids
-    void insertIdList( QVector<int> const& diff_list, Result wl )
+    void insertIdList( IdList const& diff_list, Result wl )
     {
       IdList& id_list( id_map_[(int)wl] );
       int i = 0;
@@ -698,7 +738,7 @@ public:
       return wla.nextUnusedId( res );
     }
     int id = INVALID_ID;
-    QVector<int> diff_list;
+    IdList diff_list;
     do {
       id = wla.nextUnusedId( res );
       if ( !exclude_list.contains( id ) ) break;
@@ -708,9 +748,9 @@ public:
     return id;
   }
 
-  QVector<Team> initTeams() const
+  TeamList initTeams() const
   {
-    QVector<Team> ret;
+    TeamList ret;
     int const tc = teamCount();
     int const triplet_cnt = playerCount() % 4;
     ret.reserve( tc );
@@ -811,7 +851,6 @@ public:
     initSiteList( tournament.selectedSiteList() );
     initUsedSites( tournament );
     int const n_matches = round_.size();
-    int const n_sites = sorted_sites_.size();
     int pos_max = n_matches;	// keine Überschneidung
     int pos = 0;        // match-position
     do {
@@ -851,7 +890,7 @@ public:
   }
 
 private:
-  void initSiteList( QVector<Site> const& site_list )
+  void initSiteList( SiteList const& site_list )
   {
     struct LessThan {
       bool operator()( SiteCalc const& lhs, SiteCalc const& rhs ) {

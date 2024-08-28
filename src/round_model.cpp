@@ -46,14 +46,16 @@ void RoundModelBase::initRound( Round const& round )
     int row = m * matchRowCount();
     row_to_match_.append( row++ );
     if ( global().siteEnabled() ) {
-      if ( tournament_.isTeamMode() ) {
+      if ( global().isTeamMode() ) {
         row_to_match_.append( row );
       }
       ++row;
     }
-    Match const& match = round_[m];
-    for ( int i = 0; i < match.team_lt_.size(); ++i ) {
-      row_to_match_.append( row++ );
+    if ( !global().isTeteMode() ) {
+      Match const& match = round_[m];
+      for ( int i = 0; i < match.team_lt_.size(); ++i ) {
+        row_to_match_.append( row++ );
+      }
     }
     row_to_match_.append( row );
   }
@@ -62,14 +64,14 @@ void RoundModelBase::initRound( Round const& round )
 
 int RoundModelBase::matchRowCount() const
 {
-  return global().siteEnabled()
-    ? MATCH_ROW_CNT + 1
-    : MATCH_ROW_CNT;
+  int ret = global().isTeteMode() ? TETE_ROW_CNT : MATCH_ROW_CNT;
+  if ( global().siteEnabled() ) ++ret;
+  return ret;
 }
 
 bool RoundModelBase::isTeamOnlyShown() const
 {
-  return global().isTeamOnlyShown() && tournament_.isTeamMode();
+  return global().isTeamOnlyShown() && global().isTeamMode();
 }
 
 QModelIndex RoundModelBase::index( int row, int column, QModelIndex const& /*parent*/ ) const
@@ -94,7 +96,7 @@ int RoundModelBase::rowCount( QModelIndex const& parent ) const
 int RoundModelBase::columnCount( QModelIndex const& parent ) const
 {
   if ( parent.isValid() ) return 0;
-  return tournament_.isTeamMode()
+  return global().isTeamMode()
     ? COLUMN_CNT_TEAMS + isTeamOnlyShown()
     : COLUMN_CNT_SUPERMELEE;
 }
@@ -120,19 +122,31 @@ QVariant RoundModelBase::data( QModelIndex const& mi, int role ) const
         case 0:
           return tournament_.siteName( match.site_id_ );
         case 1:
-          if ( ! tournament_.isTeamMode() ) {
+          if ( ! global().isTeamMode() ) {
             return match.result_.toString();
           }
           break;
         }
+      }
+      else if ( global().isTeteMode() ) {
+        if ( k == 0 ) {
+          switch ( col ) {
+          case 0:
+            return tournament_.playerName( match.team_lt_.playerId( 0 ) );
+          case 1:
+            return tournament_.playerName( match.team_rt_.playerId( 0 ) );
+          case 2:
+            return match.result_.toString();
+          }
+        }
       } else if ( k == 0 ) {
         switch ( col ) {
         case 0:
-          return tournament_.isTeamMode()
+          return global().isTeamMode()
             ? tournament_.player( match.team_lt_.playerId( 0 ) ).team()
             : Tournament::tr( "Match %1" ).arg( m + 1 );
         case 1:
-          if ( tournament_.isTeamMode() ) {
+          if ( global().isTeamMode() ) {
             return tournament_.player( match.team_rt_.playerId( 0 ) ).team();
           }
           [[fallthrough]];

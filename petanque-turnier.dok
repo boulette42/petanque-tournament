@@ -1,12 +1,13 @@
 Dokumentation zum Programm 'Petanque-Turnier'
 
 Autor    Boulette 42
-Version  2024-08-23
+Version  2024-08-28
 
 Einleitung
 
-Das Programm "Petanque-Turnier" dient der Protokollierung und der Auslosung von Runden-basierten Turnieren in der Sportart Petanque/Boule. Es enthält eine rudimentäre Spieler-Verwaltung, die Auslosung der Mannschaften und Begegnungen beim Supermelée und die Auslosung der Begegnungen beim Team-basierten Turnier. Als Option kann berücksichtigt werden, dass die Spieler möglichst auf unterschiedlichen Plätzen spielen sollen. Die Anzeige auf mehreren Bildschirmen wird unterstützt.
-Die Punkte werden nach dem Formule-X-System ermittelt. Jeder Spieler erhält die erzielten Punkte. Für einen Sieg gibt es zusätzlich 100 Punkte + die Differenz zum Ergebnis der Gegner.
+Das Programm "Petanque-Turnier" dient der Protokollierung und der Auslosung von Runden-basierten Turnieren in der Sportart Petanque/Boule. Es enthält eine rudimentäre Spieler-Verwaltung, die Auslosung der Mannschaften und Begegnungen beim Supermelée und die Auslosung der Begegnungen beim Team-basierten Turnier und Tête-à-tête. Als Option kann berücksichtigt werden, dass die Spieler möglichst auf unterschiedlichen Plätzen spielen sollen. Die Anzeige auf mehreren Bildschirmen wird unterstützt.
+Die Punkte im Supermelée-Modus werden nach dem Formule-X-System ermittelt. Jeder Spieler erhält die erzielten Punkte. Für einen Sieg gibt es zusätzlich 100 Punkte + die Differenz zum Ergebnis der Gegner.
+Im Team-Modus können die Punkte alternativ auch mit Buchholz-Wertung oder vereinfacht als Differenz der Ergebnisse berücksichtigt werden. 
 
 
 Ablauf

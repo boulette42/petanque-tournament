@@ -15,6 +15,7 @@ enum class RoundStatus {
 class RoundModelBase : public QAbstractItemModel
 {
   int const MATCH_ROW_CNT = 5;
+  int const TETE_ROW_CNT = 2;
 
 protected:
   Tournament& tournament_;
@@ -38,7 +39,7 @@ protected:
   int rowCount( QModelIndex const& parent ) const override;
   int columnCount( QModelIndex const& parent ) const override;
   QVariant data( QModelIndex const& mi, int role ) const override;
-  QVariant RoundModelBase::teamOnlyData( QModelIndex const& mi, int role ) const;
+  QVariant teamOnlyData( QModelIndex const& mi, int role ) const;
   QVariant headerData( int section, Qt::Orientation orientation, int role ) const override;
   void sort( int column, Qt::SortOrder order ) override;
 };

@@ -63,7 +63,7 @@ EditMatchDlg::~EditMatchDlg() = default;
 bool EditMatchDlg::exec( Match const& match, int mno, Tournament const& tournament )
 {
   QString title;
-  if ( tournament.isTeamMode() ) {
+  if ( global().isTeamMode() ) {
     int p_id_lt = match.team_lt_.playerId( 0 );
     int p_id_rt = match.team_rt_.playerId( 0 );
     title = QStringLiteral( "%1 - %2" )

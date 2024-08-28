@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>599</width>
+    <width>604</width>
     <height>385</height>
    </rect>
   </property>
@@ -31,6 +31,13 @@
        <widget class="QRadioButton" name="rbTeams">
         <property name="text">
          <string>Feste Teams</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="rbTete">
+        <property name="text">
+         <string>Tête</string>
         </property>
        </widget>
       </item>
@@ -76,6 +83,19 @@
          <string>Schweizer System mit Bucholz-Wertung</string>
         </property>
        </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_5">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>12</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
       </item>
      </layout>
     </widget>

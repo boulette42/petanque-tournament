@@ -2,6 +2,7 @@
 #include "tournament.h"
 #include "player.h"
 #include "player_result.h"
+#include "settings.h"
 
 enum Columns {
   C_ID,
@@ -120,7 +121,7 @@ QVariant PlayerModel::data( QModelIndex const& mi, int role ) const
     case Qt::DisplayRole: {
       Player const& player = tournament_.player_list_[idx];
       switch ( col ) {
-      case 0: return tournament_.isTeamMode()
+      case 0: return global().isTeamMode()
         ? QVariant( player.team() )
         : QVariant( player.id() );
       case 1: return player.lastName();
@@ -174,7 +175,7 @@ QVariant PlayerModel::headerData( int section, Qt::Orientation orientation, int 
     switch ( role ) {
     case Qt::DisplayRole:
       switch ( section ) {
-      case 0: return tournament_.isTeamMode() ? tr( "Team" ) : tr( "ID" );
+      case 0: return global().isTeamMode() ? tr( "Team" ) : tr( "ID" );
       case 1: return tr( "Name" );
       case 2: return tr( "Vorname" );
       case 3: return tr( "Verein" );
@@ -198,7 +199,7 @@ void PlayerModel::sort( int column, Qt::SortOrder order )
       : player_list_( tournament.playerList() )
       , col_( col )
       , ascending_( ascending )
-      , team_mode_( tournament.isTeamMode() )
+      , team_mode_( global().isTeamMode() )
     { }
 
     bool operator()( int i_lhs, int i_rhs )

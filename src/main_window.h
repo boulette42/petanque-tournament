@@ -19,7 +19,6 @@ class MainWindow : public QMainWindow
   Q_OBJECT
 
   enum class TabMode {
-    current,
     player,
     site,
     round,
@@ -48,7 +47,7 @@ private:
 
   bool saveTournament( QString const& filename );
   void initModels();
-  void updateView( TabMode tm = TabMode::current );
+  void updateView( TabMode tm );
   void updateRoundSelect( int round_idx );
   void activateTab( TabMode mode );
   bool eventFilter( QObject* obj, QEvent* evt ) override;
