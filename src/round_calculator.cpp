@@ -117,7 +117,7 @@ public:
     int const n_teams = sorted_teams_.size();
     int points = 0;
     int min_points = INT_MAX;
-    int const minimum_malus = calcMinimumMalus();
+    int minimum_malus = calcMinimumMalus();
     int max_try = MAX_TRY_SAME_ASSOC;
     team_used_ = FlagList( n_teams, false );
     IdxList status( n_teams, -1 );
@@ -147,13 +147,22 @@ public:
             points += malus;
             if ( t == n_teams-1 ) {
               if ( points == 0 ) return toRound( status );  // optimal
-              if ( points <= minimum_malus ) {
-                --max_try;
-                if ( max_try < 1 ) return toRound( status );
-              }
               if ( min_points > points ) {
                 min_points = points;
                 best_status = status;
+                if ( points < minimum_malus ) {
+                  minimum_malus = points;
+                  max_try = MAX_TRY_SAME_ASSOC;
+                }
+              }
+              if ( points <= minimum_malus ) {
+                // dies kann dazu führen, dass Spieler doch gegen andere Spieler
+                // des selben Vereins spielen. Nämlich wenn die gleichen Vereine
+                // das einzige Kriterium zum Ausschluss bilden und mehr als
+                // MAX_TRY_SAME_ASSOC Lösungen hintereinander gleich gut aber
+                // nicht die besten sind...
+                --max_try;
+                if ( max_try < 1 ) return toRound( status );
               }
             } else {
               team_used_[idx_rt] = true;
