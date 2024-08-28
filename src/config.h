@@ -27,7 +27,6 @@ int const INVALID_IDX = -1;
 
 
 enum class ProgMode {
-  undefined,
   super_melee,
   teams
 };

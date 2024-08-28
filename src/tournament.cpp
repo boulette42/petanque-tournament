@@ -252,19 +252,7 @@ void Tournament::setRound( int round_idx, Round const& round )
 
 bool Tournament::isTeamMode() const
 {
-  switch ( prog_mode_ ) {
-  case ProgMode::teams:
-    return true;
-  case ProgMode::undefined:
-    return global().isTeamMode();
-  //case ProgMode::SUPER_MELEE:
-  }
-  return false;
-}
-
-bool Tournament::isUndefinedMode() const
-{
-  return prog_mode_ == ProgMode::undefined;
+  return global().isTeamMode();
 }
 
 Player const& Tournament::player( int id ) const
@@ -517,7 +505,6 @@ bool Tournament::loadPlayerList( QString const& csv_name )
   }
   round_list_.clear();
   setSiteCount( global().siteCount() );
-  prog_mode_ = ProgMode::undefined;
   return true;
 }
 
@@ -587,10 +574,9 @@ bool Tournament::readFromJson( QJsonObject const& json, QString& error_string )
     if ( player.id() == INVALID_ID ) return false;
     player_list_.append( player );
   }
+  global().updateModes( prog_mode, point_mode );
   round_list_.clear();
   if ( json.contains( J_ROUNDS ) && json[J_ROUNDS].isArray() ) {
-    global().updateModes( prog_mode, point_mode );
-    prog_mode_ = prog_mode;
     TeamMap team_map;
     if ( prog_mode == ProgMode::teams ) {
       team_map = createTeamMap( player_list_ );

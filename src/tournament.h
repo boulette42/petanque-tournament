@@ -18,10 +18,9 @@ class Tournament
   PlayerList player_list_;
   QVector<Round> round_list_;
   SiteList site_list_;
-  int site_cnt_ = 0;
-  ProgMode prog_mode_ = ProgMode::undefined;
-  bool last_round_finished_ = false;
-  bool changed_ = false;
+  int site_cnt_{ 0 };
+  bool last_round_finished_{ false };
+  bool changed_{ false };
 
 public:
   Tournament();
@@ -37,7 +36,6 @@ public:
   void setLastRoundFinished( bool last_round_finished ) { last_round_finished_ = last_round_finished; }
 
   bool isTeamMode() const;
-  bool isUndefinedMode() const;
   Player const& player( int id ) const;
   QString playerName( int id ) const;
   bool addPlayer( Player const& player );

@@ -329,7 +329,7 @@ void MainWindow::editSettings()
   bool const team_mode = tournament_->isTeamMode();
   bool const formule_x = global().isFormuleX();
   bool const swiss_simple = global().isSwissSimple();
-  if ( global().execDialog( this, tournament_->isUndefinedMode() ) ) {
+  if ( global().execDialog( this, tournament_->round( 0 ).isEmpty() ) ) {
     if ( global().siteEnabled() != site_enabled ) {
       round_model_->setRound( round_model_->currentRound() );
     }
@@ -517,25 +517,24 @@ void MainWindow::updateView( TabMode tm )
   tab_widget_helper_->setTabVisible( TI_PlayerResult, ! team_mode );
   tab_widget_helper_->setTabVisible( TI_TeamResult, team_mode );
 
-  int ci = tm == TabMode::current ? ui_->tabWidget->currentIndex() : INVALID_IDX;
-  if ( ci == TI_Player || tm == TabMode::player || tm == TabMode::all ) {
+  if ( tm == TabMode::player || tm == TabMode::all ) {
     for ( int col = 0; col < player_model_->columnCount() - 1; ++col ) {
       ui_->tvPlayerList->resizeColumnToContents( col );
     }
   }
-  if ( ci == TI_Site || tm == TabMode::all ) {
+  if ( tm == TabMode::all ) {
     for ( int col = 0; col < site_model_->columnCount() - 1; ++col ) {
       ui_->tvSiteList->resizeColumnToContents( col );
     }
   }
-  if ( ci == TI_Round || tm == TabMode::round || tm == TabMode::all ) {
+  if ( tm == TabMode::round || tm == TabMode::all ) {
     ui_->tvMatchList->header()->setVisible( global().isTeamOnlyShown() );
     ui_->tvMatchList->setSortingEnabled( global().isTeamOnlyShown() );
     for ( int col = 0; col < round_model_->columnCount() - 1; ++col ) {
       ui_->tvMatchList->resizeColumnToContents( col );
     }
   }
-  if ( ci == TI_PlayerResult || ci == TI_TeamResult || tm == TabMode::result || tm == TabMode::all ) {
+  if ( tm == TabMode::result || tm == TabMode::all ) {
     if ( team_mode ) {
       for ( int col = 0; col < team_result_model_->columnCount() - 1; ++col ) {
         ui_->tvTeamResultList->resizeColumnToContents( col );
