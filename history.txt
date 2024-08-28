@@ -3,6 +3,8 @@ changes of petanque-tournament
 Version 0.98b - 2024-08-28
 feature
 - tête-à-tête mode (single players) added
+bug
+- possible endless loop, if no best solution could be found
 
 Version 0.98a - 2024-08-26
 feature

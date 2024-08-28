@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Neues Fenster wählen</string>
+   <string>Neues Fenster erzeugen</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
