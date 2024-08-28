@@ -252,7 +252,7 @@ void Tournament::setRound( int round_idx, Round const& round )
 
 bool Tournament::isTeamMode() const
 {
-  switch ( mode_ ) {
+  switch ( prog_mode_ ) {
   case ProgMode::teams:
     return true;
   case ProgMode::undefined:
@@ -264,7 +264,7 @@ bool Tournament::isTeamMode() const
 
 bool Tournament::isUndefinedMode() const
 {
-  return mode_ == ProgMode::undefined;
+  return prog_mode_ == ProgMode::undefined;
 }
 
 Player const& Tournament::player( int id ) const
@@ -363,9 +363,9 @@ int Tournament::selectedPlayerCount() const
   return cnt;
 }
 
-QVector<Site> Tournament::selectedSiteList() const
+SiteList Tournament::selectedSiteList() const
 {
-  QVector<Site> ret;
+  SiteList ret;
   int const n = site_list_.size();
   ret.reserve( n );
   for ( int i = 0; i < n; ++i ) {
@@ -517,7 +517,7 @@ bool Tournament::loadPlayerList( QString const& csv_name )
   }
   round_list_.clear();
   setSiteCount( global().siteCount() );
-  mode_ = ProgMode::undefined;
+  prog_mode_ = ProgMode::undefined;
   return true;
 }
 
@@ -532,7 +532,10 @@ bool Tournament::loadTournament( QString const& tournament_name )
   QJsonDocument tournament_doc( QJsonDocument::fromJson( tournament_data ) );
   QString error_string;
   if ( ! readFromJson( tournament_doc.object(), error_string ) ) {
-    qWarning() << tr( "Lesen fehlgeschlagen: %1" ).arg( error_string );
+    QMessageBox::warning(
+      nullptr,
+      Tournament::tr( "Datei laden" ),
+      tr( "Lesen fehlgeschlagen: %1" ).arg( error_string ) );
     return false;
   }
   for ( int ri = 0; ri < round_list_.size(); ++ri ) {
@@ -561,10 +564,10 @@ bool Tournament::saveTournament( QString const& tournament_name, QString& error_
 bool Tournament::readFromJson( QJsonObject const& json, QString& error_string )
 {
   error_string.clear();
-  ProgMode mode = ProgMode::undefined;
+  ProgMode prog_mode = ProgMode::super_melee;
   if ( json.contains( J_MODE ) && json[J_MODE].isString() ) {
-    QString s_mode = json[J_MODE].toString();
-    mode = s_mode == QLatin1String( "teams" ) ? ProgMode::teams : ProgMode::super_melee;
+    QString s_prog_mode = json[J_MODE].toString();
+    prog_mode = s_prog_mode == QLatin1String( "teams" ) ? ProgMode::teams : ProgMode::super_melee;
   }
   PointMode point_mode = PointMode::formule_x;
   if ( json.contains( J_POINT_MODE ) && json[J_POINT_MODE].isString() ) {
@@ -586,10 +589,10 @@ bool Tournament::readFromJson( QJsonObject const& json, QString& error_string )
   }
   round_list_.clear();
   if ( json.contains( J_ROUNDS ) && json[J_ROUNDS].isArray() ) {
-    global().updateModes( mode, point_mode );
-    mode_ = mode;
+    global().updateModes( prog_mode, point_mode );
+    prog_mode_ = prog_mode;
     TeamMap team_map;
-    if ( mode == ProgMode::teams ) {
+    if ( prog_mode == ProgMode::teams ) {
       team_map = createTeamMap( player_list_ );
     }
     QJsonArray r_arr = json[J_ROUNDS].toArray();

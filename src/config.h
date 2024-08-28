@@ -2,6 +2,7 @@
 #define CONFIG_H
 
 #include <qcoreapplication.h>
+#include <qmap.h>
 #include <qpointer.h>
 #include <qstring.h>
 #include <qvector.h>
@@ -17,6 +18,7 @@ using IdList = QVector<int>;
 using IdxList = QVector<int>;
 using Round = QVector<Match>;
 using PlayerList = QVector<Player>;
+using SiteList = QVector<Site>;
 using TeamList = QVector<Team>;
 using TeamMap = QMap<QString, IdList>;
 

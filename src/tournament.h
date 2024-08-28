@@ -17,9 +17,9 @@ class Tournament
 
   PlayerList player_list_;
   QVector<Round> round_list_;
-  QVector<Site> site_list_;
+  SiteList site_list_;
   int site_cnt_ = 0;
-  ProgMode mode_ = ProgMode::undefined;
+  ProgMode prog_mode_ = ProgMode::undefined;
   bool last_round_finished_ = false;
   bool changed_ = false;
 
@@ -47,8 +47,8 @@ public:
   int selectedPlayerCount() const;
 
   QString siteName( int id ) const;
-  QVector<Site> const& siteList() const { return site_list_; }
-  QVector<Site> selectedSiteList() const;
+  SiteList const& siteList() const { return site_list_; }
+  SiteList selectedSiteList() const;
   int siteCount() const { return site_cnt_; }
   bool setSiteCount( int site_cnt );
   int selectedSiteCount() const;

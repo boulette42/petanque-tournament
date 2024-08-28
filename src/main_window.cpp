@@ -303,6 +303,8 @@ void MainWindow::activateTab( TabMode mode )
       ui_->tvPlayerResultList->setFocus();
     }
     break;
+  case TabMode::all:
+    break;
   }
 }
 

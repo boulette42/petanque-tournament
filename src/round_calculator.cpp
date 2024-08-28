@@ -404,7 +404,7 @@ public:
   TeamList getTeamList0( PlayerList const& players ) const
   {
     // group players by association
-    QMap<QString, QVector<int> > a_map;
+    QMap <QString, IdList> a_map;
     for ( Player const& p : players ) {
       QString assoc = p.association();
       int id = p.id();
@@ -422,7 +422,7 @@ public:
     //   second player left teams
     //   second player right team
     //   all other
-    QVector<Team> ret = initTeams();
+    TeamList ret = initTeams();
     int const tc = ret.size();
     int first_t_id = 0;
     int t_id = first_t_id;
@@ -474,7 +474,7 @@ public:
     }
 
     // stores unused winner/loser ids
-    void insertIdList( QVector<int> const& diff_list, Result wl )
+    void insertIdList( IdList const& diff_list, Result wl )
     {
       IdList& id_list( id_map_[(int)wl] );
       int i = 0;
@@ -698,7 +698,7 @@ public:
       return wla.nextUnusedId( res );
     }
     int id = INVALID_ID;
-    QVector<int> diff_list;
+    IdList diff_list;
     do {
       id = wla.nextUnusedId( res );
       if ( !exclude_list.contains( id ) ) break;
@@ -708,9 +708,9 @@ public:
     return id;
   }
 
-  QVector<Team> initTeams() const
+  TeamList initTeams() const
   {
-    QVector<Team> ret;
+    TeamList ret;
     int const tc = teamCount();
     int const triplet_cnt = playerCount() % 4;
     ret.reserve( tc );
@@ -850,7 +850,7 @@ public:
   }
 
 private:
-  void initSiteList( QVector<Site> const& site_list )
+  void initSiteList( SiteList const& site_list )
   {
     struct LessThan {
       bool operator()( SiteCalc const& lhs, SiteCalc const& rhs ) {
