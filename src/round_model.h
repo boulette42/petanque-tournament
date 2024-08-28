@@ -38,7 +38,7 @@ protected:
   int rowCount( QModelIndex const& parent ) const override;
   int columnCount( QModelIndex const& parent ) const override;
   QVariant data( QModelIndex const& mi, int role ) const override;
-  QVariant RoundModelBase::teamOnlyData( QModelIndex const& mi, int role ) const;
+  QVariant teamOnlyData( QModelIndex const& mi, int role ) const;
   QVariant headerData( int section, Qt::Orientation orientation, int role ) const override;
   void sort( int column, Qt::SortOrder order ) override;
 };

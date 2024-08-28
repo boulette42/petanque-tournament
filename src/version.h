@@ -10,5 +10,6 @@
 #define MY_COMPANY_NAME "Boulette 42"
 #define MY_PRODUCT_NAME "Petanque Turnier"
 #define MY_PRODUCT_DESCRIPTION "Turnierverwaltung Boule/Petanque"
+#define MY_YEAR "2022-2024"
 
 #endif

@@ -12,7 +12,7 @@ AboutDlg::AboutDlg( QWidget* parent )
   ui_->setupUi( dlg_ );
   ui_->txVersion->setText( QStringLiteral( MY_VERSION_STRING ) );
   ui_->txAuthor->setText( QStringLiteral( MY_COMPANY_NAME ) );
-  ui_->txYear->setText( QStringLiteral( "2022" ) );
+  ui_->txYear->setText( QStringLiteral( MY_YEAR ) );
   QObject::connect( ui_->pbOk, &QPushButton::clicked,
     dlg_, &QDialog::accept );
   if ( !LicensesDlg::licenseFileExists() ) {

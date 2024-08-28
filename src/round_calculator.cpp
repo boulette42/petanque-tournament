@@ -367,8 +367,8 @@ public:
     for ( int i = 0; i < n; ++i ) {
       team_id_.push_back( t_id );
       match_id_.push_back( m_id );
-      if ( i < i_trpl && i % 2 == 1
-        || i >= i_trpl && i % 3 == 2 )
+      if ( i < i_trpl && ( i % 2 ) == 1
+        || i >= i_trpl && ( i % 3 ) == 2 )
       {
         ++t_id;
         if ( t_id % 2 == 0 ) {
@@ -811,7 +811,6 @@ public:
     initSiteList( tournament.selectedSiteList() );
     initUsedSites( tournament );
     int const n_matches = round_.size();
-    int const n_sites = sorted_sites_.size();
     int pos_max = n_matches;	// keine Überschneidung
     int pos = 0;        // match-position
     do {

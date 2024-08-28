@@ -1,13 +1,14 @@
 changes of petanque-tournament
 
-Version 0.98a - 2023-08-26
+Version 0.98a - 2024-08-26
+feature
 - different evaluation modes in team-mode: formule x,
   swiss-system simple and swiss-system buchholz
 - simplification of json-format in team-mode: tournaments can
   be saved and loaded with team-names 
 
-Version 0.97b - 2023-08-21
-- minimum number of supermelee players reduced from 12 to 8
+Version 0.97b - 2024-08-21
+- set minimum players of supermelee to 8
 
 Version 0.97a - 2023-08-24
 bug
