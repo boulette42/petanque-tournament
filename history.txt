@@ -1,5 +1,9 @@
 changes of petanque-tournament
 
+Version 0.98c - 2024-08-28
+bug
+- couldn't find Team names with UpperCase-Letters in saved File
+
 Version 0.98b - 2024-08-28
 feature
 - tête-à-tête mode (single players) added

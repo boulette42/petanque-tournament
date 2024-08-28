@@ -20,8 +20,18 @@ Match Match::readFromJson( QJsonObject const& json, TeamMap const& team_map, QSt
   QJsonObject json_lt = team_arr[0].toObject();
   QJsonObject json_rt = team_arr[1].toObject();
   if ( json_lt.contains( J_TEAM_NAME ) && json_lt[J_TEAM_NAME].isString() ) {
-    ret.team_lt_ = Team( *team_map.constFind( json_lt[J_TEAM_NAME].toString() ) );
-    if ( !ret.team_lt_.size() == 0 ) ret.team_rt_ = Team( *team_map.constFind( json_rt[J_TEAM_NAME].toString() ) );
+    QString team_name = json_lt[J_TEAM_NAME].toString().toLower();
+    auto it = team_map.constFind( team_name );
+    if ( it != team_map.constEnd() ) {
+      ret.team_lt_ = Team( *it );
+      if ( !ret.team_lt_.size() == 0 ) {
+        team_name = json_rt[J_TEAM_NAME].toString().toLower();
+        it = team_map.constFind( team_name );
+        if ( it != team_map.constEnd() ) {
+          ret.team_rt_ = Team( *it );
+        }
+      }
+    }
     if ( ret.team_rt_.size() == 0 ) {
       error_string = tr( "Teams per Namen nicht gelesen" );
     }
