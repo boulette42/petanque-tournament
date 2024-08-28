@@ -18,6 +18,7 @@ public:
   QString dataDir( bool for_write = false ) const;
   int fontSize() const;
   bool isTeamMode() const;
+  bool isTeteMode() const;
   bool isFormuleX() const;
   bool isSwissSimple() const;
   bool siteEnabled() const;

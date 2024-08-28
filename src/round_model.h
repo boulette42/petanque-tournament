@@ -15,6 +15,7 @@ enum class RoundStatus {
 class RoundModelBase : public QAbstractItemModel
 {
   int const MATCH_ROW_CNT = 5;
+  int const TETE_ROW_CNT = 2;
 
 protected:
   Tournament& tournament_;

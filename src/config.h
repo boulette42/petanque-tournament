@@ -28,8 +28,12 @@ int const INVALID_IDX = -1;
 
 enum class ProgMode {
   super_melee,
-  teams
+  teams,
+  tete
 };
+
+ProgMode toProgMode( QString const& s );
+QString toString( ProgMode point_mode );
 
 enum class PointMode {
   formule_x,

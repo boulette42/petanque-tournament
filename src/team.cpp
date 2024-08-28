@@ -7,7 +7,7 @@ Team::Team( IdList const& player_list )
   : player_list_( player_list )
 {
   int const n_id = player_list.size();
-  if ( n_id < 2 || 3 < n_id ) {
+  if ( n_id < 1 || 3 < n_id ) {
     player_list_.resize(0);
   }
 }
@@ -20,7 +20,7 @@ Team Team::readFromJson( QJsonObject const& json, QString& error_string )
   }
   QJsonArray id_arr = json[J_TEAM].toArray();
   int const n_id = id_arr.size();
-  if ( n_id < 2 || n_id > 3 ) {
+  if ( n_id < 1 || n_id > 3 ) {
     error_string = tr( "Falsche Spieler-Anzahl im Team" );
     return ret;
   }

@@ -35,7 +35,6 @@ public:
   bool lastRoundFinished() const { return last_round_finished_; }
   void setLastRoundFinished( bool last_round_finished ) { last_round_finished_ = last_round_finished; }
 
-  bool isTeamMode() const;
   Player const& player( int id ) const;
   QString playerName( int id ) const;
   bool addPlayer( Player const& player );

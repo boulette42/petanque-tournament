@@ -52,6 +52,15 @@ bool Player::equals( Player const& rhs ) const
   // selected_ und result_ irrelevant
 }
 
+QString Player::team() const
+{
+  return global().isTeteMode()
+    ? id_ == INVALID_ID
+      ? QString()
+      : QString::number( id_ )
+    : team_;
+}
+
 void Player::setMatch( int round_idx, Match const& match )
 {
   if ( ! result_ ) {

@@ -295,7 +295,7 @@ void MainWindow::activateTab( TabMode mode )
     ui_->tvMatchList->setFocus();
     break;
   case TabMode::result:
-    if ( tournament_->isTeamMode() ) {
+    if ( global().isTeamMode() ) {
       ui_->tabWidget->setCurrentIndex( TI_TeamResult );
       ui_->tvTeamResultList->setFocus();
     } else {
@@ -326,14 +326,14 @@ void MainWindow::editSettings()
   bool const site_enabled = global().siteEnabled();
   int const font_size = global().fontSize();
   int const site_count = global().siteCount();
-  bool const team_mode = tournament_->isTeamMode();
+  bool const team_mode = global().isTeamMode();
   bool const formule_x = global().isFormuleX();
   bool const swiss_simple = global().isSwissSimple();
   if ( global().execDialog( this, tournament_->round( 0 ).isEmpty() ) ) {
     if ( global().siteEnabled() != site_enabled ) {
       round_model_->setRound( round_model_->currentRound() );
     }
-    if (team_mode != tournament_->isTeamMode()) {
+    if (team_mode != global().isTeamMode()) {
       updateView(TabMode::player);
     }
     if ( global().siteCount() != site_count ) {
@@ -408,7 +408,7 @@ void MainWindow::addPlayer()
 {
   activateTab( TabMode::player );
   EditPlayerDlg dlg( this );
-  if ( dlg.exec( Player(), tournament_->isTeamMode() ) ) {
+  if ( dlg.exec( Player(), global().isTeamMode() ) ) {
     player_model_->addPlayer( dlg.player() );
   }
 }
@@ -506,13 +506,14 @@ void MainWindow::initModels()
   ui_->tvPlayerResultList->setModel( player_result_model_ );
   team_result_model_ = new TeamResultModel( *tournament_ );
   ui_->tvTeamResultList->setModel( team_result_model_ );
+  ui_->tvTeamResultList->header()->setMinimumSectionSize( 1 );
   ui_->cmbRound->clear();
   ui_->leSiteCnt->setText( QString::number( tournament_->siteCount() ) );
 }
 
 void MainWindow::updateView( TabMode tm )
 {
-  bool const team_mode = tournament_->isTeamMode();
+  bool const team_mode = global().isTeamMode();
   tab_widget_helper_->setTabVisible( TI_Site, global().siteEnabled() );
   tab_widget_helper_->setTabVisible( TI_PlayerResult, ! team_mode );
   tab_widget_helper_->setTabVisible( TI_TeamResult, team_mode );
@@ -573,7 +574,7 @@ void MainWindow::updateRoundSelect( int round_idx )
 void MainWindow::finishRound()
 {
   round_model_->finishRound();
-  if ( tournament_->isTeamMode() ) {
+  if ( global().isTeamMode() ) {
     team_result_model_->updateTeamList();
     for ( int col = 0; col < team_result_model_->columnCount() - 1; ++col ) {
       ui_->tvTeamResultList->resizeColumnToContents( col );
@@ -608,7 +609,7 @@ void MainWindow::createWindow()
     model = round_model_;
   }
   else if ( swd.isResultWindow() ) {
-    if ( tournament_->isTeamMode() ) {
+    if ( global().isTeamMode() ) {
       model = team_result_model_;
     }
     else {
@@ -649,7 +650,7 @@ void MainWindow::playerActivated( QModelIndex const& index )
 {
   EditPlayerDlg dlg( this );
   Player p = player_model_->player( index );
-  if ( dlg.exec( p, tournament_->isTeamMode() ) ) {
+  if ( dlg.exec( p, global().isTeamMode() ) ) {
     player_model_->setPlayer( index, dlg.player() );
   }
 }

@@ -36,7 +36,7 @@ public:
   QString const& firstName() const { return first_name_; }
   QString const& lastName() const { return last_name_; }
   QString const& association() const { return association_; }
-  QString const& team() const { return team_; }
+  QString team() const;
   QSharedPointer<PlayerResult> result() const { return result_; }
   int points() const { return points_; }
   void setPoints( int points ) { points_ = points; }

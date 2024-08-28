@@ -123,42 +123,63 @@ int TeamResultModel::columnCount( QModelIndex const& parent ) const
 
 QVariant TeamResultModel::data( QModelIndex const& mi, int role ) const
 {
-  int const row = mi.row();
+  int col = mi.column();
+  if ( role == Qt::DisplayRole ) {
+    return data( mi.row(), col );
+  } else if ( role == Qt::TextAlignmentRole ) {
+    if ( col == C_NAME || !global().isTeteMode() && col == C_TEAM ) {
+      return Qt::AlignLeft;
+    }
+    return Qt::AlignRight;
+  }
+  return QVariant();
+}
+
+QVariant TeamResultModel::data( int row, int col ) const
+{
   if ( 0 <= row && row < sorted_.size() ) {
     int const idx = sorted_[row];
-    int col = mi.column();
-    if ( role == Qt::DisplayRole ) {
-      Player const& player = tournament_.playerList()[idx];
-      switch ( col ) {
-      case C_TEAM:
-        return player.team();
-      case C_ROUNDS:
-        return player.result()
-          ? player.result()->wonRounds()
-          : 0;
-      case C_POINTS:
-        if ( !player.result() ) return 0;
-        if ( global().isFormuleX() ) return player.result()->resultPoints( true );
-        if ( global().isSwissSimple() ) return player.result()->resultPoints( false );
-        return QStringLiteral("%1 (%2)").arg(player.result()->buchholzPoints(tournament_))
-          .arg(player.result()->buchholzTieBreak(tournament_));
-      default:
-        if ( tournament_.lastRoundIdx() >= 0 ) {
-          col -= COLUMN_OFFSET;
-          if ( show_teams ) {
-            if ( ( col % 2 ) == 0 ) {
-              int opp_id = opponentPlayer( player, col / 2 );
-              return tournament_.player( opp_id ).team();
-            }
-            col /= 2;
+    Player const& player = tournament_.playerList()[idx];
+    switch ( col ) {
+    case C_POS:
+      if ( row < 1
+        || data( row, C_POINTS ) != data( row - 1, C_POINTS )
+        || data( row, C_ROUNDS ) != data( row - 1, C_ROUNDS ) )
+      {
+        return QStringLiteral( "%1." ).arg( row + 1 );
+      }
+      break;
+    case C_TEAM:
+      return player.team();
+    case C_NAME:
+      if ( global().isTeteMode() ) {
+        return QStringLiteral( "%1 %2" ).arg( player.firstName(), player.lastName() );
+      }
+      break;
+    case C_ROUNDS:
+      return player.result()
+        ? player.result()->wonRounds()
+        : 0;
+    case C_POINTS:
+      if ( !player.result() ) return 0;
+      if ( global().isFormuleX() ) return player.result()->resultPoints( true );
+      if ( global().isSwissSimple() ) return player.result()->resultPoints( false );
+      return QStringLiteral("%1 (%2)").arg(player.result()->buchholzPoints(tournament_))
+        .arg(player.result()->buchholzTieBreak(tournament_));
+    default:
+      if ( tournament_.lastRoundIdx() >= 0 ) {
+        col -= COLUMN_OFFSET;
+        if ( show_teams ) {
+          if ( ( col % 2 ) == 0 ) {
+            int opp_id = opponentPlayer( player, col / 2 );
+            return tournament_.player( opp_id ).team();
           }
-          if ( player.result() && player.result()->rounds() > col ) {
-            return player.result()->resultPoints( col, global().isFormuleX() );
-          }
+          col /= 2;
+        }
+        if ( player.result() && player.result()->rounds() > col ) {
+          return player.result()->resultPoints( col, global().isFormuleX() );
         }
       }
-    } else if ( role == Qt::TextAlignmentRole ) {
-      return col == C_TEAM ? Qt::AlignLeft : Qt::AlignRight;
     }
   }
   return QVariant();
@@ -169,8 +190,14 @@ QVariant TeamResultModel::headerData( int section, Qt::Orientation orientation, 
   if ( orientation == Qt::Horizontal ) {
     if ( role == Qt::DisplayRole ) {
       switch ( section ) {
+      case C_POS:
+        break;
       case C_TEAM:
-        return Tournament::tr( "Team" );
+        return global().isTeteMode() ? Tournament::tr( "ID" ) : Tournament::tr("Team");
+        break;
+      case C_NAME:
+        if ( global().isTeteMode() ) return Tournament::tr( "Spieler" );
+        break;
       case C_ROUNDS:
         return Tournament::tr( "Siege" );
       case C_POINTS:
