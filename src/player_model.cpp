@@ -212,9 +212,16 @@ void PlayerModel::sort( int column, Qt::SortOrder order )
         return lhs.selected() > rhs.selected();
       }
       switch ( col_ ) {
-      case 0: return team_mode_
-        ? lhs.team().compare(rhs.team(), Qt::CaseInsensitive) < 0
-        : rhs.id() > lhs.id();
+      case 0: 
+        if ( team_mode_ ) {
+          if ( !lhs.team().isEmpty() && lhs.team().at( 0 ).isDigit()
+            && !rhs.team().isEmpty() && rhs.team().at( 0 ).isDigit() )
+          {
+            return lhs.team().toInt() < rhs.team().toInt();
+          }
+          return lhs.team().compare( rhs.team(), Qt::CaseInsensitive ) < 0;
+        }
+        return rhs.id() > lhs.id();
       case 1: return lhs.lastName().compare( rhs.lastName(), Qt::CaseInsensitive ) < 0;
       case 2: return lhs.firstName().compare( rhs.firstName(), Qt::CaseInsensitive ) < 0;
       case 3: return lhs.association().compare( rhs.association(), Qt::CaseInsensitive ) < 0;
